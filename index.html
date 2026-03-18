@@ -1,15 +1,153 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Poyin — Trading Intel</title>
-    <meta name="description" content="Ilmu trading on-chain Solana yang jujur, simpel, dan bisa diakses semua orang. Dari bundle token, cabal play, sampai market cap tier." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Poyin — Trading Intel</title>
+  <meta name="description"
+    content="Ilmu trading on-chain Solana yang jujur, simpel, dan bisa diakses semua orang. Dari bundle token, cabal play, sampai market cap tier." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- ════════ SECURITY LAYER ════════ -->
+  <style>
+    /* Blokir Print & Screenshot via print dialog/shortcut */
+    @media print {
+      html, body { display: none !important; visibility: hidden !important; }
+    }
+
+    /* Blokir seleksi teks di seluruh halaman */
+    * {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
+    }
+
+    /* Overlay proteksi (DevTools / tab hidden) */
+    #sec-shield {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      background: #000;
+      color: #fff;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      gap: 12px;
+    }
+    #sec-shield .lock-icon { font-size: 3rem; }
+    #sec-shield .lock-title { font-size: 1.4rem; font-weight: 600; }
+    #sec-shield .lock-sub   { font-size: .9rem; opacity: .5; }
+  </style>
+
+  <script>
+    /* ══════════════════════════════════════════════
+       NATIVE SECURITY — berjalan sebelum React mount
+       ══════════════════════════════════════════════ */
+
+    var _shield = null;
+    function showShield() {
+      if (!_shield) _shield = document.getElementById('sec-shield');
+      if (_shield) _shield.style.display = 'flex';
+    }
+    function hideShield() {
+      if (!_shield) _shield = document.getElementById('sec-shield');
+      if (_shield) _shield.style.display = 'none';
+    }
+
+    /* 1. Blokir klik kanan */
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault(); e.stopPropagation(); return false;
+    }, true);
+
+    /* 2. Blokir drag */
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault(); return false;
+    }, true);
+
+    /* 3. Blokir seleksi teks */
+    document.addEventListener('selectstart', function(e) {
+      e.preventDefault(); return false;
+    }, true);
+
+    /* 4. Blokir copy / cut / paste */
+    ['copy', 'cut', 'paste'].forEach(function(ev) {
+      document.addEventListener(ev, function(e) {
+        e.preventDefault(); e.stopPropagation(); return false;
+      }, true);
+    });
+
+    /* 5. Blokir keyboard shortcuts berbahaya */
+    document.addEventListener('keydown', function(e) {
+      var k = (e.key || '').toUpperCase();
+      var ctrl = e.ctrlKey || e.metaKey;
+
+      if (e.keyCode === 123) { e.preventDefault(); e.stopPropagation(); return; }        // F12
+      if (ctrl && e.shiftKey && (k === 'I' || k === 'J' || k === 'C')) {                 // Ctrl+Shift+I/J/C
+        e.preventDefault(); e.stopPropagation(); return;
+      }
+      if (ctrl && k === 'U') { e.preventDefault(); e.stopPropagation(); return; }        // Ctrl+U View Source
+      if (ctrl && k === 'S') { e.preventDefault(); e.stopPropagation(); return; }        // Ctrl+S Save
+      if (ctrl && k === 'A') { e.preventDefault(); e.stopPropagation(); return; }        // Ctrl+A Select All
+      if (ctrl && (k === 'C' || k === 'X' || k === 'V')) {                               // Ctrl+C/X/V
+        e.preventDefault(); e.stopPropagation(); return;
+      }
+      if (e.keyCode === 44) { e.preventDefault(); e.stopPropagation(); return; }         // PrintScreen key
+    }, true);
+
+    /* 6. Deteksi DevTools terbuka (resize heuristic) */
+    (function devToolsGuard() {
+      var threshold = 160;
+      function checkDevTools() {
+        var wDiff = window.outerWidth  - window.innerWidth;
+        var hDiff = window.outerHeight - window.innerHeight;
+        if (wDiff > threshold || hDiff > threshold) {
+          showShield();
+        } else {
+          hideShield();
+        }
+      }
+      window.addEventListener('resize', checkDevTools);
+      checkDevTools();
+    })();
+
+    /* 7. Deteksi debugger aktif */
+    (function debuggerCheck() {
+      var t = new Date();
+      /* jshint ignore:start */
+      debugger;
+      /* jshint ignore:end */
+      if ((new Date() - t) > 200) {
+        document.body.innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;' +
+          'height:100vh;background:#000;color:#fff;font-family:sans-serif;font-size:1.4rem;">' +
+          '🔒 Akses ditolak.</div>';
+      }
+    })();
+
+    /* 8. Shield muncul saat tab berpindah (anti screen share / alt-tab screenshot) */
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) { showShield(); }
+      else { setTimeout(hideShield, 400); }
+    });
+  </script>
+</head>
+
+<body>
+  <!-- Security shield overlay -->
+  <div id="sec-shield">
+    <span class="lock-icon">🔒</span>
+    <span class="lock-title">Konten ini dilindungi.</span>
+    <span class="lock-sub">Tutup Developer Tools dan muat ulang halaman.</span>
+  </div>
+
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

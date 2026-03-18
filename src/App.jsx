@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { PANEL_ORDER } from './data/panelData';
 import { useScrollReveal } from './hooks/useScrollReveal';
+import { useSecurity } from './hooks/useSecurity';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import MateriIntro from './components/MateriIntro';
@@ -14,6 +15,7 @@ export default function App() {
   const [activePanel, setActivePanel] = useState('p0');
 
   useScrollReveal();
+  useSecurity();
 
   const switchPanel = useCallback((id) => {
     setActivePanel(id);
