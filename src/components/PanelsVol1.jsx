@@ -855,7 +855,7 @@ export function PanelMarketCap() {
 /* ──────────────────────────────────────────────────────────────── */
 /* P9 · CLOSING                                                    */
 /* ──────────────────────────────────────────────────────────────── */
-export function PanelClosing() {
+export function PanelClosing({ onSwitch }) {
   return (
     <>
       <div className="closing-card reveal">
@@ -881,6 +881,7 @@ export function PanelClosing() {
       </Callout>
 
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 24 }} className="reveal">
+        <button onClick={() => onSwitch?.('pa0')} className="btn btn-blue" style={{ background: '#7c3aed', borderColor: '#7c3aed' }}>📖 Lanjut ke Vol 2 — Advance</button>
         <a href="https://x.com/elponyin" target="_blank" rel="noopener" className="btn btn-blue">𝕏 Follow @elponyin</a>
         <a href="https://trojan.com/@Keusel" target="_blank" rel="noopener" className="btn btn-outline">⚡ Mulai Trading di Trojan</a>
       </div>

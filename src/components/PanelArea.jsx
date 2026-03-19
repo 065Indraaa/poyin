@@ -64,7 +64,7 @@ export default function PanelArea({ activePanel, onSwitch }) {
             <p className="panel-sub">{data.sub}</p>
             <div className="panel-rule" style={data.vol === 2 ? { background: '#7c3aed' } : undefined} />
             <PanelBreadcrumb items={data.breadcrumb} />
-            {ContentComponent && <ContentComponent />}
+            {ContentComponent && <ContentComponent onSwitch={onSwitch} />}
             <PanelNav nav={data.nav} onSwitch={onSwitch} />
           </div>
         );
