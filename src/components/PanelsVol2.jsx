@@ -258,43 +258,115 @@ export function PanelScalping() {
     <>
       {/* Penjelasan Awal */}
       <p className="prose reveal">
-        <strong>Apa itu Instant Scalping?</strong> Scalping adalah metode membeli dan menjual koin dalam waktu sangat singkat (hitungan menit), dengan target untung kecil tapi konsisten. Kunci utamanya: <em>rencanamu sudah jadi sebelum kamu membeli, bukan dibuat sambil panik di tengah-tengah.</em>
+        <strong>Ini rahasia dapur yang sebenernya.</strong> Setiap hari gw seneng banget ngeliat followers ngetag trading journey mereka — dan hampir <em>70% dari mereka berhasil nghindar dari rug</em> setelah nerapin 4 langkah ini. Bukan keberuntungan, tapi metode.
+      </p>
+      <p className="prose reveal">
+        Cara kerja instant scalping di <strong>new pair fresh launch</strong> itu simpel: kamu bukan nentuin kapan masuk, tapi nentuin koin mana yang <em>layak</em> untuk dimasukin. 4 filter ini jadi penjagamu.
       </p>
 
-      {/* Langkah terstruktur */}
+      {/* Visual Infographic */}
+      <div className="illus-box reveal">
+        <svg viewBox="0 0 700 310" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', display: 'block' }}>
+          <rect width="700" height="310" fill="transparent" />
+
+          {/* Title */}
+          <text x="350" y="30" textAnchor="middle" fontFamily="Georgia,serif" fontSize="17" fontWeight="700" fill="#18182b">4 Filter Sebelum Scalp New Pair</text>
+
+          {/* Step 1 */}
+          <rect x="20" y="50" width="145" height="110" rx="14" fill="#eff6ff" stroke="#93c5fd" strokeWidth="2" />
+          <text x="92" y="78" textAnchor="middle" fontFamily="sans-serif" fontSize="26">⛽</text>
+          <text x="92" y="100" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="700" fill="#1e40af">Step 1</text>
+          <text x="92" y="116" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#1d4ed8">Cek Global</text>
+          <text x="92" y="130" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#1d4ed8">Gas Fee</text>
+          <rect x="32" y="140" width="120" height="12" rx="6" fill="#dbeafe" />
+          <text x="92" y="151" textAnchor="middle" fontFamily="sans-serif" fontSize="9.5" fill="#1e40af" fontWeight="600">Fee tinggi = traffic padat</text>
+
+          {/* Arrow */}
+          <text x="175" y="112" textAnchor="middle" fontSize="22" fill="#94a3b8">→</text>
+
+          {/* Step 2 */}
+          <rect x="190" y="50" width="145" height="110" rx="14" fill="#f0fdf4" stroke="#86efac" strokeWidth="2" />
+          <text x="262" y="78" textAnchor="middle" fontFamily="sans-serif" fontSize="26">👛</text>
+          <text x="262" y="100" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="700" fill="#065f46">Step 2</text>
+          <text x="262" y="116" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#047857">Holder &amp; Funded</text>
+          <text x="262" y="130" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#047857">Wallet Age</text>
+          <rect x="202" y="140" width="120" height="12" rx="6" fill="#dcfce7" />
+          <text x="262" y="151" textAnchor="middle" fontFamily="sans-serif" fontSize="9.5" fill="#065f46" fontWeight="600">Funded under 1 day = 🚩</text>
+
+          {/* Arrow */}
+          <text x="345" y="112" textAnchor="middle" fontSize="22" fill="#94a3b8">→</text>
+
+          {/* Step 3 */}
+          <rect x="360" y="50" width="145" height="110" rx="14" fill="#fefce8" stroke="#fde68a" strokeWidth="2" />
+          <text x="432" y="78" textAnchor="middle" fontFamily="sans-serif" fontSize="26">💰</text>
+          <text x="432" y="100" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="700" fill="#92400e">Step 3</text>
+          <text x="432" y="116" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#b45309">Cek Balance</text>
+          <text x="432" y="130" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#b45309">Top Holder</text>
+          <rect x="372" y="140" width="120" height="12" rx="6" fill="#fef9c3" />
+          <text x="432" y="151" textAnchor="middle" fontFamily="sans-serif" fontSize="9.5" fill="#92400e" fontWeight="600">Under 0.2 SOL top holder = 🚩</text>
+
+          {/* Arrow */}
+          <text x="515" y="112" textAnchor="middle" fontSize="22" fill="#94a3b8">→</text>
+
+          {/* Step 4 */}
+          <rect x="530" y="50" width="150" height="110" rx="14" fill="#fdf4ff" stroke="#e879f9" strokeWidth="2" />
+          <text x="605" y="78" textAnchor="middle" fontFamily="sans-serif" fontSize="26">📊</text>
+          <text x="605" y="100" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="700" fill="#701a75">Step 4</text>
+          <text x="605" y="116" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#86198f">Cek Entri</text>
+          <text x="605" y="130" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#86198f">Market Cap</text>
+          <rect x="542" y="140" width="126" height="12" rx="6" fill="#fae8ff" />
+          <text x="605" y="151" textAnchor="middle" fontFamily="sans-serif" fontSize="9.5" fill="#701a75" fontWeight="600">Under 3K habis pump = 🚩</text>
+
+          {/* Result Row */}
+          <rect x="20" y="188" width="305" height="100" rx="14" fill="#fef2f2" stroke="#fca5a5" strokeWidth="2" />
+          <text x="172" y="214" textAnchor="middle" fontSize="20">🚫</text>
+          <text x="172" y="234" textAnchor="middle" fontFamily="Georgia,serif" fontSize="14" fontWeight="700" fill="#991b1b">2 atau lebih flag → SKIP</text>
+          <text x="172" y="252" textAnchor="middle" fontFamily="sans-serif" fontSize="11.5" fill="#b91c1c">Koin itu terlalu berisiko.</text>
+          <text x="172" y="268" textAnchor="middle" fontFamily="sans-serif" fontSize="11.5" fill="#b91c1c">Selalu ada koin baru tiap menit.</text>
+
+          <rect x="375" y="188" width="305" height="100" rx="14" fill="#f0fdf4" stroke="#4ade80" strokeWidth="2.5" />
+          <text x="527" y="214" textAnchor="middle" fontSize="20">✅</text>
+          <text x="527" y="234" textAnchor="middle" fontFamily="Georgia,serif" fontSize="14" fontWeight="700" fill="#14532d">Cuma 1 flag → GAS IT</text>
+          <text x="527" y="252" textAnchor="middle" fontFamily="sans-serif" fontSize="11.5" fill="#15803d">Potensi scalp 60–70%</text>
+          <text x="527" y="268" textAnchor="middle" fontFamily="sans-serif" fontSize="11.5" fill="#15803d">di new pair fresh launch. 🚀</text>
+        </svg>
+      </div>
+
+      {/* 4 Steps Detail */}
       <StepFlow steps={[
         {
           num: '1',
-          title: 'Identifikasi Koin — Cek Narasi + Momentum',
-          desc: 'Sebelum masuk, jawab pertanyaan ini: Apakah ada cerita (narasi) yang kuat di balik koin ini? Siapa pembuatnya? Apakah ada cabal yang terlibat? Seperti apa volume awalnya? Kalau jawabannya tidak meyakinkan, <strong>lewati</strong>. Selalu ada koin lain yang datang setiap jam.',
+          title: 'Tengok Global Gas Fee',
+          desc: 'Langkah pertama sebelum ngapa-ngapain: cek kondisi jaringan Solana. Kalau gas fee lagi tinggi banget, berarti traffic lagi padat — banyak bot dan trader lain juga ngejar koin yang sama. Di kondisi gini, execution kamu bisa lebih lambat dari orang lain. <strong>Pahami kondisi war sebelum masuk medan perang.</strong>',
         },
         {
           num: '2',
-          title: 'Masuk dengan Porsi Kecil Dulu (20-30%)',
-          desc: 'Jangan langsung masuk dengan seluruh uangmu. Masuk dengan 20–30% dulu sebagai "tes awal" (probe entry). Kalau koin langsung naik cepat, tambah posisi. Kalau langsung turun, kerugianmu sangat kecil karena kamu hanya memasukkan sebagian kecil.',
+          title: 'Cek Holder — Umur Funded Wallet',
+          desc: 'Langsung ke data holder di DexScreener atau tools tracking kamu. Yang dicari: <strong>funded wallet under 1 day</strong>. Kalau banyak holder yang dompetnya baru di-fund kurang dari sehari sebelum launch — itu sinyal bahwa dompet-dompet itu sengaja disiapkan untuk manipulasi. Ini red flag yang serius.',
         },
         {
           num: '3',
-          title: 'Set Auto TP & SL Sebelum Menambah Posisi',
-          desc: '<strong>TP</strong> (Take Profit) = otomatis jual saat untung mencapai target. <strong>SL</strong> (Stop Loss) = otomatis jual saat rugi mencapai batas yang kamu tentukan. Ini WAJIB di-set sebelum menambah uang lagi. Dengan cara ini, emosi tidak punya kesempatan mengambil alih keputusan.',
+          title: 'Cek Balance Top Holder',
+          desc: 'Setelah cek usia wallet, lihat balance-nya. Kalau top holder di koin itu punya saldo <strong>under 0.2 SOL</strong> — ini artinya mereka bukan player besar yang siap nahan atau dorong harga. Mereka kemungkinan besar cuma fomo atau worse, bagian dari skema yang sengaja bikin distro keliatan sehat.',
         },
         {
           num: '4',
-          title: 'Jual di Zona Hijau — Jangan Nunggu "Puncak"',
-          desc: 'Scalping yang bagus adalah yang <strong>konsisten</strong>, bukan yang sekali besar. Target keuntungan 30–70% per transaksi, lalu keluar. Jangan nunggu 10x lipat — itu bukan scalping, itu investasi. Scalper disiplin = bertahan lama.',
+          title: 'Cek Entry Market Cap',
+          desc: 'Ini filter terakhir dan sering jadi penentu. Kalau koin itu <strong>udah ngepump abis di bawah 3K market cap</strong> pas deploy — berarti kamu kemungkinan besar masuk di atas, bukan awal. Pump awal biasanya dari insider. Setelah mereka keluar, kamu yang tanggung. <strong>Kalau entri kamu di bawah 3K dan udah ngepump — skip.</strong>',
         },
       ]} />
 
-      <Callout type="info" icon="⚡" title="Waktu ideal untuk scalping koin baru">
-        Di koin baru, waktu terbaik untuk scalping biasanya antara <strong>3 sampai 20 menit</strong> dari peluncuran. Setelah itu, pemain awal mulai menjual dan harga menjadi tidak terprediksi. Kalau kamu tidak bisa memantau layar secara aktif dalam jendela waktu itu, lebih baik lewati koin tersebut.
+      <Callout type="ok" icon="🎯" title="Rumus Simpelnya">
+        Dari 4 filter di atas — <strong>kalau 2 atau lebih kena, langsung skip</strong> tanpa pikir panjang. Tapi kalau cuma 1 yang bermasalah? Selamat, kamu udah punya edge yang cukup buat scalp 60–70% di new pair fresh launch. Konsisten di filter ini = konsisten di profit.
       </Callout>
 
-      <Callout type="danger" icon="🚨" title="Kesalahan fatal dalam scalping">
-        Menahan koin karena "yakin pasti balik naik" — ini bukan scalping lagi, ini judi. Scalping punya aturan ketat: kalau target tidak tercapai dalam jendela waktu yang sudah ditentukan, <strong>jual dan keluar</strong>. Tidak ada pengecualian. Disiplin ini yang menjaga uangmu tetap hidup.
+      <Callout type="warn" icon="⚠️" title="Jangan Ganti Aturan di Tengah Jalan">
+        Godaan terbesar waktu scalping new pair adalah FOMO — ngeliat koin satu naik, langsung skip filter dan masuk. <strong>Ini yang bikin rug.</strong> 4 step ini bukan saran, ini protokol. Kalau kamu lompatin salah satunya, jangan salahkan market — salahkan diri sendiri.
       </Callout>
     </>
   );
 }
+
 
 // ═══════ PA6: MULTI WALLET ═══════
 export function PanelMultiWallet() {

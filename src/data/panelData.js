@@ -171,8 +171,8 @@ export const panels = {
   pa5: {
     eyebrow: 'A6',
     eyebrowLabel: 'Advance — Scalping',
-    title: 'Instant Scalping —\n4 Step di New Pair',
-    sub: 'Scalping bukan soal kecepatan semata — ini soal disiplin dalam chaos. Dengan metode 4 langkah ini, kamu mengubah ketidakpastian new pair menjadi kalkulasi yang terstruktur.',
+    title: 'Instant Scalping —\nCara Filter New Pair',
+    sub: 'Ini rahasia dapur yang sebenernya. 4 langkah sederhana yang bisa menghindarkan kamu dari rug — dan membuka peluang scalp 60–70% di fresh launch.',
     breadcrumb: ['Vol. 2 Advance', 'Instant Scalping', 'A6 dari A7'],
     nav: { prev: 'pa4', next: 'pa6', counter: 'A6 / A7', prevLabel: '← Transaksi Murah', nextLabel: 'Multi Wallet →' },
     type: 'scalping',
