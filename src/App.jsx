@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { PANEL_ORDER } from './data/panelData';
 import { useScrollReveal } from './hooks/useScrollReveal';
 import { useSecurity } from './hooks/useSecurity';
@@ -51,6 +52,7 @@ export default function App() {
       </div>
 
       <Footer />
+      <Analytics />
     </>
   );
 }
