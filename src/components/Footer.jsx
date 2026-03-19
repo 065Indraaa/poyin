@@ -23,13 +23,13 @@ export default function Footer() {
           <div className="ft-links-title">Terhubung</div>
           <div className="ft-links">
             <a
-              href="https://x.com/elpoyin"
+              href="https://x.com/elponyin"
               target="_blank"
               rel="noopener"
               className="ft-link"
             >
               <span style={{ fontSize: 20 }}>𝕏</span>
-              Follow @elpoyin di X
+              Follow @elponyin di X
             </a>
             <a
               href="https://trojan.com/@Keusel"

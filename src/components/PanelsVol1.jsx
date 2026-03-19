@@ -876,12 +876,12 @@ export function PanelClosing() {
 
       <Callout type="ok" icon="🙏" title="Kalau materi ini membantu kamu...">
         Jangan lupa bantu orang lain juga. Share ke teman yang masih belajar, atau setidaknya
-        follow @elpoyin di X untuk update materi selanjutnya. Ilmu yang disimpan sendirian
+        follow @elponyin di X untuk update materi selanjutnya. Ilmu yang disimpan sendirian
         tidak akan pernah berkembang — dan tidak akan pernah membantu siapapun selain dirimu sendiri.
       </Callout>
 
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 24 }} className="reveal">
-        <a href="https://x.com/elpoyin" target="_blank" rel="noopener" className="btn btn-blue">𝕏 Follow @elpoyin</a>
+        <a href="https://x.com/elponyin" target="_blank" rel="noopener" className="btn btn-blue">𝕏 Follow @elponyin</a>
         <a href="https://trojan.com/@Keusel" target="_blank" rel="noopener" className="btn btn-outline">⚡ Mulai Trading di Trojan</a>
       </div>
     </>

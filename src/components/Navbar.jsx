@@ -14,8 +14,8 @@ export default function Navbar() {
       </a>
       <div className="nav-spacer" />
       <div className="nav-links">
-        <a href="https://x.com/elpoyin" target="_blank" rel="noopener" className="nav-link">
-          𝕏 @elpoyin
+        <a href="https://x.com/elponyin" target="_blank" rel="noopener" className="nav-link">
+          𝕏 @elponyin
         </a>
         <a href="https://trojan.com/@Keusel" target="_blank" rel="noopener" className="nav-link pri">
           ⚡ Trojan
