@@ -17,7 +17,7 @@ export default function Hero() {
         </h1>
         <p className="hero-desc">
           Kalau kamu pernah beli token dan tiba-tiba nyangkut tanpa tahu kenapa — materi ini buat kamu.
-          Poyin ngemas ilmu trading on-chain Solana jadi{' '}
+          Ponyin ngemas ilmu trading on-chain Solana jadi{' '}
           <strong>sesimpel ngobrol sama teman</strong>, tapi sekuat analisis yang biasanya cuma dimiliki whale.
         </p>
         <div className="hero-btns">
@@ -35,8 +35,8 @@ export default function Hero() {
           <div className="fchip fc1">🔥 Bundle Vol.1</div>
           <div className="fchip fc2">📊 Solana OG</div>
           <div className="fchip fc3">⚡ trojan.com</div>
-          <img src={avatarSrc} className="hcard-av" alt="Poyin" draggable="false" />
-          <div className="hcard-name">Poyin</div>
+          <img src={avatarSrc} className="hcard-av" alt="Ponyin" draggable="false" />
+          <div className="hcard-name">Ponyin</div>
           <div className="hcard-role">Trader · Educator</div>
           <div className="hcard-tags">
             <span className="htag">On-chain</span>

@@ -17,7 +17,7 @@ export const sidebarItems = [
   { id: 'p6', num: '7', title: 'Cabal Play', sub: 'Kelompok terorganisir', vol: 1 },
   { id: 'p7', num: '8', title: 'Membaca Holder', sub: 'Siapa yang sebenarnya pegang', vol: 1 },
   { id: 'p8', num: '9', title: 'Market Cap Tier', sub: 'Micro → CEX, beda strategi', vol: 1 },
-  { id: 'p9', num: '★', title: 'Penutup', sub: 'Dari Poyin', vol: 1 },
+  { id: 'p9', num: '★', title: 'Penutup', sub: 'Dari Ponyin', vol: 1 },
   { id: 'pa0', num: 'A1', title: 'Cara Snipe Early', sub: 'Mapping + tools sniper', vol: 2 },
   { id: 'pa1', num: 'A2', title: 'First 1K dari $100', sub: 'Dua jalur nyata', vol: 2 },
   { id: 'pa2', num: 'A3', title: 'Wallet Ping', sub: '10 mata lebih baik', vol: 2 },
@@ -112,7 +112,7 @@ export const panels = {
   p9: {
     eyebrow: '★',
     eyebrowLabel: 'Penutup',
-    title: 'Dari Poyin,\ndengan Tulus.',
+    title: 'Dari Ponyin,\ndengan Tulus.',
     sub: 'Semua yang ada di sini hanyalah fondasi dasar. Masih banyak ilmu lain yang menunggu untuk dijelajahi — tapi fondasi yang kuat dan kokoh selalu lebih baik dari teknik yang canggih tapi berdiri di atas tanah yang rapuh.',
     breadcrumb: ['Vol. 1', 'Penutup', '★ dari 9'],
     nav: { prev: 'p8', next: 'p0', counter: '9 / 9', prevLabel: '← Market Cap Tier', nextLabel: 'Mulai dari awal →' },

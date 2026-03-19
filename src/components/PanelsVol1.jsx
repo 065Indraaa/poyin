@@ -428,7 +428,7 @@ export function PanelMemeVUtil() {
 
       {/* BAGIAN 3 — Rekomendasi */}
       <div className="reveal">
-        <Callout type="info" icon="🎯" title="Rekomendasi Poyin untuk pemula">
+        <Callout type="info" icon="🎯" title="Rekomendasi Ponyin untuk pemula">
           <strong>Mulailah dari meme coin dulu.</strong> Bukan karena lebih aman — justru sebaliknya.
           Tapi karena kecepatannya yang ekstrem akan memaksamu memahami psikologi trading, manajemen
           risiko, dan cara baca pasar jauh lebih cepat dibanding buku manapun.
@@ -571,7 +571,7 @@ export function PanelKonfirmasi() {
 
       {/* BAGIAN 2 — 3 Langkah */}
       <div className="reveal">
-        <SectionLabel>Tiga langkah metode Poyin</SectionLabel>
+        <SectionLabel>Tiga langkah metode Ponyin</SectionLabel>
         <StepFlow steps={[
           {
             icon: '1️⃣', color: '#ef4444',
@@ -859,7 +859,7 @@ export function PanelClosing() {
   return (
     <>
       <div className="closing-card reveal">
-        <img src={avatarSrc} className="closing-av" alt="Poyin" draggable="false" />
+        <img src={avatarSrc} className="closing-av" alt="Ponyin" draggable="false" />
         <div className="closing-quote">
           "Kejahatan lahir bukan karena mereka terstruktur. Kejahatan lahir karena banyak orang
           baik yang diam dan mendiamkan."
@@ -871,7 +871,7 @@ export function PanelClosing() {
           Terlebih kalau ilmu ini bermanfaat dan bisa digunakan sama orang lain untuk mengambil
           keputusan yang lebih baik. Guru melahirkan matahari, dan matahari melahirkan para guru.
         </p>
-        <div className="closing-sig">Salam hangat — dari dalam dan luar jaringan,<br />@ELPoyin ✨</div>
+        <div className="closing-sig">Salam hangat — dari dalam dan luar jaringan,<br />@ELPonyin ✨</div>
       </div>
 
       <Callout type="ok" icon="🙏" title="Kalau materi ini membantu kamu...">

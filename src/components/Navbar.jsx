@@ -9,8 +9,8 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <a href="#" className="nav-brand" onClick={scrollToMateri}>
-        <img src={avatarSrc} className="nav-av" alt="Poyin" draggable="false" />
-        <div className="nav-name">Poyin<b>.</b></div>
+        <img src={avatarSrc} className="nav-av" alt="Ponyin" draggable="false" />
+        <div className="nav-name">Ponyin<b>.</b></div>
       </a>
       <div className="nav-spacer" />
       <div className="nav-links">

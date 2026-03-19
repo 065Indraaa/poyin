@@ -3,7 +3,7 @@ export default function Footer() {
     <footer>
       <div className="ft-inner">
         <div>
-          <div className="ft-logo">Poyin<b>.</b></div>
+          <div className="ft-logo">Ponyin<b>.</b></div>
           <div className="ft-desc">
             Materi trading on-chain yang disampaikan jujur dan simpel. Tidak ada jargon yang sengaja dibikin susah — karena ilmu yang bagus harusnya bisa dipahami semua orang.
           </div>
@@ -44,7 +44,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="ft-copy">
-        © 2025 Poyin Trading Intel Hub · Semua konten dilindungi · Dilarang menyalin tanpa izin
+        © 2025 Ponyin Trading Intel Hub · Semua konten dilindungi · Dilarang menyalin tanpa izin
       </div>
     </footer>
   );
