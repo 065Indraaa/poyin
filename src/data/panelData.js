@@ -3,8 +3,8 @@
 // ═══════════════════════════════════════════════════
 
 export const PANEL_ORDER = [
-  'p0','p1','p2','p3','p4','p5','p6','p7','p8','p9',
-  'pa0','pa1','pa2','pa3','pa4','pa5','pa6'
+  'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9',
+  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6'
 ];
 
 export const sidebarItems = [
