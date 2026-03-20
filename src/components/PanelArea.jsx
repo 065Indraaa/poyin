@@ -8,7 +8,7 @@ import {
 } from './PanelsVol1';
 import {
   PanelSnipe, PanelFirst1K, PanelWalletPing, PanelModal,
-  PanelTransaksi, PanelScalping, PanelMultiWallet
+  PanelTransaksi, PanelScalping, PanelMultiWallet, PanelRefundSol
 } from './PanelsVol2';
 
 const CONTENT_MAP = {
@@ -27,8 +27,9 @@ const CONTENT_MAP = {
   pa2: PanelWalletPing,
   pa3: PanelModal,
   pa4: PanelTransaksi,
-  pa5: PanelScalping,
-  pa6: PanelMultiWallet,
+  pa5: PanelRefundSol,
+  pa6: PanelScalping,
+  pa7: PanelMultiWallet,
 };
 
 export default function PanelArea({ activePanel, onSwitch }) {

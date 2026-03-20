@@ -1,5 +1,6 @@
 import { Callout, IllusBox, CkList, StepFlow } from './PanelComponents';
 import { SnipeSVG, WalletPingSVG, MultiWalletSVG } from './Illustrations';
+import RefundImg from '../assets/Refund.jpg';
 
 // ═══════ PA0: SNIPE ═══════
 export function PanelSnipe() {
@@ -412,6 +413,88 @@ export function PanelMultiWallet() {
       <Callout type="warn" icon="⚠️" title="Cocok untuk simpanan 5 SOL ke atas">
         Strategi ini butuh modal yang cukup untuk dipecah ke 2–3 dompet aktif. Di bawah 5 SOL, pembagiannya terlalu kecil dan kurang efektif. Mulai pelajari dari sekarang — saat simpananmu sudah cukup, tinggal langsung dijalankan.
       </Callout>
+    </>
+  );
+}
+
+// ═══════ PA7: RENT REFUND ═══════
+export function PanelRefundSol() {
+  return (
+    <>
+      <p className="prose reveal">
+        <strong>Pernah merasa saldo SOL berkurang diam-diam tiap kali trading?</strong> Banyak degen yang belum tahu rahasia ini, apalagi yang baru pindah dari Ethereum. Di Ethereum, dompet kamu bertransaksi langsung dengan <em>smart contract</em>. Tapi di ekosistem Solana, arsitekturnya berbeda.
+      </p>
+
+      <div className="two-col reveal" style={{ marginTop: 24 }}>
+        <div>
+          <p className="prose">
+            <strong>Analogi Uang Bank & Emas:</strong> Sederhananya begini. Bayangkan kamu punya uang 10 Juta di bank, lalu ingin beli emas 5 Juta. Di Solana, kamu tidak membeli emas itu langsung dari rekening utamamu. Jaringan justru <strong>membuatkan rekening baru khusus</strong> hanya untuk menaruh emas tersebut.
+          </p>
+          <p className="prose">
+            Nah, rekening baru ini butuh biaya sewa (<em>Rent</em>) yang dipotong otomatis. Saat emasnya habis terjual, <strong>rekening kosongnya tetap ada dan biaya sewanya tidak otomatis kembali ke kamu!</strong>
+          </p>
+          <Callout type="ok" icon="💰" title="Tutup Rekening = Uang">
+            Kabar baiknya: setiap kali kamu menutup 1 rekening kosong, kamu akan mendapat refund sekitar <strong>0.002 SOL</strong>. Coba hitung kalau kamu sudah scalping 50 koin baru bulan ini.
+          </Callout>
+        </div>
+        <div>
+          {/* Card container untuk mengisi space kosong di sekitar gambar yang dikecilkan */}
+          <div style={{ background: 'var(--surface)', padding: 24, borderRadius: 16, border: '1px solid var(--border)', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <img 
+              src={RefundImg} 
+              alt="Rent Refund" 
+              style={{ maxWidth: 220, width: '100%', borderRadius: 12, border: '1px solid var(--border)', display: 'block', boxShadow: '0 8px 16px rgba(0,0,0,0.06)' }} 
+            />
+            <p className="prose" style={{ fontSize: 13, textAlign: 'center', marginTop: 16, marginBottom: 0, color: 'var(--slate)' }}>
+              Ilustrasi penarikan saldo rent otomatis dari sistem.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p className="prose reveal" style={{ marginTop: 24 }}>
+        <strong>Platform Eksekutor:</strong> Ada banyak situs pembakar token penyedia layanan ini, namun <strong>Refundyoursol</strong> adalah rekomendasi teraman karena fitur talangan gas-nya.
+      </p>
+
+      <ul className="cklist reveal">
+        {[
+          '<strong>Fitur Ditalangin:</strong> Amit-amit saldo SOL kamu lagi bener-bener nol untuk biaya gas menutup rekening — <em>smart contract</em> situs ini bisa "nalangin" bayarin gas kamu duluan secara otomatis.',
+          '<strong>Perhitungan Transparan:</strong> Misal kamu tutup 40 akun. 40 x 0.002 SOL = 0.08 SOL. Dari situ tinggal dikurangi otomatis untuk biaya gas talangan. Cukup klik dan beres.',
+          '<strong>Aman & Teruji:</strong> Saya pribadi sudah pakai 6 bulan tanpa masalah. Terkadang juga ada bonus <em>airdrop</em> dari mereka.',
+        ].map((item, i) => (
+          <li key={i}>
+            <span className="ck" style={{ background: '#7c3aed' }}>{i + 1}</span>
+            <span dangerouslySetInnerHTML={{ __html: item }} />
+          </li>
+        ))}
+      </ul>
+
+      <Callout type="warn" icon="⚠️" title="Catatan Penting: Hanya Koin Baru">
+        Aturan ini eksklusif untuk <em>new pair</em>. Kalau kamu keluar-masuk (membeli lalu menjual) koin yang benar-benar sama hingga 10 kali, rekening khusus untuk koin itu hanya dibuat sekali. Jadi, refund yang didapat juga hanya satu kali.
+      </Callout>
+
+      <div className="reveal" style={{ marginTop: 40, marginBottom: 20, textAlign: 'center' }}>
+        <a 
+          href="https://refundyoursol.com/8EA4DBF83C7524C5" 
+          target="_blank" 
+          rel="noreferrer" 
+          style={{ 
+            display: 'inline-block', 
+            background: '#ffffff', 
+            color: 'var(--brand)', 
+            border: '2px solid var(--brand)',
+            padding: '16px 32px', 
+            borderRadius: 12, 
+            fontWeight: 800, 
+            textDecoration: 'none',
+            fontSize: '16px',
+            boxShadow: '0 8px 24px rgba(124, 58, 237, 0.15)',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          🚀 KLIK DI SINI: Tarik Refund Sekarang
+        </a>
+      </div>
     </>
   );
 }

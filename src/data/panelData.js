@@ -4,7 +4,7 @@
 
 export const PANEL_ORDER = [
   'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9',
-  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6'
+  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6', 'pa7'
 ];
 
 export const sidebarItems = [
@@ -23,8 +23,9 @@ export const sidebarItems = [
   { id: 'pa2', num: 'A3', title: 'Wallet Ping', sub: '10 mata lebih baik', vol: 2 },
   { id: 'pa3', num: 'A4', title: 'Money Management', sub: 'Compounding + greedy', vol: 2 },
   { id: 'pa4', num: 'A5', title: 'Transaksi Murah', sub: 'RUST + RPC direct', vol: 2 },
-  { id: 'pa5', num: 'A6', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
-  { id: 'pa6', num: 'A7', title: 'Multi Wallet', sub: 'Keajaiban trading', vol: 2 },
+  { id: 'pa5', num: 'A6', title: 'Rent Refund', sub: 'Tarik kembali uang sewa', vol: 2 },
+  { id: 'pa6', num: 'A7', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
+  { id: 'pa7', num: 'A8', title: 'Multi Wallet', sub: 'Keajaiban trading', vol: 2 },
 ];
 
 export const panels = {
@@ -123,8 +124,8 @@ export const panels = {
     eyebrowLabel: 'Advance — Snipe',
     title: 'Cara Snipe\nEarly Project',
     sub: 'Trading itu seperti perang. Persenjataan lengkap membantu, teknologi canggih membantu — tapi satu hal yang tidak tergantikan adalah informasi. Siapa yang tahu lebih dulu, dia yang menang.',
-    breadcrumb: ['Vol. 2 Advance', 'Snipe Early Project', 'A1 dari A7'],
-    nav: { prev: null, next: 'pa1', counter: 'A1 / A7', prevLabel: '', nextLabel: 'Cara Dapat $1000 dari $100 →' },
+    breadcrumb: ['Vol. 2 Advance', 'Snipe Early Project', 'A1 dari A8'],
+    nav: { prev: null, next: 'pa1', counter: 'A1 / A8', prevLabel: '', nextLabel: 'Cara Dapat $1000 dari $100 →' },
     type: 'snipe',
     vol: 2
   },
@@ -133,8 +134,8 @@ export const panels = {
     eyebrowLabel: 'Advance — Strategy',
     title: 'Cara Dapat\n$1000 dari $100',
     sub: 'Tidak ada jalan pintas yang benar-benar "pintas" — tapi ada dua jalur nyata yang sudah terbukti. Pilih sesuai kemampuan dan posisi kamu saat ini.',
-    breadcrumb: ['Vol. 2 Advance', 'First 1K', 'A2 dari A7'],
-    nav: { prev: 'pa0', next: 'pa2', counter: 'A2 / A7', prevLabel: '← Snipe Early Project', nextLabel: 'Wallet Ping →' },
+    breadcrumb: ['Vol. 2 Advance', 'First 1K', 'A2 dari A8'],
+    nav: { prev: 'pa0', next: 'pa2', counter: 'A2 / A8', prevLabel: '← Snipe Early Project', nextLabel: 'Wallet Ping →' },
     type: 'first1k',
     vol: 2
   },
@@ -143,8 +144,8 @@ export const panels = {
     eyebrowLabel: 'Advance — Tracking',
     title: 'Cara Bikin\nMata Kamu Jadi Banyak',
     sub: '10 mata lebih baik dari 2 mata. Tapi bukan berarti kamu harus pantau 10 layar sekaligus — kamu cukup set wallet ping yang tepat, dan biarkan sistem yang bekerja.',
-    breadcrumb: ['Vol. 2 Advance', 'Wallet Ping', 'A3 dari A7'],
-    nav: { prev: 'pa1', next: 'pa3', counter: 'A3 / A7', prevLabel: '← First 1K dari $100', nextLabel: 'Modal yang Tepat →' },
+    breadcrumb: ['Vol. 2 Advance', 'Wallet Ping', 'A3 dari A8'],
+    nav: { prev: 'pa1', next: 'pa3', counter: 'A3 / A8', prevLabel: '← First 1K dari $100', nextLabel: 'Modal yang Tepat →' },
     type: 'walletping',
     vol: 2
   },
@@ -153,8 +154,8 @@ export const panels = {
     eyebrowLabel: 'Advance — Money Mgmt',
     title: 'Berapa Modal\nyang Tepat untuk Trade?',
     sub: 'Tidak ada angka yang berlaku untuk semua orang. Tapi ada kerangka yang terbukti bekerja — dan yang lebih penting, ada mental yang harus benar dulu sebelum angka apapun bisa bekerja.',
-    breadcrumb: ['Vol. 2 Advance', 'Money Management', 'A4 dari A7'],
-    nav: { prev: 'pa2', next: 'pa4', counter: 'A4 / A7', prevLabel: '← Wallet Ping', nextLabel: 'Transaksi Murah & Cepat →' },
+    breadcrumb: ['Vol. 2 Advance', 'Money Management', 'A4 dari A8'],
+    nav: { prev: 'pa2', next: 'pa4', counter: 'A4 / A8', prevLabel: '← Wallet Ping', nextLabel: 'Transaksi Murah & Cepat →' },
     type: 'modal',
     vol: 2
   },
@@ -163,28 +164,38 @@ export const panels = {
     eyebrowLabel: 'Advance — Tech',
     title: 'Transaksi Murah,\nSpeed Tetap Kencang',
     sub: 'Platform trading seperti Trojan, Flux, dan Axiom memberikan kenyamanan UI yang luar biasa — tapi ada harga yang dibayar setiap kali kamu trade di sana: platform fee. Ada cara untuk menghilangkannya.',
-    breadcrumb: ['Vol. 2 Advance', 'Transaksi Murah', 'A5 dari A7'],
-    nav: { prev: 'pa3', next: 'pa5', counter: 'A5 / A7', prevLabel: '← Money Management', nextLabel: 'Instant Scalping →' },
+    breadcrumb: ['Vol. 2 Advance', 'Transaksi Murah', 'A5 dari A8'],
+    nav: { prev: 'pa3', next: 'pa5', counter: 'A5 / A8', prevLabel: '← Money Management', nextLabel: 'Rent Refund →' },
     type: 'transaksi',
     vol: 2
   },
   pa5: {
     eyebrow: 'A6',
-    eyebrowLabel: 'Advance — Scalping',
-    title: 'Instant Scalping —\nCara Filter New Pair',
-    sub: 'Ini rahasia dapur yang sebenernya. 4 langkah sederhana yang bisa menghindarkan kamu dari rug — dan membuka peluang scalp 60–70% di fresh launch.',
-    breadcrumb: ['Vol. 2 Advance', 'Instant Scalping', 'A6 dari A7'],
-    nav: { prev: 'pa4', next: 'pa6', counter: 'A6 / A7', prevLabel: '← Transaksi Murah', nextLabel: 'Multi Wallet →' },
-    type: 'scalping',
+    eyebrowLabel: 'Advance — Tools',
+    title: 'Rent Refund —\nTarik Kembali Uang Sewa',
+    sub: 'Setiap kali kamu beli koin baru di Solana, ada saldo kecil yang tertahan sebagai uang sewa akun. Bayangkan kalau kamu sudah transaksi ratusan kali — berapa banyak uang kamu yang mengendap?',
+    breadcrumb: ['Vol. 2 Advance', 'Rent Refund', 'A6 dari A8'],
+    nav: { prev: 'pa4', next: 'pa6', counter: 'A6 / A8', prevLabel: '← Transaksi Murah', nextLabel: 'Instant Scalping →' },
+    type: 'refund',
     vol: 2
   },
   pa6: {
     eyebrow: 'A7',
+    eyebrowLabel: 'Advance — Scalping',
+    title: 'Instant Scalping —\nCara Filter New Pair',
+    sub: 'Ini rahasia dapur yang sebenernya. 4 langkah sederhana yang bisa menghindarkan kamu dari rug — dan membuka peluang scalp 60–70% di fresh launch.',
+    breadcrumb: ['Vol. 2 Advance', 'Instant Scalping', 'A7 dari A8'],
+    nav: { prev: 'pa5', next: 'pa7', counter: 'A7 / A8', prevLabel: '← Rent Refund', nextLabel: 'Multi Wallet →' },
+    type: 'scalping',
+    vol: 2
+  },
+  pa7: {
+    eyebrow: 'A8',
     eyebrowLabel: 'Advance — Multi Wallet',
     title: 'Multi Wallet —\nKeajaiban yang Bukan Keajaiban',
     sub: 'Multi wallet bukan tentang menyembunyikan diri. Ini tentang bermain lebih cerdas di ekosistem yang memang seperti itu adanya.',
-    breadcrumb: ['Vol. 2 Advance', 'Multi Wallet', 'A7 dari A7'],
-    nav: { prev: 'pa5', next: 'p0', counter: 'A7 / A7', prevLabel: '← Instant Scalping', nextLabel: 'Mulai dari awal ↺' },
+    breadcrumb: ['Vol. 2 Advance', 'Multi Wallet', 'A8 dari A8'],
+    nav: { prev: 'pa6', next: 'p0', counter: 'A8 / A8', prevLabel: '← Instant Scalping', nextLabel: 'Mulai dari awal ↺' },
     type: 'multiwallet',
     vol: 2
   },
