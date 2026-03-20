@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { PANEL_ORDER } from './data/panelData';
 import { useScrollReveal } from './hooks/useScrollReveal';
@@ -10,6 +10,7 @@ import MobileTabs from './components/MobileTabs';
 import Sidebar from './components/Sidebar';
 import PanelArea from './components/PanelArea';
 import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 import './styles/main.css';
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
   useScrollReveal();
   useSecurity();
 
+  // Listen for navigation events from Chatbot
   const switchPanel = useCallback((id) => {
     setActivePanel(id);
 
@@ -37,6 +39,17 @@ export default function App() {
     }, 200);
   }, []);
 
+  useEffect(() => {
+    const handleNavigatePanel = (e) => {
+      const { panelId } = e.detail;
+      if (panelId) {
+        switchPanel(panelId);
+      }
+    };
+    window.addEventListener('navigate-panel', handleNavigatePanel);
+    return () => window.removeEventListener('navigate-panel', handleNavigatePanel);
+  }, [switchPanel]);
+
   return (
     <>
       <Navbar />
@@ -52,6 +65,7 @@ export default function App() {
       </div>
 
       <Footer />
+      <Chatbot />
       <Analytics />
     </>
   );
