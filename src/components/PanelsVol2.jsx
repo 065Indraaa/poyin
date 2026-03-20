@@ -440,10 +440,10 @@ export function PanelRefundSol() {
         <div>
           {/* Card container untuk mengisi space kosong di sekitar gambar yang dikecilkan */}
           <div style={{ background: 'var(--surface)', padding: 24, borderRadius: 16, border: '1px solid var(--border)', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <img 
-              src={RefundImg} 
-              alt="Rent Refund" 
-              style={{ maxWidth: 220, width: '100%', borderRadius: 12, border: '1px solid var(--border)', display: 'block', boxShadow: '0 8px 16px rgba(0,0,0,0.06)' }} 
+            <img
+              src={RefundImg}
+              alt="Rent Refund"
+              style={{ maxWidth: 220, width: '100%', borderRadius: 12, border: '1px solid var(--border)', display: 'block', boxShadow: '0 8px 16px rgba(0,0,0,0.06)' }}
             />
             <p className="prose" style={{ fontSize: 13, textAlign: 'center', marginTop: 16, marginBottom: 0, color: 'var(--slate)' }}>
               Ilustrasi penarikan saldo rent otomatis dari sistem.
@@ -474,18 +474,18 @@ export function PanelRefundSol() {
       </Callout>
 
       <div className="reveal" style={{ marginTop: 40, marginBottom: 20, textAlign: 'center' }}>
-        <a 
-          href="https://refundyoursol.com/8EA4DBF83C7524C5" 
-          target="_blank" 
-          rel="noreferrer" 
-          style={{ 
-            display: 'inline-block', 
-            background: '#ffffff', 
-            color: 'var(--brand)', 
+        <a
+          href="https://refundyoursol.com/B2E6CA901EFE9F86"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: 'inline-block',
+            background: '#ffffff',
+            color: 'var(--brand)',
             border: '2px solid var(--brand)',
-            padding: '16px 32px', 
-            borderRadius: 12, 
-            fontWeight: 800, 
+            padding: '16px 32px',
+            borderRadius: 12,
+            fontWeight: 800,
             textDecoration: 'none',
             fontSize: '16px',
             boxShadow: '0 8px 24px rgba(124, 58, 237, 0.15)',
