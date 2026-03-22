@@ -5,6 +5,46 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-0',
+      date: '11 Maret 2026',
+      xLink: 'https://x.com/i/spaces/1yxBeMvqddEJN?s=20',
+      title: 'Rahasia Trading & Kisah Hidup Ray Ponyin: Dari Warnet Jadi Pro Trader',
+      desc: 'Ngobrolin trik pisahin wallet, manajemen portofolio super aman ala miliarder, sampai bongkar masa lalu Bang Ray dari jaga rental PS.',
+      tag: 'Portofolio · Story',
+      insights: [
+        {
+          num: '1',
+          title: 'Seni Menyiksa Diri Pakai "Challenge Wallet"',
+          body: 'Buat menghindari penyakit gatel mencet Buy (<em>overtrade</em>), Bang Ray mewajibkan pemisahan antara <strong>Main Wallet</strong> dan <strong>Challenge Wallet</strong>.<br/><br/><strong>Logikanya:</strong> Taruh saldo super tipis di Challenge Wallet. Pas saldo mepet, insting bertahan hidupmu bakal menyala. Kamu otomatis jadi jauh lebih tajam dan kejam saat milih koin karena takut modal recehmu beneran ludes kena rug!',
+        },
+        {
+          num: '2',
+          title: 'Awas Tool Bodong di TikTok & Wallet Kena Kuras',
+          body: 'Jangan gampang ngiler lihat <em>tools</em> kripto ajaib yang dipamerin di TikTok! Bang Ray ngingetin kalau bikin alat buat nge-rug itu nggak sembarangan.<br/><br/><strong>Aturan Besi:</strong> Kalau dompetmu pernah asal "Connect" ke web/aplikasi scam, SECEPATNYA pindahin sisa koin ke wallet baru. Scammer itu pintar, mereka sering sabar nunggu saldomu gendut dulu baru disedot sampai kering seketika.',
+        },
+        {
+          num: '3',
+          title: 'Nostalgia Perjuangan: Dari Operator Warnet ke Blockchain',
+          body: 'Sukses itu nggak instan. Bang Ray cerita gila-gilaan soal masa lalunya yang merangkak dari bawah banget.<br/><br/>Dari jaga rental PS waktu SD, nyambi jadi <strong>operator warnet</strong> pas SMP cuma biar bisa main komputer gratisan. Dia bahkan kenal Bitcoin pas eranya masih dipakai buat beli <em>cash game online</em>! Dari situ insting teknologinya terasah sampai sekarang mahir bermanuver di Solana, Base, hingga TON.',
+        },
+        {
+          num: '4',
+          title: 'Formasi Portofolio Anti-Miskin (No Uang Panas!)',
+          body: '<strong>Haram hukumnya trading pakai Uang Panas!</strong> (uang kos, uang susu, dll). Manajemen portofolio asli Bang Ray ini bikin kaget karena super aman.<br/><br/><strong>Rahasianya:</strong> Cuma <strong>1%</strong> nyawa buat judi di Memecoin. Sisanya? <strong>70%</strong> tidur tenang di Koin Spot (BTC/SOL dll), <strong>20%</strong> ditaruh di obligasi SBN negara, dan <strong>5%</strong> jadi Emas murni. Jangan cuma nafsu cari kaya dadakan tanpa mikir sabuk pengaman!',
+        },
+        {
+          num: '5',
+          title: 'Gimana Sih Cara Jadi Developer Token yang Sukses?',
+          body: 'Mau bikin token sendiri? Jangan harap laku kalau akun developermu masih bau kencur.<br/><br/>Bang Ray bilang, kamu harus ngebangun <strong>Reputasi Akun Dev</strong> biar pelacak bot dan publik percaya. Selain itu, cari tim yang emang jujur dan pantau terus narasi (<em>meta</em>) apa yang lagi hype. Tujuannya simpel: buat tokenmu tembus tahap <em>bonding</em> sampai punya kolam likuiditas permanen!',
+        },
+        {
+          num: '6',
+          title: 'Berburu RUG, Bukan Terbang ke Bulan',
+          body: 'Fakta keras: Sejago apapun analisismu, kamu <strong>Nggak Bakal Bisa Menebak 100%</strong> mana koin yang pasti bakal <em>Runner</em> gila-gilaan.<br/><br/><strong>Mindsetnya dibalik:</strong> Fokus pelajari ciri-ciri koin RUG (scam) sampai khatam. Begitu kamu jago ngehindarin koin sampah, secara otomatis rasio koin yang tersisa di tanganmu berpeluang jadi <em>runner</em>. Hoki itu akan datang sendiri kalau kamu selamat dari ranjau!',
+        },
+      ],
+    },
+    {
       id: 'space-1',
       date: '18 Maret 2026',
       xLink: 'https://x.com/i/spaces/1qGvvkmVpvpGB?s=20',
@@ -121,6 +161,46 @@ const SPACES_DATA = {
     },
   ],
   en: [
+    {
+      id: 'space-0',
+      date: 'March 11, 2026',
+      xLink: 'https://x.com/i/spaces/1yxBeMvqddEJN?s=20',
+      title: 'Trading Secrets & Ray Ponyin\'s Origin: From Cybercafe Boy to Pro Trader',
+      desc: 'Unpacking the "Challenge Wallet" hack, extreme portfolio defense, and Ray\'s crazy journey from running a Playstation rental store to mastering crypto.',
+      tag: 'Portfolio · Story',
+      insights: [
+        {
+          num: '1',
+          title: 'Torture Yourself With a "Challenge Wallet"',
+          body: 'To cure the itch of impulsive buying (<em>overtrading</em>), Ray enforces a strict segregation between your <strong>Main Wallet</strong> and a <strong>Challenge Wallet</strong>.<br/><br/><strong>The logic is brutal:</strong> Load only a microscopic balance in the Challenge Wallet. When capital is tight, your survival instincts flare up. You naturally become hyper-critical and ruthless in vetting coins because you\'re terrified of getting rugged out of your last pennies.',
+        },
+        {
+          num: '2',
+          title: 'Toxic TikTok Tools & Wallet Drainers',
+          body: 'Stop drooling over "magic" crypto tools promoted by randoms on TikTok! Ray explicitly warns that actual drainer/rug software isn\'t randomly handed out online.<br/><br/><strong>Iron Rule:</strong> If your wallet has EVER been "Connected" to a shady app, nuke it immediately and migrate to a fresh wallet. Scammers are notoriously patient; they\'ll happily wait until your balance gets fat before indiscriminately draining every last drop.',
+        },
+        {
+          num: '3',
+          title: 'The Origin Story: Cybercafe Operator to Web3 Veteran',
+          body: 'Success isn\'t an overnight package. Ray unloads his absolute ground-zero origin story.<br/><br/>He went from watching over a Playstation rental joint in elementary school to grinding as a <strong>cybercafe operator</strong> in junior high just to get free computer access. He encountered Bitcoin back when it was only traded for black-market online game cash! That raw grit fundamentally forged his blockchain instincts across Solana, Base, and TON today.',
+        },
+        {
+          num: '4',
+          title: 'The Anti-Broke Portfolio (No Hot Money!)',
+          body: '<strong>It is utterly forbidden to trade with "Hot Money"!</strong> (rent, groceries, emergency funds). Ray\'s actual real-life portfolio mechanics are shockingly conservative.<br/><br/><strong>The setup:</strong> A mere <strong>1%</strong> of his net worth gambles in the Memecoin trenches. The rest? <strong>70%</strong> sleeping peacefully in mainstream Spot holdings, <strong>20%</strong> locked in Government Bonds (SBN), and <strong>5%</strong> shielded in solid Gold. Quit hunting the mythical jackpot without strapping on your financial seatbelt first!',
+        },
+        {
+          num: '5',
+          title: 'The Blueprint to Becoming a Successful Token Dev',
+          body: 'Thinking of deploying your own token? Don\'t remotely expect retail volume if your dev wallet is a complete ghost.<br/><br/>Ray states that establishing a flawless <strong>Dev Account Reputation</strong> is mandatory to gain the trust of tracking bots and massive communities. Surrounding yourself with a non-shady team and riding the immediate meta is the only way to effectively push a coin into permanent <em>bonding</em> liquidity.',
+        },
+        {
+          num: '6',
+          title: 'Hunt for the RUGs, Not the Runners',
+          body: 'The hardest pill to swallow: Regardless of how superhuman your analysis is, you <strong>cannot mathematically predict</strong> which completely random coin will trigger a 1000x <em>Runner</em>.<br/><br/><strong>Flip your mental model:</strong> Obsessively master exactly how to identify RUGs mechanically. Once you become a master at dodging literal landmines, the remaining coins in your wallet statistically manifest into runners on their own. Luck is just a byproduct of survival!',
+        },
+      ],
+    },
     {
       id: 'space-1',
       date: 'March 18, 2026',
@@ -266,7 +346,7 @@ function InsightCard({ insight, color }) {
 function RecordingCard({ space, index }) {
   const { t } = useLang();
   const [expanded, setExpanded] = useState(false);
-  const colors = ['#2455d4', '#7c3aed', '#059669'];
+  const colors = ['#2455d4', '#7c3aed', '#059669', '#ea580c'];
   const color = colors[index % colors.length];
 
   return (
