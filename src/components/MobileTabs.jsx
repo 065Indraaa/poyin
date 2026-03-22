@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { sidebarItems } from '../data/panelData';
+import { sidebarItemsData } from '../data/panelData';
+import { useLang } from '../context/LanguageContext';
 
 export default function MobileTabs({ activePanel, onSwitch }) {
   const activeRef = useRef(null);
+  const { lang } = useLang();
+  const items = sidebarItemsData[lang];
 
   useEffect(() => {
     if (activeRef.current) {
@@ -12,7 +15,7 @@ export default function MobileTabs({ activePanel, onSwitch }) {
 
   return (
     <div className="mobile-tabs" id="mobileTabs">
-      {sidebarItems.map((item, i) => {
+      {items.map((item, i) => {
         const isAdvance = item.vol === 2;
         const isSep = i === 10; // separator before vol2
         return (

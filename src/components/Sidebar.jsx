@@ -1,16 +1,19 @@
-import { sidebarItems, PANEL_ORDER } from '../data/panelData';
+import { sidebarItemsData, PANEL_ORDER } from '../data/panelData';
+import { useLang } from '../context/LanguageContext';
 
 export default function Sidebar({ activePanel, onSwitch }) {
+  const { lang, t } = useLang();
+  const items = sidebarItemsData[lang];
   const idx = PANEL_ORDER.indexOf(activePanel);
   const pct = Math.round(((idx + 1) / PANEL_ORDER.length) * 100);
 
-  const vol1 = sidebarItems.filter(i => i.vol === 1);
-  const vol2 = sidebarItems.filter(i => i.vol === 2);
+  const vol1 = items.filter(i => i.vol === 1);
+  const vol2 = items.filter(i => i.vol === 2);
 
   return (
     <aside className="sidebar">
       <div className="sb-header">
-        <div className="sb-label">Materi · Vol. 1</div>
+        <div className="sb-label">{t('Materi · Vol. 1', 'Materials · Vol. 1')}</div>
         <div className="sb-progress-bar">
           <div className="sb-progress-fill" style={{ width: `${pct}%` }} />
         </div>
@@ -30,7 +33,7 @@ export default function Sidebar({ activePanel, onSwitch }) {
 
       <div className="sb-sep" />
       <div className="sb-coming">
-        <div className="sb-coming-label">Segera Hadir</div>
+        <div className="sb-coming-label">{t('Segera Hadir', 'Coming Soon')}</div>
         <div className="sb-coming-item">
           <span>🔒</span>
           <div>

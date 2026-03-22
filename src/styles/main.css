@@ -2145,3 +2145,52 @@ footer {
     right: 20px;
   }
 }
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(36, 85, 212, 0.08);
+  border: 1.5px solid rgba(36, 85, 212, 0.18);
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.lang-toggle:hover {
+  background: rgba(36, 85, 212, 0.14);
+  border-color: rgba(36, 85, 212, 0.3);
+  transform: scale(1.04);
+}
+
+.lang-opt {
+  color: var(--ink3);
+  transition: color 0.2s, font-weight 0.2s;
+  padding: 0 2px;
+}
+
+.lang-opt.active {
+  color: var(--b);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lang-sep {
+  color: var(--c4);
+  font-weight: 400;
+  margin: 0 1px;
+}
+
+@media (max-width: 640px) {
+  .lang-toggle {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+}

@@ -1,6 +1,9 @@
 import avatarSrc from '../assets/avatar.png';
+import { useLang } from '../context/LanguageContext';
 
 export default function Hero() {
+  const { t } = useLang();
+
   const scrollToMateri = (e) => {
     e.preventDefault();
     document.getElementById('materi')?.scrollIntoView({ behavior: 'smooth' });
@@ -11,21 +14,23 @@ export default function Hero() {
       <div className="hero-left">
         <div className="hero-eyebrow">Trading Intel Hub</div>
         <h1>
-          Ilmu trading yang<br />
-          <em>nyangkut di otak,</em><br />
-          bukan cuma lewat.
+          {t(
+            <>Ilmu trading yang<br /><em>nyangkut di otak,</em><br />bukan cuma lewat.</>,
+            <>Trading knowledge that<br /><em>sticks in your brain,</em><br />not just passing through.</>
+          )}
         </h1>
         <p className="hero-desc">
-          Kalau kamu pernah beli token dan tiba-tiba nyangkut tanpa tahu kenapa — materi ini buat kamu.
-          Ponyin ngemas ilmu trading on-chain Solana jadi{' '}
-          <strong>sesimpel ngobrol sama teman</strong>, tapi sekuat analisis yang biasanya cuma dimiliki whale.
+          {t(
+            <>Kalau kamu pernah beli token dan tiba-tiba nyangkut tanpa tahu kenapa — materi ini buat kamu. Ponyin ngemas ilmu trading on-chain Solana jadi{' '}<strong>sesimpel ngobrol sama teman</strong>, tapi sekuat analisis yang biasanya cuma dimiliki whale.</>,
+            <>If you've ever bought a token and suddenly got stuck without knowing why — this material is for you. Ponyin packages on-chain Solana trading knowledge to be{' '}<strong>as simple as chatting with a friend</strong>, yet as powerful as analysis usually reserved for whales.</>
+          )}
         </p>
         <div className="hero-btns">
           <a href="#materi" className="btn btn-blue" onClick={scrollToMateri}>
-            Baca Materi ↓
+            {t('Baca Materi ↓', 'Read Materials ↓')}
           </a>
           <a href="https://trojan.com/@Keusel" target="_blank" rel="noopener" className="btn btn-outline">
-            ⚡ Platform Trading
+            ⚡ {t('Platform Trading', 'Trading Platform')}
           </a>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { panels } from '../data/panelData';
+import { panelsData } from '../data/panelData';
+import { useLang } from '../context/LanguageContext';
 import { PanelEyebrow, PanelBreadcrumb, PanelNav } from './PanelComponents';
 import {
   PanelBundle, PanelGlobalFees, PanelRevoke, PanelMemeVUtil,
@@ -34,6 +35,8 @@ const CONTENT_MAP = {
 
 export default function PanelArea({ activePanel, onSwitch }) {
   const areaRef = useRef(null);
+  const { lang } = useLang();
+  const panels = panelsData[lang];
 
   // Trigger reveal animations when panel changes
   useEffect(() => {

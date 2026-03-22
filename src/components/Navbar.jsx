@@ -1,4 +1,5 @@
 import avatarSrc from '../assets/avatar.png';
+import LangToggle from './LangToggle';
 
 export default function Navbar() {
   const scrollToMateri = (e) => {
@@ -14,6 +15,7 @@ export default function Navbar() {
       </a>
       <div className="nav-spacer" />
       <div className="nav-links">
+        <LangToggle />
         <a href="https://x.com/elponyin" target="_blank" rel="noopener" className="nav-link">
           𝕏 @elponyin
         </a>

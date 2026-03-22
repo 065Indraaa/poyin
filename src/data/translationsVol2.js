@@ -1,0 +1,277 @@
+// ═══════════════════════════════════════════════════
+// TRANSLATIONS VOL.2 — Advanced panel content
+// ═══════════════════════════════════════════════════
+
+const T2 = {
+  // ─── PA0: SNIPE ───
+  snipe: {
+    id: {
+      p1: '<strong>Apa itu Snipe?</strong> Snipe artinya membeli koin di detik-detik pertama peluncurannya — sebelum orang lain sempat sadar bahwa koin itu ada. Ibaratnya, kamu sudah duduk di baris paling depan bioskop sebelum pintunya dibuka untuk umum.',
+      p2: 'Untuk melakukan ini, kamu butuh tiga hal: <strong>informasi</strong> (tahu koin apa yang akan diluncurkan dan kapan), <strong>alat</strong> (bot sniper atau kode khusus), dan <strong>kecepatan</strong> (selisih milidetik bisa berarti selisih jutaan dolar). Tanpa ketiganya, kamu cuma "menembak dalam gelap."',
+      mappingTitle: 'Langkah pertama: Mapping (Pemetaan)',
+      mapping: 'Sebelum bisa snipe, kamu harus sudah tahu: <strong>akun mana yang akan membuat koin</strong>, koin itu akan diluncurkan oleh siapa, dan di pool (tempat jual-beli) mana launch-nya. Tanpa tiga informasi ini, peluang berhasilmu sangat kecil.',
+      caseStudy: '<strong>Contoh nyata:</strong> Naseem berhasil membeli koin $trump hanya 0.05 detik sebelum likuiditas (uang) ditambahkan ke pool. Dia menghabiskan sekitar $100.000 USD hanya untuk biaya gas (biaya transaksi) demi kecepatan. Modalnya $1 juta — hasilnya? Profit $302 juta. Ini bukan keberuntungan, tapi kombinasi informasi yang akurat, alat yang tepat, dan eksekusi yang presisi.',
+      toolsHeader: 'Tools untuk snipe (dari yang paling canggih):',
+      tools: [
+        '<strong>Mintech</strong> — Bot sniper paling kuat. Cocok untuk peluncuran besar di mana kamu sudah punya semua info: nama koin, dompet Developer, dan waktu penambahan likuiditas. Harga mahal, tapi hasilnya setimpal.',
+        '<strong>Flux</strong> — Alternatif premium dengan fitur otomasi canggih untuk snipe dan trading sehari-hari.',
+        '<strong>Maestro</strong> — Gratis dan cukup handal untuk snipe standar. Cocok untuk pemula yang mau mulai belajar.',
+        '<strong>Trojan</strong> — Gratis, bisa snipe sekaligus trading harian. Tampilan antarmukanya nyaman dipakai.',
+        '<strong>Custom Helius Code</strong> — Untuk yang serius. Kamu menulis kode sendiri untuk bertransaksi langsung ke blockchain tanpa perantara (platform fee = $0). Biaya pengembangan: $5 sampai $100k tergantung kerumitan.',
+      ],
+      botTitle: 'Kapan pakai snipe manual vs bot?',
+      bot: 'Snipe manual (tanpa bot) bisa dilakukan kalau kamu selalu standby depan layar. Tapi untuk peluncuran besar yang sudah diketahui waktunya — gunakan Mintech atau kode khusus. Di level itu, selisih milidetik = selisih jutaan dolar.',
+    },
+    en: {
+      p1: '<strong>What is Sniping?</strong> Sniping means buying a coin in the first few seconds of its launch — before anyone else even realizes the coin exists. Think of it like sitting in the front row of a cinema before the doors open to the public.',
+      p2: 'To do this, you need three things: <strong>information</strong> (knowing which coin will launch and when), <strong>tools</strong> (a sniper bot or custom code), and <strong>speed</strong> (a millisecond difference can mean millions of dollars). Without all three, you\'re just "shooting in the dark."',
+      mappingTitle: 'First step: Mapping',
+      mapping: 'Before you can snipe, you need to already know: <strong>which account will create the coin</strong>, who will launch it, and in which pool (marketplace) the launch will happen. Without these three pieces of information, your chances of success are very low.',
+      caseStudy: '<strong>Real example:</strong> Naseem managed to buy the $trump coin just 0.05 seconds before liquidity was added to the pool. He spent about $100,000 USD just on gas fees (transaction costs) for speed. His capital was $1 million — the result? $302 million profit. This wasn\'t luck, but a combination of accurate information, the right tools, and precise execution.',
+      toolsHeader: 'Tools for sniping (from most advanced):',
+      tools: [
+        '<strong>Mintech</strong> — The most powerful sniper bot. Ideal for big launches where you already have all info: coin name, Developer wallet, and liquidity add timing. Expensive, but worth the results.',
+        '<strong>Flux</strong> — Premium alternative with advanced automation features for sniping and daily trading.',
+        '<strong>Maestro</strong> — Free and reliable enough for standard sniping. Great for beginners who want to start learning.',
+        '<strong>Trojan</strong> — Free, can snipe and do daily trading. Comfortable user interface.',
+        '<strong>Custom Helius Code</strong> — For the serious ones. You write your own code to transact directly on blockchain without intermediaries (platform fee = $0). Development cost: $5 to $100k depending on complexity.',
+      ],
+      botTitle: 'When to use manual snipe vs bot?',
+      bot: 'Manual sniping (without a bot) works if you\'re always standing by at your screen. But for big launches with known timing — use Mintech or custom code. At that level, a millisecond difference = millions of dollars difference.',
+    },
+  },
+
+  // ─── PA1: FIRST 1K ───
+  first1k: {
+    id: {
+      jalur1Title: 'Jalur Koneksi ("Mulut Manis")',
+      jalur1: 'Kamu membangun hubungan baik dengan cabal atau Developer yang sering meluncurkan koin. Minta supaya diajak masuk bareng di proyek mereka. Biasanya mereka akan memintamu membeli sejumlah SOL — ini untuk dompet "resmi" kamu yang mereka ketahui.',
+      jalur1b: 'Tapi kamu juga punya dompet lain yang <em>mereka tidak tahu</em>. Ini bukan kecurangan — di dunia crypto, semua orang bermain untuk dirinya sendiri. Yang penting: <strong>saat menjual, jaga supaya grafik harga tetap sehat</strong> (jangan jual mendadak di saat harga sedang jatuh).',
+      sellTitle: 'Cara menjual yang baik (menjaga chart)',
+      sell: 'Jangan jual di saat harga sedang merah (turun). Jangan jual di saat harga sedang naik cepat. Gunakan metode <strong>trailing stop</strong> — ikuti harga naik dan otomatis jual saat harga mulai turun dari puncak. Dengan cara ini, grafik harga tetap terlihat sehat dan reputasimu terjaga.',
+      jalur2Title: 'Jalur Deployer ("Si Pembuat")',
+      jalur2: 'Kamu membuat koin sendiri. Semua keputusan ada di tanganmu: waktu peluncuran, pembagian suplai, strategi promosi. Jalur ini potensinya lebih besar, tapi butuh kemampuan dan pengetahuan yang lebih dalam.',
+      jalur2b: 'Tutorial lengkap cara membuat dan meluncurkan koin akan dibagikan di materi berikutnya. Yang terpenting dipahami saat ini: <em>reputasi adalah aset jangka panjang.</em> Sekali kamu dikenal bisa dipercaya di komunitas, pintu-pintu kesempatan berikutnya terbuka jauh lebih mudah.',
+      principleTitle: 'Prinsip penting',
+      principle: 'Jangan berhenti berusaha hanya karena sudah dapat sedikit untung. Bangun reputasi, perluas jaringan, dan terus tingkatkan kemampuan — kombinasi ketiganya yang membuat seorang trader bertahan di jangka panjang.',
+    },
+    en: {
+      jalur1Title: 'The Connection Path ("Sweet Talker")',
+      jalur1: 'You build good relationships with cabals or Developers who frequently launch coins. Ask to be brought along in their projects. They\'ll usually ask you to buy a certain amount of SOL — this is for your "official" wallet that they know about.',
+      jalur1b: 'But you also have another wallet that <em>they don\'t know about</em>. This isn\'t cheating — in the crypto world, everyone plays for themselves. What matters: <strong>when selling, keep the price chart healthy</strong> (don\'t sell suddenly when the price is falling).',
+      sellTitle: 'How to sell properly (maintaining the chart)',
+      sell: 'Don\'t sell when the price is red (falling). Don\'t sell when the price is rising fast. Use the <strong>trailing stop</strong> method — follow the price up and automatically sell when it starts dropping from the peak. This way, the price chart stays healthy and your reputation is preserved.',
+      jalur2Title: 'The Deployer Path ("The Creator")',
+      jalur2: 'You create your own coin. All decisions are in your hands: launch timing, supply distribution, marketing strategy. This path has bigger potential, but requires deeper skills and knowledge.',
+      jalur2b: 'A complete tutorial on how to create and launch a coin will be shared in upcoming materials. The most important thing to understand now: <em>reputation is a long-term asset.</em> Once you\'re known as trustworthy in the community, doors to future opportunities open much more easily.',
+      principleTitle: 'Important principle',
+      principle: 'Don\'t stop trying just because you made a small profit. Build reputation, expand your network, and keep improving your skills — the combination of these three is what makes a trader last in the long run.',
+    },
+  },
+
+  // ─── PA2: WALLET PING ───
+  walletping: {
+    id: {
+      p1: '<strong>Apa itu Wallet Ping?</strong> Wallet ping adalah sistem notifikasi yang mengirim peringatan (alert) setiap kali dompet yang kamu pantau melakukan transaksi. Setiap kali dompet tersebut membeli, menjual, atau menambah likuiditas — kamu langsung dapat pemberitahuan.',
+      p2: '<strong>Penting:</strong> Ini <em>bukan</em> sinyal untuk langsung membeli. Ini hanya memberi tahu bahwa "ada sesuatu yang perlu kamu perhatikan di sini." Kamu tetap harus menganalisis sendiri sebelum bertindak.',
+      warnTitle: 'Kesalahan paling umum',
+      warn: 'Banyak pemula langsung FOMO (takut ketinggalan) dan membeli setiap kali dapat ping. Jangan lakukan ini! Wallet ping hanya memberi tahu bahwa ada aktivitas menarik. Keputusan beli tetap harus berdasarkan analisis kamu sendiri.',
+      findHeader: 'Cara menemukan dompet bagus yang layak dipantau:',
+      findItems: [
+        '<strong>Jangan FOMO saat ketinggalan</strong> — Kalau kamu ketinggalan koin yang sedang naik, jangan langsung beli di harga tertinggi. Justru ini kesempatan terbaik untuk mencari dompet-dompet bagus yang masuk lebih awal.',
+        '<strong>Buka DexScreener atau Terminal</strong> — Scroll ke bawah di koin yang sedang naik. Cari dompet-dompet yang masuk sangat awal, sebelum harga naik drastis.',
+        '<strong>Cek fitur "Top Trader"</strong> — Di setiap koin ada daftar 20 trader terbaik. Biasanya sekitar 5 di antaranya adalah pemain yang konsisten bagus dan layak dipantau jangka panjang.',
+        '<strong>Lacak dari satu dompet ke dompet lain</strong> — Di blockchain, satu dompet bagus sering berinteraksi dengan dompet bagus lainnya. Ikuti rantainya — dari 1 dompet bisa menemukan 10 dompet berkualitas.',
+      ],
+      benefitTitle: 'Manfaat nyata dari wallet ping',
+      benefit: 'Dengan sistem wallet ping yang tepat, risiko kamu terkena penipuan (rug pull) turun dari 90% menjadi sekitar 60% — dan bisa turun lagi ke 50% seiring kamu semakin mengenal pola dompet-dompet yang kamu pantau. Ini bukan fitur tambahan, ini adalah peningkatan fundamental cara bermainmu.',
+    },
+    en: {
+      p1: '<strong>What is Wallet Ping?</strong> Wallet ping is a notification system that sends alerts every time a wallet you\'re monitoring makes a transaction. Every time that wallet buys, sells, or adds liquidity — you get notified immediately.',
+      p2: '<strong>Important:</strong> This is <em>not</em> a signal to buy immediately. It only tells you "there\'s something worth paying attention to here." You still need to analyze for yourself before acting.',
+      warnTitle: 'Most common mistake',
+      warn: 'Many beginners immediately FOMO (fear of missing out) and buy every time they get a ping. Don\'t do this! Wallet ping only tells you there\'s interesting activity. The decision to buy must still be based on your own analysis.',
+      findHeader: 'How to find good wallets worth monitoring:',
+      findItems: [
+        '<strong>Don\'t FOMO when you miss out</strong> — If you missed a coin that\'s pumping, don\'t buy at the highest price. This is actually the best opportunity to find good wallets that entered early.',
+        '<strong>Open DexScreener or Terminal</strong> — Scroll down on a pumping coin. Look for wallets that entered very early, before the price rose drastically.',
+        '<strong>Check the "Top Trader" feature</strong> — Every coin has a list of 20 best traders. Usually about 5 of them are consistently good players worth monitoring long-term.',
+        '<strong>Trace from one wallet to another</strong> — On blockchain, one good wallet often interacts with other good wallets. Follow the chain — from 1 wallet you can find 10 quality wallets.',
+      ],
+      benefitTitle: 'Real benefits of wallet ping',
+      benefit: 'With the right wallet ping system, your risk of getting scammed (rug pull) drops from 90% to about 60% — and can drop further to 50% as you become more familiar with the patterns of wallets you monitor. This isn\'t an add-on feature, it\'s a fundamental upgrade to how you play.',
+    },
+  },
+
+  // ─── PA3: MODAL / MONEY MGMT ───
+  modal: {
+    id: {
+      p1: '<strong>Berapa modal yang tepat untuk trading?</strong> Jawabannya bergantung pada posisimu: apakah kamu trading dengan uang yang memang "bebas" (uang dingin), atau ada tekanan hutang di belakangnya? Trading sambil dikejar hutang adalah kombinasi yang paling berbahaya — tekanan psikologis akan membuat semua keputusanmu menjadi emosional dan tidak rasional.',
+      tp35: '<strong>Strategi 35% Take Profit (Ambil Untung):</strong> Setiap kali kamu untung dari sebuah trade, ambil 35% dari keuntungan itu dan pindahkan ke dompet baru yang terpisah. Dompet ini adalah "tabungan" kamu. Sisanya bisa kamu gunakan untuk trade lanjutan.',
+      tp35why: '<strong>Kenapa pindah ke dompet baru?</strong> Karena dengan memisahkan secara fisik, kamu tidak tergoda untuk langsung memasukkan semua keuntungan ke trade berikutnya. <em>Efek bunga berbunga (compounding) hanya bekerja kalau keuntungannya benar-benar diamankan</em>.',
+      opportunity: '<strong>Saat ada peluang bagus:</strong> Dari uang yang sudah terkumpul, masuk dengan 70–80% dari total simpanan. Target untung: cukup <strong>50% per trade</strong>, bukan 10x. Dengan efek compounding, 50% dari simpanan yang terus tumbuh jauh lebih berarti dari 10x dari modal kecil.',
+      autoTP: '<strong>Fitur Auto Take Profit:</strong> Ini senjata terbaik melawan keserakahan. Set targetmu, biarkan sistem yang menjual. Setelah target tercapai, <strong>berhenti</strong>. Jangan beli lagi koin yang sama. Disiplin ini yang membedakan trader yang bertahan lama.',
+      greedTitle: 'Tanda-tanda keserakahan yang harus dihindari',
+      greed: 'Merasa "sayang kalau jual sekarang, harusnya tunggu lebih tinggi" — ini serakah. Membeli lagi koin yang sudah kamu jual — ini serakah. Masuk dengan uang lebih besar dari biasanya karena "yakin banget" — ini serakah. Semua keputusan trading yang didasari emosi (bukan rencana) adalah tanda keserakahan sedang menguasaimu.',
+    },
+    en: {
+      p1: '<strong>How much capital is right for trading?</strong> The answer depends on your position: are you trading with money that\'s truly "free" (cold money), or is there debt pressure behind it? Trading while chased by debt is the most dangerous combination — psychological pressure will make all your decisions emotional and irrational.',
+      tp35: '<strong>35% Take Profit Strategy:</strong> Every time you profit from a trade, take 35% of that profit and move it to a separate new wallet. This wallet is your "savings." The rest can be used for follow-up trades.',
+      tp35why: '<strong>Why move to a new wallet?</strong> Because by physically separating it, you won\'t be tempted to immediately throw all profits into the next trade. <em>The compounding effect only works if profits are truly secured</em>.',
+      opportunity: '<strong>When a good opportunity arises:</strong> From the money you\'ve accumulated, enter with 70–80% of total savings. Profit target: just <strong>50% per trade</strong>, not 10x. With the compounding effect, 50% of continuously growing savings means far more than 10x from small capital.',
+      autoTP: '<strong>Auto Take Profit Feature:</strong> This is your best weapon against greed. Set your target, let the system sell. After the target is reached, <strong>stop</strong>. Don\'t buy the same coin again. This discipline is what sets long-lasting traders apart.',
+      greedTitle: 'Signs of greed you must avoid',
+      greed: 'Feeling "it\'d be a waste to sell now, should wait for a higher price" — that\'s greed. Buying back a coin you already sold — that\'s greed. Entering with more money than usual because you\'re "super confident" — that\'s greed. Any trading decision based on emotion (not a plan) is a sign that greed is controlling you.',
+    },
+  },
+
+  // ─── PA4: TRANSAKSI ───
+  transaksi: {
+    id: {
+      p1: '<strong>Bagaimana cara mengurangi biaya trading?</strong> Platform seperti Trojan, Flux, dan Axiom memang nyaman dipakai, tapi setiap kali kamu bertransaksi di sana, ada "biaya layanan" (platform fee) yang dipotong. Kalau dihitung sebulan, jumlahnya bisa sangat besar. Ada dua cara untuk mengurangi atau menghilangkan biaya ini.',
+      rustTerm: 'RUST untuk Trading',
+      rustDesc: '<strong>Apa itu?</strong> RUST adalah bahasa pemrograman yang dipakai oleh jaringan Solana. Kalau kamu bisa menulis kode transaksi sendiri dalam RUST, kamu bisa bertransaksi langsung ke blockchain tanpa perantara — artinya <strong>biaya platform = Rp 0</strong>.<br /><br /><strong>Butuh apa?</strong> Kemampuan coding dasar. Investasi waktu belajar cukup besar, tapi sangat sepadan untuk trader yang serius dan bertransaksi setiap hari.',
+      rpcTerm: 'RPC Langsung',
+      rpcDesc: '<strong>Apa itu?</strong> RPC (Remote Procedure Call) adalah "gerbang komunikasi" antara kamu dan blockchain Solana. Platform berbayar menggunakan gerbang mereka sendiri dan menambahkan biaya di atasnya. Dengan berlangganan langsung ke penyedia RPC seperti <strong>Helius</strong>, <strong>QuikNode</strong>, atau <strong>Triton</strong> — kamu dapat kecepatan yang sama, tanpa biaya tambahan dari platform.<br /><br /><strong>Biaya langganan?</strong> Jauh lebih murah dibanding total fee platform yang kamu bayar setiap bulan.',
+      calcTitle: 'Contoh perhitungan nyata',
+      calc: 'Misalkan kamu trading 10 kali sehari, dengan rata-rata 0.5 SOL per transaksi. Biaya platform rata-rata 1% = 0.05 SOL per transaksi = 0.5 SOL per hari. Dalam sebulan: <strong>15 SOL</strong>. Setahun: <strong>180 SOL</strong>. Dengan RPC langsung + RUST, penghematan itu masuk ke kantongmu sendiri.',
+      whenTitle: 'Kapan mulai belajar ini?',
+      when: 'Belajar RUST dan menyiapkan RPC sendiri butuh waktu yang cukup besar. Saran: mulai <strong>setelah simpananmu stabil di atas 5 SOL</strong> dan kamu sudah punya pola trading yang konsisten. Jangan terburu-buru belajar sisi teknis sebelum dasar trading-mu sendiri sudah solid.',
+    },
+    en: {
+      p1: '<strong>How to reduce trading costs?</strong> Platforms like Trojan, Flux, and Axiom are convenient to use, but every time you transact there, there\'s a "service fee" (platform fee) being deducted. Calculated monthly, the total can be very large. There are two ways to reduce or eliminate these costs.',
+      rustTerm: 'RUST for Trading',
+      rustDesc: '<strong>What is it?</strong> RUST is the programming language used by the Solana network. If you can write transaction code yourself in RUST, you can transact directly on the blockchain without intermediaries — meaning <strong>platform fee = $0</strong>.<br /><br /><strong>What\'s needed?</strong> Basic coding ability. The time investment for learning is significant, but very worthwhile for serious traders who transact daily.',
+      rpcTerm: 'Direct RPC',
+      rpcDesc: '<strong>What is it?</strong> RPC (Remote Procedure Call) is the "communication gateway" between you and the Solana blockchain. Paid platforms use their own gateways and add fees on top. By subscribing directly to RPC providers like <strong>Helius</strong>, <strong>QuikNode</strong>, or <strong>Triton</strong> — you get the same speed, without additional platform fees.<br /><br /><strong>Subscription cost?</strong> Much cheaper than the total platform fees you pay every month.',
+      calcTitle: 'Real calculation example',
+      calc: 'Say you trade 10 times a day, averaging 0.5 SOL per transaction. Average platform fee 1% = 0.05 SOL per transaction = 0.5 SOL per day. In a month: <strong>15 SOL</strong>. In a year: <strong>180 SOL</strong>. With direct RPC + RUST, those savings go straight into your pocket.',
+      whenTitle: 'When to start learning this?',
+      when: 'Learning RUST and setting up your own RPC takes significant time. Advice: start <strong>after your savings are stable above 5 SOL</strong> and you already have a consistent trading pattern. Don\'t rush into the technical side before your trading fundamentals are solid.',
+    },
+  },
+
+  // ─── PA5: SCALPING ───
+  scalping: {
+    id: {
+      p1: '<strong>Ini rahasia dapur yang sebenernya.</strong> Setiap hari gw seneng banget ngeliat followers ngetag trading journey mereka — dan hampir <em>70% dari mereka berhasil nghindar dari rug</em> setelah nerapin 4 langkah ini. Bukan keberuntungan, tapi metode.',
+      p2: 'Cara kerja instant scalping di <strong>new pair fresh launch</strong> itu simpel: kamu bukan nentuin kapan masuk, tapi nentuin koin mana yang <em>layak</em> untuk dimasukin. 4 filter ini jadi penjagamu.',
+      step1: 'Tengok Global Gas Fee',
+      step1Desc: 'Langkah pertama sebelum ngapa-ngapain: cek kondisi jaringan Solana. Kalau gas fee lagi tinggi banget, berarti traffic lagi padat — banyak bot dan trader lain juga ngejar koin yang sama. Di kondisi gini, execution kamu bisa lebih lambat dari orang lain. <strong>Pahami kondisi war sebelum masuk medan perang.</strong>',
+      step2: 'Cek Holder — Umur Funded Wallet',
+      step2Desc: 'Langsung ke data holder di DexScreener atau tools tracking kamu. Yang dicari: <strong>funded wallet under 1 day</strong>. Kalau banyak holder yang dompetnya baru di-fund kurang dari sehari sebelum launch — itu sinyal bahwa dompet-dompet itu sengaja disiapkan untuk manipulasi. Ini red flag yang serius.',
+      step3: 'Cek Balance Top Holder',
+      step3Desc: 'Setelah cek usia wallet, lihat balance-nya. Kalau top holder di koin itu punya saldo <strong>under 0.2 SOL</strong> — ini artinya mereka bukan player besar yang siap nahan atau dorong harga. Mereka kemungkinan besar cuma fomo atau worse, bagian dari skema yang sengaja bikin distro keliatan sehat.',
+      step4: 'Cek Entry Market Cap',
+      step4Desc: 'Ini filter terakhir dan sering jadi penentu. Kalau koin itu <strong>udah ngepump abis di bawah 3K market cap</strong> pas deploy — berarti kamu kemungkinan besar masuk di atas, bukan awal. Pump awal biasanya dari insider. Setelah mereka keluar, kamu yang tanggung. <strong>Kalau entri kamu di bawah 3K dan udah ngepump — skip.</strong>',
+      resultTitle: 'Rumus Simpelnya',
+      result: 'Dari 4 filter di atas — <strong>kalau 2 atau lebih kena, langsung skip</strong> tanpa pikir panjang. Tapi kalau cuma 1 yang bermasalah? Selamat, kamu udah punya edge yang cukup buat scalp 60–70% di new pair fresh launch. Konsisten di filter ini = konsisten di profit.',
+      warnTitle: 'Jangan Ganti Aturan di Tengah Jalan',
+      warn: 'Godaan terbesar waktu scalping new pair adalah FOMO — ngeliat koin satu naik, langsung skip filter dan masuk. <strong>Ini yang bikin rug.</strong> 4 step ini bukan saran, ini protokol. Kalau kamu lompatin salah satunya, jangan salahkan market — salahkan diri sendiri.',
+    },
+    en: {
+      p1: '<strong>This is the real kitchen secret.</strong> Every day I love seeing followers tag their trading journeys — and nearly <em>70% of them successfully avoided rugs</em> after applying these 4 steps. It\'s not luck, it\'s method.',
+      p2: 'How instant scalping works on <strong>new pair fresh launches</strong> is simple: you\'re not deciding when to enter, but which coins are <em>worth</em> entering. These 4 filters are your guardian.',
+      step1: 'Check Global Gas Fee',
+      step1Desc: 'First step before doing anything: check Solana network conditions. If gas fees are really high, it means traffic is heavy — many bots and other traders are also chasing the same coins. In these conditions, your execution could be slower than others. <strong>Understand the war conditions before entering the battlefield.</strong>',
+      step2: 'Check Holders — Funded Wallet Age',
+      step2Desc: 'Go straight to holder data on DexScreener or your tracking tools. Look for: <strong>funded wallets under 1 day old</strong>. If many holders have wallets that were funded less than a day before launch — that\'s a signal those wallets were deliberately prepared for manipulation. This is a serious red flag.',
+      step3: 'Check Top Holder Balance',
+      step3Desc: 'After checking wallet age, look at the balance. If top holders in that coin have a balance <strong>under 0.2 SOL</strong> — this means they\'re not big players ready to hold or push the price. They\'re most likely just FOMO or worse, part of a scheme to make the distribution look healthy.',
+      step4: 'Check Entry Market Cap',
+      step4Desc: 'This is the last filter and often the deciding one. If the coin <strong>has already pumped hard below 3K market cap</strong> at deploy — you\'re most likely entering at the top, not the beginning. The initial pump is usually from insiders. After they exit, you\'re the one holding the bag. <strong>If your entry is below 3K and it\'s already pumped — skip.</strong>',
+      resultTitle: 'The Simple Formula',
+      result: 'From the 4 filters above — <strong>if 2 or more are flagged, skip immediately</strong> without thinking twice. But if only 1 is problematic? Congratulations, you already have enough edge to scalp 60–70% on new pair fresh launches. Consistency with these filters = consistency in profit.',
+      warnTitle: 'Don\'t Change the Rules Midway',
+      warn: 'The biggest temptation when scalping new pairs is FOMO — seeing one coin pump, skipping filters and jumping in. <strong>This is what causes rug losses.</strong> These 4 steps aren\'t suggestions, they\'re protocol. If you skip even one, don\'t blame the market — blame yourself.',
+    },
+  },
+
+  // ─── PA6: MULTI WALLET ───
+  multiwallet: {
+    id: {
+      p1: '<strong>Apa itu Multi Wallet?</strong> Multi wallet artinya menggunakan beberapa dompet digital berbeda (bukan hanya satu) untuk beroperasi di pasar koin. Setiap dompet adalah "identitas terpisah" di blockchain. Dengan beberapa dompet, kamu bisa:',
+      benefits: [
+        '<strong>Menyebar kepemilikan</strong> — Supaya tidak terlihat seperti satu orang yang menguasai banyak koin',
+        '<strong>Memancing bot otomatis</strong> — Bot melihat distribusi pemegang yang sehat, lalu ikut membeli → harga otomatis naik',
+        '<strong>Proteksi keamanan</strong> — Kalau satu dompet diretas, uangmu di dompet lain tetap aman',
+        '<strong>DCA lebih efisien</strong> — Bisa membeli di harga berbeda-beda dengan dompet yang berbeda',
+      ],
+      howTitle: 'Cara kerjanya:',
+      how: 'Misalkan kamu ingin membeli 3 SOL di sebuah koin kecil. Alih-alih beli 3 SOL dari 1 dompet (yang langsung kelihatan di sistem sebagai pemegang besar), kamu memecahnya ke 3 dompet berbeda, masing-masing 1 SOL. Di sistem pelacak, kepemilikan terlihat merata — seperti 3 orang berbeda.',
+      effectTitle: 'Efeknya:',
+      effect: 'Bot otomatis melihat distribusi pemegang yang sehat dan ikut membeli. Volume perdagangan naik, harga ikut naik. Ini yang disebut "instant profit setelah kamu beli" — padahal kamu yang mengendalikan semua dompet itu.',
+      prosTitle: 'Kelebihannya:',
+      pros: 'Potensi keuntungan maksimal dari setiap posisi. Koin yang seharusnya "mati" bisa punya peluang hidup lagi karena bot terpancing masuk. Ditambah perlindungan dari risiko peretasan — kalau satu dompet kena, yang lain tetap aman.',
+      consTitle: 'Kekurangannya:',
+      cons: 'Kamu bisa dicap sebagai "tukang jual murah" — ini risiko reputasi yang nyata. Selain itu, kamu harus pintar menghitung: keuntungan 10% dari dompetmu sendiri bisa jadi nol kalau kamu menjual ke dompetmu sendiri tanpa sadar.',
+      dcaTitle: 'Strategi DCA Multi Wallet yang Benar',
+      dca: 'Kalau Dompet 1 beli di harga Rp 10.000 dan harganya turun — <strong>jangan beli lagi pakai Dompet 1.</strong> Gunakan Dompet 2 untuk membeli di harga lebih rendah. Kenapa? Karena dengan cara ini, kerugian di Dompet 1 bisa ditutup lebih efisien. Rata-rata harga beli keseluruhanmu turun tanpa terlihat seperti satu orang yang terus menumpuk pembelian.',
+      minTitle: 'Cocok untuk simpanan 5 SOL ke atas',
+      min: 'Strategi ini butuh modal yang cukup untuk dipecah ke 2–3 dompet aktif. Di bawah 5 SOL, pembagiannya terlalu kecil dan kurang efektif. Mulai pelajari dari sekarang — saat simpananmu sudah cukup, tinggal langsung dijalankan.',
+    },
+    en: {
+      p1: '<strong>What is Multi Wallet?</strong> Multi wallet means using several different digital wallets (not just one) to operate in the coin market. Each wallet is a "separate identity" on the blockchain. With multiple wallets, you can:',
+      benefits: [
+        '<strong>Spread ownership</strong> — So it doesn\'t look like one person controlling many coins',
+        '<strong>Bait automated bots</strong> — Bots see healthy holder distribution, then buy along → price automatically rises',
+        '<strong>Security protection</strong> — If one wallet gets hacked, your money in other wallets remains safe',
+        '<strong>More efficient DCA</strong> — Can buy at different prices with different wallets',
+      ],
+      howTitle: 'How it works:',
+      how: 'Say you want to buy 3 SOL in a small coin. Instead of buying 3 SOL from 1 wallet (which immediately shows up in the system as a big holder), you split it across 3 different wallets, 1 SOL each. In the tracking system, ownership looks evenly distributed — like 3 different people.',
+      effectTitle: 'The effect:',
+      effect: 'Automated bots see healthy holder distribution and join the buying. Trading volume rises, price follows. This is what\'s called "instant profit after you buy" — when in fact you control all those wallets.',
+      prosTitle: 'Advantages:',
+      pros: 'Maximum profit potential from every position. A coin that should be "dead" can have a chance at life again because bots are baited into buying. Plus protection from hacking risk — if one wallet gets hit, the others stay safe.',
+      consTitle: 'Disadvantages:',
+      cons: 'You could be labeled as a "cheap dumper" — this is a real reputation risk. Also, you need to be smart with calculations: a 10% profit from your own wallet could end up as zero if you sell to your own wallet without realizing it.',
+      dcaTitle: 'Correct Multi Wallet DCA Strategy',
+      dca: 'If Wallet 1 buys at $10 and the price drops — <strong>don\'t buy again with Wallet 1.</strong> Use Wallet 2 to buy at the lower price. Why? Because this way, the loss in Wallet 1 can be covered more efficiently. Your overall average purchase price drops without looking like one person continuously stacking purchases.',
+      minTitle: 'Suitable for savings of 5 SOL and above',
+      min: 'This strategy needs enough capital to split across 2–3 active wallets. Below 5 SOL, the split is too small and less effective. Start learning now — when your savings are enough, you can deploy it immediately.',
+    },
+  },
+
+  // ─── PA5 (REFUND): RENT REFUND ───
+  refund: {
+    id: {
+      p1: '<strong>Pernah merasa saldo SOL berkurang diam-diam tiap kali trading?</strong> Banyak degen yang belum tahu rahasia ini, apalagi yang baru pindah dari Ethereum. Di Ethereum, dompet kamu bertransaksi langsung dengan <em>smart contract</em>. Tapi di ekosistem Solana, arsitekturnya berbeda.',
+      analogyTitle: 'Analogi Uang Bank & Emas:',
+      analogy: 'Sederhananya begini. Bayangkan kamu punya uang 10 Juta di bank, lalu ingin beli emas 5 Juta. Di Solana, kamu tidak membeli emas itu langsung dari rekening utamamu. Jaringan justru <strong>membuatkan rekening baru khusus</strong> hanya untuk menaruh emas tersebut.',
+      analogy2: 'Nah, rekening baru ini butuh biaya sewa (<em>Rent</em>) yang dipotong otomatis. Saat emasnya habis terjual, <strong>rekening kosongnya tetap ada dan biaya sewanya tidak otomatis kembali ke kamu!</strong>',
+      refundTitle: 'Tutup Rekening = Uang',
+      refundDesc: 'Kabar baiknya: setiap kali kamu menutup 1 rekening kosong, kamu akan mendapat refund sekitar <strong>0.002 SOL</strong>. Coba hitung kalau kamu sudah scalping 50 koin baru bulan ini.',
+      illustCaption: 'Ilustrasi penarikan saldo rent otomatis dari sistem.',
+      platformHeader: '<strong>Platform Eksekutor:</strong> Ada banyak situs pembakar token penyedia layanan ini, namun <strong>Refundyoursol</strong> adalah rekomendasi teraman karena fitur talangan gas-nya.',
+      features: [
+        '<strong>Fitur Ditalangin:</strong> Amit-amit saldo SOL kamu lagi bener-bener nol untuk biaya gas menutup rekening — <em>smart contract</em> situs ini bisa "nalangin" bayarin gas kamu duluan secara otomatis.',
+        '<strong>Perhitungan Transparan:</strong> Misal kamu tutup 40 akun. 40 x 0.002 SOL = 0.08 SOL. Dari situ tinggal dikurangi otomatis untuk biaya gas talangan. Cukup klik dan beres.',
+        '<strong>Aman & Teruji:</strong> Saya pribadi sudah pakai 6 bulan tanpa masalah. Terkadang juga ada bonus <em>airdrop</em> dari mereka.',
+      ],
+      noteTitle: 'Catatan Penting: Hanya Koin Baru',
+      note: 'Aturan ini eksklusif untuk <em>new pair</em>. Kalau kamu keluar-masuk (membeli lalu menjual) koin yang benar-benar sama hingga 10 kali, rekening khusus untuk koin itu hanya dibuat sekali. Jadi, refund yang didapat juga hanya satu kali.',
+      ctaBtn: '🚀 KLIK DI SINI: Tarik Refund Sekarang',
+    },
+    en: {
+      p1: '<strong>Ever felt like your SOL balance secretly decreases every time you trade?</strong> Many degens don\'t know this secret yet, especially those who just migrated from Ethereum. On Ethereum, your wallet transacts directly with <em>smart contracts</em>. But in the Solana ecosystem, the architecture is different.',
+      analogyTitle: 'Bank Money & Gold Analogy:',
+      analogy: 'Simply put, it\'s like this. Imagine you have $10,000 in the bank and want to buy $5,000 worth of gold. On Solana, you don\'t buy that gold directly from your main account. The network instead <strong>creates a brand new account</strong> just to hold that gold.',
+      analogy2: 'Now, this new account requires a rental fee (<em>Rent</em>) that\'s automatically deducted. When the gold is sold, <strong>the empty account stays and the rent doesn\'t automatically return to you!</strong>',
+      refundTitle: 'Close Account = Money Back',
+      refundDesc: 'The good news: every time you close 1 empty account, you get a refund of about <strong>0.002 SOL</strong>. Calculate how much that is if you\'ve scalped 50 new coins this month.',
+      illustCaption: 'Illustration of automatic rent balance withdrawal from the system.',
+      platformHeader: '<strong>Execution Platform:</strong> There are many token burner sites providing this service, but <strong>Refundyoursol</strong> is the safest recommendation due to its gas advance feature.',
+      features: [
+        '<strong>Gas Advance Feature:</strong> Even if your SOL balance is absolutely zero for gas fees to close accounts — the site\'s <em>smart contract</em> can "advance" and pay your gas automatically.',
+        '<strong>Transparent Calculation:</strong> Say you close 40 accounts. 40 x 0.002 SOL = 0.08 SOL. From there it\'s automatically deducted for the advanced gas fees. Just click and done.',
+        '<strong>Safe & Tested:</strong> I\'ve personally used it for 6 months without issues. Sometimes there are bonus <em>airdrops</em> from them too.',
+      ],
+      noteTitle: 'Important Note: New Coins Only',
+      note: 'This rule is exclusive to <em>new pairs</em>. If you enter and exit (buy then sell) the exact same coin 10 times, the special account for that coin is only created once. So, the refund you get is also only once.',
+      ctaBtn: '🚀 CLICK HERE: Claim Your Refund Now',
+    },
+  },
+};
+
+export default T2;

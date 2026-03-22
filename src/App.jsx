@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/react';
+import { LanguageProvider } from './context/LanguageContext';
 import { PANEL_ORDER } from './data/panelData';
 import { useScrollReveal } from './hooks/useScrollReveal';
 import { useSecurity } from './hooks/useSecurity';
@@ -51,7 +52,7 @@ export default function App() {
   }, [switchPanel]);
 
   return (
-    <>
+    <LanguageProvider>
       <Navbar />
       <Hero />
 
@@ -67,6 +68,6 @@ export default function App() {
       <Footer />
       <Chatbot />
       <Analytics />
-    </>
+    </LanguageProvider>
   );
 }

@@ -1,11 +1,18 @@
+import { useLang } from '../context/LanguageContext';
+
 export default function Footer() {
+  const { t } = useLang();
+
   return (
     <footer>
       <div className="ft-inner">
         <div>
           <div className="ft-logo">Ponyin<b>.</b></div>
           <div className="ft-desc">
-            Materi trading on-chain yang disampaikan jujur dan simpel. Tidak ada jargon yang sengaja dibikin susah — karena ilmu yang bagus harusnya bisa dipahami semua orang.
+            {t(
+              'Materi trading on-chain yang disampaikan jujur dan simpel. Tidak ada jargon yang sengaja dibikin susah — karena ilmu yang bagus harusnya bisa dipahami semua orang.',
+              'On-chain trading materials delivered honestly and simply. No jargon made purposefully complicated — because good knowledge should be understandable by everyone.'
+            )}
           </div>
           <a
             href="https://trojan.com/@Keusel"
@@ -14,13 +21,13 @@ export default function Footer() {
             className="ft-partner"
           >
             <div>
-              <div className="ft-partner-label">Partner Resmi</div>
+              <div className="ft-partner-label">{t('Partner Resmi', 'Official Partner')}</div>
               <div className="ft-partner-name">⚡ trojan.com/@Keusel</div>
             </div>
           </a>
         </div>
         <div className="ft-right">
-          <div className="ft-links-title">Terhubung</div>
+          <div className="ft-links-title">{t('Terhubung', 'Connect')}</div>
           <div className="ft-links">
             <a
               href="https://x.com/elponyin"
@@ -29,7 +36,7 @@ export default function Footer() {
               className="ft-link"
             >
               <span style={{ fontSize: 20 }}>𝕏</span>
-              Follow @elponyin di X
+              {t('Follow @elponyin di X', 'Follow @elponyin on X')}
             </a>
             <a
               href="https://trojan.com/@Keusel"
@@ -38,13 +45,16 @@ export default function Footer() {
               className="ft-link"
             >
               <span style={{ fontSize: 20 }}>⚡</span>
-              Mulai trading di Trojan
+              {t('Mulai trading di Trojan', 'Start trading on Trojan')}
             </a>
           </div>
         </div>
       </div>
       <div className="ft-copy">
-        © 2025 Ponyin Trading Intel Hub · Semua konten dilindungi · Dilarang menyalin tanpa izin
+        {t(
+          '© 2025 Ponyin Trading Intel Hub · Semua konten dilindungi · Dilarang menyalin tanpa izin',
+          '© 2025 Ponyin Trading Intel Hub · All content protected · No copying without permission'
+        )}
       </div>
     </footer>
   );
