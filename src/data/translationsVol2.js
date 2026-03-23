@@ -113,6 +113,14 @@ const T2 = {
       autoTP: '<strong>Fitur Auto Take Profit:</strong> Ini senjata terbaik melawan keserakahan. Set targetmu, biarkan sistem yang menjual. Setelah target tercapai, <strong>berhenti</strong>. Jangan beli lagi koin yang sama. Disiplin ini yang membedakan trader yang bertahan lama.',
       greedTitle: 'Tanda-tanda keserakahan yang harus dihindari',
       greed: 'Merasa "sayang kalau jual sekarang, harusnya tunggu lebih tinggi" — ini serakah. Membeli lagi koin yang sudah kamu jual — ini serakah. Masuk dengan uang lebih besar dari biasanya karena "yakin banget" — ini serakah. Semua keputusan trading yang didasari emosi (bukan rencana) adalah tanda keserakahan sedang menguasaimu.',
+      simTitle: 'Simulasi Compounding (Bunga Berbunga)',
+      simDesc: 'Ubah modal awal di bawah ini untuk melihat bagaimana target konsisten 50% dari 80% modal kamu per trade dapat menumbuhkan aset secara eksponensial.',
+      simInput: 'Modal Awal (SOL):',
+      simStep: 'Trade Ke-',
+      simStart: 'Saldo Awal',
+      simTrade: 'Ukuran Trade (80%)',
+      simProfit: 'Profit Target (50%)',
+      simEnd: 'Saldo Akhir'
     },
     en: {
       p1: '<strong>How much capital is right for trading?</strong> The answer depends on your position: are you trading with money that\'s truly "free" (cold money), or is there debt pressure behind it? Trading while chased by debt is the most dangerous combination — psychological pressure will make all your decisions emotional and irrational.',
@@ -122,6 +130,14 @@ const T2 = {
       autoTP: '<strong>Auto Take Profit Feature:</strong> This is your best weapon against greed. Set your target, let the system sell. After the target is reached, <strong>stop</strong>. Don\'t buy the same coin again. This discipline is what sets long-lasting traders apart.',
       greedTitle: 'Signs of greed you must avoid',
       greed: 'Feeling "it\'d be a waste to sell now, should wait for a higher price" — that\'s greed. Buying back a coin you already sold — that\'s greed. Entering with more money than usual because you\'re "super confident" — that\'s greed. Any trading decision based on emotion (not a plan) is a sign that greed is controlling you.',
+      simTitle: 'Compounding Effect Simulation',
+      simDesc: 'Change the initial capital below to see how a consistent 50% target on 80% of your capital per trade can grow your portfolio exponentially.',
+      simInput: 'Initial Capital (SOL):',
+      simStep: 'Trade #',
+      simStart: 'Start Balance',
+      simTrade: 'Trade Size (80%)',
+      simProfit: 'Target Profit (50%)',
+      simEnd: 'End Balance'
     },
   },
 

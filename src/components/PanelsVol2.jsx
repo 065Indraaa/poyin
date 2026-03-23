@@ -3,6 +3,7 @@ import { SnipeSVG, WalletPingSVG, MultiWalletSVG } from './Illustrations';
 import { useLang } from '../context/LanguageContext';
 import T2 from '../data/translationsVol2';
 import RefundImg from '../assets/Refund.jpg';
+import { useState } from 'react';
 
 /* Helper: get translations for a section */
 function useT(section) {
@@ -123,6 +124,27 @@ export function PanelWalletPing() {
 export function PanelModal() {
   const t = useT('modal');
   const { lang } = useLang();
+  
+  const [initialCapital, setInitialCapital] = useState(0.5);
+
+  const steps = [];
+  let currentCap = parseFloat(initialCapital) || 0;
+  for (let i = 1; i <= 5; i++) {
+    let tradeAmount = currentCap * 0.8;
+    let profit = tradeAmount * 0.5;
+    let newCap = currentCap + profit;
+    if (currentCap > 0) {
+      steps.push({
+        step: i,
+        start: currentCap.toFixed(2),
+        trade: tradeAmount.toFixed(2),
+        profit: profit.toFixed(2),
+        end: newCap.toFixed(2)
+      });
+    }
+    currentCap = newCap;
+  }
+
   return (
     <>
       <p className="prose reveal" dangerouslySetInnerHTML={{ __html: t.p1 }} />
@@ -169,6 +191,48 @@ export function PanelModal() {
         <div>
           <p className="prose" dangerouslySetInnerHTML={{ __html: t.opportunity }} />
           <p className="prose" dangerouslySetInnerHTML={{ __html: t.autoTP }} />
+        </div>
+      </div>
+
+      <div className="simulation-box reveal" style={{ background: 'var(--surface)', padding: 24, borderRadius: 16, border: '1px solid var(--border)', marginTop: 32, marginBottom: 32 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', marginBottom: 8 }}>{t.simTitle}</h3>
+        <p className="prose" style={{ fontSize: 14, marginBottom: 20 }}>{t.simDesc}</p>
+        
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--slate)', marginBottom: 8 }}>{t.simInput}</label>
+          <input 
+            type="number" 
+            value={initialCapital} 
+            onChange={(e) => setInitialCapital(e.target.value)}
+            step="0.1"
+            min="0.1"
+            style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', width: '100%', maxWidth: 200, fontSize: 16, color: 'var(--ink)', outline: 'none' }}
+          />
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid var(--border)', textAlign: 'left', color: 'var(--slate)' }}>
+                <th style={{ padding: '12px 8px' }}>{t.simStep}</th>
+                <th style={{ padding: '12px 8px' }}>{t.simStart}</th>
+                <th style={{ padding: '12px 8px' }}>{t.simTrade}</th>
+                <th style={{ padding: '12px 8px', color: 'var(--brand)' }}>{t.simProfit}</th>
+                <th style={{ padding: '12px 8px', color: 'var(--ink)' }}>{t.simEnd}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {steps.map((s, idx) => (
+                <tr key={idx} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '12px 8px', fontWeight: 600 }}>{s.step}</td>
+                  <td style={{ padding: '12px 8px' }}>{s.start} SOL</td>
+                  <td style={{ padding: '12px 8px' }}>{s.trade} SOL</td>
+                  <td style={{ padding: '12px 8px', color: 'var(--brand)', fontWeight: 600 }}>+{s.profit} SOL</td>
+                  <td style={{ padding: '12px 8px', color: 'var(--ink)', fontWeight: 700 }}>{s.end} SOL</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
