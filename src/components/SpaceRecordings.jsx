@@ -83,7 +83,7 @@ const SPACES_DATA = {
       id: 'space-2',
       date: '18 Maret 2026',
       xLink: 'https://x.com/i/spaces/1qxoNezjdmjJv?s=20',
-      title: 'Tips Jitu Trading Crypto & Cara Menemukan Gaya Tradingmu ala Bang Ponyon',
+      title: 'Tips Jitu Trading Crypto & Cara Menemukan Gaya Tradingmu ala Bang Ponyin',
       desc: 'Dari curhat soal gaya trading, ngebahas Kabal Play, sampai pentingnya nyatet performa di Excel. Daging semua!',
       tag: 'Trading Style · Kabal',
       insights: [
@@ -240,14 +240,14 @@ const SPACES_DATA = {
       id: 'space-2',
       date: 'March 18, 2026',
       xLink: 'https://x.com/i/spaces/1qxoNezjdmjJv?s=20',
-      title: 'Pro Trading Tips & Cultivating Your Unique Edge à la Bang Ponyon',
+      title: 'Pro Trading Tips & Cultivating Your Unique Edge à la Bang Ponyin',
       desc: 'From discovering your lane, grasping "Cabal Plays", to why you absolutely need an Excel sheet to survive.',
       tag: 'Trading Style · Cabal',
       insights: [
         {
           num: '1',
           title: 'Soul Searching for Your Market Edge',
-          body: 'Bang Ponyon\'s golden rule: Log insane amounts of screen time, but <strong>do not burn through your savings</strong>. Allocate a tiny "tuition fee" just for learning.<br/><br/><strong>Non-negotiable:</strong> Track every single win and loss in Excel. Soon you\'ll notice a pattern—whether you naturally excel at cat coins, utility tokens, or political narratives. Lean into what feels effortless, and stop fighting mechanics you inherently suck at.',
+          body: 'Bang Ponyin\'s golden rule: Log insane amounts of screen time, but <strong>do not burn through your savings</strong>. Allocate a tiny "tuition fee" just for learning.<br/><br/><strong>Non-negotiable:</strong> Track every single win and loss in Excel. Soon you\'ll notice a pattern—whether you naturally excel at cat coins, utility tokens, or political narratives. Lean into what feels effortless, and stop fighting mechanics you inherently suck at.',
         },
         {
           num: '2',
