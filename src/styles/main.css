@@ -181,10 +181,11 @@ body {
   .pt-input { width: 110px; font-size: 12px; }
   .nav-name { font-size: 18px; }
   .price-ticker { display: flex; margin-left: 10px; padding: 6px 8px; border-radius: 10px; }
-
 .pt-value.up { color: var(--grn); }
 .pt-value.down { color: var(--red); }
 .pt-pct { font-size: 11px; color: inherit; margin-left: 8px; font-weight: 700; }
+
+}
 
 .nav-link {
   font-size: 14px;
