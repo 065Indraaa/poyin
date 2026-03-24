@@ -1,5 +1,6 @@
 import avatarSrc from '../assets/avatar.png';
 import LangToggle from './LangToggle';
+import PriceTicker from './PriceTicker';
 
 export default function Navbar() {
   const scrollToMateri = (e) => {
@@ -13,6 +14,7 @@ export default function Navbar() {
         <img src={avatarSrc} className="nav-av" alt="Ponyin" draggable="false" />
         <div className="nav-name">Ponyin<b>.</b></div>
       </a>
+      <PriceTicker />
       <div className="nav-spacer" />
       <div className="nav-links">
         <LangToggle />
