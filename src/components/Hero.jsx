@@ -47,7 +47,7 @@ export default function Hero() {
           <a href="#materi" className="btn btn-blue" onClick={scrollToMateri}>
             {t('Baca Materi ↓', 'Read Materials ↓')}
           </a>
-          <a href="https://trojan.com/@Keusel" target="_blank" rel="noopener" className="btn btn-outline">
+          <a href="https://trojan.com/@Ponyinnn" target="_blank" rel="noopener" className="btn btn-outline">
             ⚡ {t('Platform Trading', 'Trading Platform')}
           </a>
         </div>
