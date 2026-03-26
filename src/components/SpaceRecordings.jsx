@@ -5,6 +5,61 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-new',
+      date: '26 Maret 2026',
+      xLink: 'https://x.com/i/spaces/1DxLdvEqgraxm?s=20',
+      title: 'Rahasia Cuan Koin Micin Solana: Screening, Psikologi & Hindari Rugpull',
+      desc: 'Komparasi terminal Trojan vs Axiom, dilema punya banyak copy trader, cara baca Gas Fee kayak detektif, sampai lacak wallet insider.',
+      tag: 'Screening · Psikologi',
+      insights: [
+        {
+          num: '1',
+          title: 'Trojan vs Axiom: Mana yang Lebih Cuan?',
+          body: 'Axiom emang ngebut soal eksekusi, tapi <strong>Trojan punya senjata rahasia: cashback fee trading hingga 45%!</strong><br/><br/><strong>Tips anti rugi dari Bang Ponyin:</strong> Jangan refleks klaim cashback tiap hari karena bakal nyatu sama emosi rugi tradenya. Mending tampung dulu di wallet baru, klaim seminggu atau sebulan sekali — rasanya kayak dapet gaji bonus dari angin!',
+        },
+        {
+          num: '2',
+          title: 'Bedah Fitur Trojan: Market Order, Limit, DCA & Event',
+          body: '<strong>Market Order</strong> = masuk/keluar instan tapi berisiko kena harga aneh kalau ada lonjakan tiba-tiba.<br/><strong>Limit Order</strong> = lebih aman tapi wajib paham <em>slippage</em> (toleransi harga bergeser).<br/><strong>DCA</strong> = cicil jual perlahan di beberapa level harga.<br/><strong>Event</strong> = auto-jual kalau developer ketahuan curang.<br/><br/>Poinnya: fitur-fitur ini buat trader yang mau tetap <strong>disiplin tanpa mantengin layar 24 jam!</strong>',
+        },
+        {
+          num: '3',
+          title: 'Dilema Besar: Jadi Idola Copy Trader Itu Melelahkan',
+          body: 'Punya ratusan orang yang copy trade kamu kedengarannya keren — sampai kamu beneran mau jual. Bang Ponyin curhat: begitu dia pelan-pelan <em>take profit</em>, para copy trader panik langsung <strong>full sell semuanya</strong> serentak — akibatnya harga token dibanting habis seketika.<br/><br/>Ini beban psikologis nyata. Dia nggak mau dianggap <em>dump</em> ke pengikutnya sendiri padahal cuma mau ambil sebagian profit.',
+        },
+        {
+          num: '4',
+          title: 'Psikologi Trading: Main di Jalurmu Sendiri',
+          body: 'Jangan dipaksain ngikutin gaya trading siapapun kalau kondisi hidupmu beda. Kalau masih kerja kantoran, <strong>JANGAN coba trading di jam kerja</strong> — konsentrasi belah dua hampir selalu berujung merah.<br/><br/>Pakai <em>Uang Dingin</em> (uang yang udah diiklaskan) supaya mentalmu kalem waktu floating loss dan nggak jadi <em>Paper Hand</em> yang jual panik di harga terendah.',
+        },
+        {
+          num: '5',
+          title: 'Strategi Utama: Jago Hindari RUG, Bukan Nebak Runner',
+          body: 'Ini prinsip paling jujur dari Bang Ponyin: trading micin bukan tentang siapa yang paling pinter nebak koin 100x. Tapi tentang <strong>siapa yang paling jago mendiskualifikasi koin sampah.</strong><br/><br/>Kalau kamu bisa coret semua koin yang berpotensi scam, kolam pilihanmu otomatis berisi lebih banyak koin berkualitas. Jangan bakar <em>hopium</em> tinggi sebelum bisa baca tanda bahaya!',
+        },
+        {
+          num: '6',
+          title: 'Rahasia Deteksi Bot Pakai Global Gas Fee',
+          body: '<strong>Global Gas Fee itu alat pendeteksi kebohongan on-chain.</strong> Rasio warasnya: Market Cap 10.000 minimal Gas Fee 0.8–1 SOL.<br/><br/>Gas Fee super tipis padahal Market Cap udah gede? Itu tanda merah terang-benderang bahwa isinya cuma <strong>tim dev dan sniper yang lagi nge-bundle</strong>, siap membanting harga begitu ada retail yang ikut masuk.',
+        },
+        {
+          num: '7',
+          title: 'Multi-Wallet Pro: Kuasai Supply, Turunkan Average',
+          body: 'Trader kelas kakap sengaja bagi saldo ke banyak wallet. Tujuannya ganda:<br/>• <strong>DCA Lebih Efektif:</strong> Tiap wallet beli di titik berbeda, <em>average entry</em> turun lebih signifikan.<br/>• <strong>Kamuflase Supply:</strong> Kuasai supply besar tanpa kelihatan mencurigakan di mata bot pelacak. Satu otak, banyak topeng.',
+        },
+        {
+          num: '8',
+          title: 'Lacak Wallet Insider: ROI Jauh Lebih Penting dari Win Rate',
+          body: 'Jangan tergoda lihat <em>Win Rate</em> tinggi mentah-mentah! Wallet yang menang 9 dari 10 tapi sekali kalah langsung ludes itu valuasinya sama dengan nol.<br/><br/><strong>Yang wajib diburu adalah ROI gila-gilaan.</strong> Wallet Win Rate 30% tapi <em>ROI $50.000+</em> jauh lebih berharga. Gunakan tools forensik kayak <strong>Cielo.finance</strong> atau <strong>Dune</strong> buat bedah performa wallet secara mendalam.',
+        },
+        {
+          num: '9',
+          title: 'Narasi & Timing: Dua Mata Uang Asli di Micin',
+          body: 'Koin micin itu hidup dari <strong>Narasi</strong> (Elon Musk, meme hewan, tokoh trending) dan ketepatan <strong>Timing</strong> volume perdagangannya.<br/><br/>Tiap launchpad (Bags, Pump.fun, Raydium) punya jam emas aktivitas yang berbeda. Plus, metode rug developer terus berevolusi tiap minggu. Tetap kaku dengan satu metode dan market bakal dengan senang hati ninggalin kamu!',
+        },
+      ],
+    },
+    {
       id: 'space-0',
       date: '11 Maret 2026',
       xLink: 'https://x.com/i/spaces/1yxBeMvqddEJN?s=20',

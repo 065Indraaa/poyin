@@ -221,9 +221,87 @@ body {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
   position: relative;
   overflow: hidden;
   padding-top: 64px;
+}
+
+/* ── Partnership Bar ── */
+.hero-partner-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 24px;
+  background: linear-gradient(90deg, #0f1f6e 0%, #1a3db8 50%, #0f1f6e 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s, opacity 0.2s;
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.hero-partner-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: partnerShimmer 3s ease-in-out infinite;
+}
+
+@keyframes partnerShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.hero-partner-bar:hover {
+  background: linear-gradient(90deg, #162b8a 0%, #2455d4 50%, #162b8a 100%);
+  opacity: 0.95;
+}
+
+.partner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+  flex-shrink: 0;
+  animation: partnerPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes partnerPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25); }
+  50%       { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.08); }
+}
+
+.partner-text {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.partner-text strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.partner-arrow {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.hero-partner-bar:hover .partner-arrow {
+  transform: translateX(4px);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .hero-left {

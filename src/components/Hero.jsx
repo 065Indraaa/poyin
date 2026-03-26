@@ -11,6 +11,24 @@ export default function Hero() {
 
   return (
     <section className="hero">
+
+      {/* ── Partnership Bar ── */}
+      <a
+        href="https://t.me/ponyinnn"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hero-partner-bar"
+      >
+        <span className="partner-dot" />
+        <span className="partner-text">
+          {t(
+            <>💼 Partnership & Endorsement? Hubungi kami di&nbsp;<strong>@ponyinnn</strong>&nbsp;di Telegram ✉️</>,
+            <>💼 Partnership & Endorsement? Reach us at&nbsp;<strong>@ponyinnn</strong>&nbsp;on Telegram ✉️</>
+          )}
+        </span>
+        <span className="partner-arrow">→</span>
+      </a>
+
       <div className="hero-left">
         <div className="hero-eyebrow">Trading Intel Hub</div>
         <h1>
