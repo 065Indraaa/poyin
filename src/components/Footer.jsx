@@ -39,7 +39,7 @@ export default function Footer() {
               {t('Follow @elponyin di X', 'Follow @elponyin on X')}
             </a>
             <a
-              href="https://trojan.com/@Keusel"
+              href="https://trojan.com/@Ponyinnn"
               target="_blank"
               rel="noopener"
               className="ft-link"
