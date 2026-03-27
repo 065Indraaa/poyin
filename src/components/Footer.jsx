@@ -15,7 +15,7 @@ export default function Footer() {
             )}
           </div>
           <a
-            href="https://trojan.com/@Keusel"
+            href="https://trojan.com/@Ponyinnn"
             target="_blank"
             rel="noopener"
             className="ft-partner"
