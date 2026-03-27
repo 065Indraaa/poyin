@@ -22,7 +22,7 @@ export default function Footer() {
           >
             <div>
               <div className="ft-partner-label">{t('Partner Resmi', 'Official Partner')}</div>
-              <div className="ft-partner-name">⚡ trojan.com/@Keusel</div>
+              <div className="ft-partner-name">⚡ trojan.com/@Ponyinnn</div>
             </div>
           </a>
         </div>
