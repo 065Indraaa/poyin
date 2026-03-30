@@ -13,6 +13,7 @@ import PanelArea from './components/PanelArea';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import SpaceRecordings from './components/SpaceRecordings';
+import ProofGallery from './components/ProofGallery';
 import './styles/main.css';
 
 export default function App() {
@@ -67,6 +68,8 @@ export default function App() {
       </div>
 
       <SpaceRecordings />
+
+      <ProofGallery />
 
       <Footer />
       <Chatbot />

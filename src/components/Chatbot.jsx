@@ -23,6 +23,7 @@ const MATERI_MAP_DATA = {
     { keywords: ['rent refund', 'refund', 'sewa', 'rent', 'solana rent'], panelId: 'pa5', label: '📖 Buka Materi: Rent Refund' },
     { keywords: ['scalping', 'instant scalping', 'new pair', 'fresh launch'], panelId: 'pa6', label: '📖 Buka Materi: Instant Scalping' },
     { keywords: ['multi wallet', 'multiwallet', 'banyak wallet'], panelId: 'pa7', label: '📖 Buka Materi: Multi Wallet' },
+    { keywords: ['bukti', 'testimoni', 'screenshot', 'galeri bukti', 'jejak bukti', 'foto perjalanan'], sectionId: 'proof-gallery', label: '📸 Buka Galeri Bukti' },
   ],
   en: [
     { keywords: ['bundle', 'bundle token', 'monopoly', 'hidden supply'], panelId: 'p0', label: '📖 Open Material: Bundle Token' },
@@ -42,6 +43,7 @@ const MATERI_MAP_DATA = {
     { keywords: ['rent refund', 'refund', 'rent', 'solana rent'], panelId: 'pa5', label: '📖 Open Material: Rent Refund' },
     { keywords: ['scalping', 'instant scalping', 'new pair', 'fresh launch'], panelId: 'pa6', label: '📖 Open Material: Instant Scalping' },
     { keywords: ['multi wallet', 'multiwallet', 'multiple wallet'], panelId: 'pa7', label: '📖 Open Material: Multi Wallet' },
+    { keywords: ['proof gallery', 'screenshot', 'testimonial', 'social proof', 'journey', 'proof', 'results'], sectionId: 'proof-gallery', label: '📸 View Proof Gallery' },
   ],
 };
 
@@ -53,11 +55,12 @@ function detectMateriButtons(userText, botReply, lang) {
 
   for (const m of materiMap) {
     for (const kw of m.keywords) {
-      if (combined.includes(kw) && !seen.has(m.panelId)) {
-        matched.push({ panelId: m.panelId, label: m.label });
-        seen.add(m.panelId);
-        break;
-      }
+      if (!combined.includes(kw)) continue;
+      const targetId = m.sectionId ?? m.panelId;
+      if (!targetId || seen.has(targetId)) break;
+      matched.push({ panelId: m.panelId, sectionId: m.sectionId, label: m.label });
+      seen.add(targetId);
+      break;
     }
   }
   return matched.slice(0, 3);
@@ -192,8 +195,18 @@ export default function Chatbot() {
 
   const toggleChat = () => setIsOpen(!isOpen);
 
-  const navigateToPanel = (panelId) => {
-    window.dispatchEvent(new CustomEvent('navigate-panel', { detail: { panelId } }));
+  const navigateToPanel = (targetId) => {
+    if (!targetId) return;
+
+    if (targetId === 'proof-gallery') {
+      const section = document.getElementById('proof-gallery');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
+
+    window.dispatchEvent(new CustomEvent('navigate-panel', { detail: { panelId: targetId } }));
     setTimeout(() => {
       const materi = document.getElementById('materi');
       if (materi) window.scrollTo({ top: materi.offsetTop - 64, behavior: 'smooth' });
