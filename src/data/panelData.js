@@ -5,7 +5,7 @@
 
 export const PANEL_ORDER = [
   'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9',
-  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6', 'pa7'
+  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6', 'pa7', 'pa8'
 ];
 
 export const sidebarItemsData = {
@@ -28,6 +28,7 @@ export const sidebarItemsData = {
     { id: 'pa5', num: 'A6', title: 'Rent Refund', sub: 'Tarik kembali uang sewa', vol: 2 },
     { id: 'pa6', num: 'A7', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
     { id: 'pa7', num: 'A8', title: 'Multi Wallet', sub: 'Keajaiban trading', vol: 2 },
+    { id: 'pa8', num: 'A9', title: 'Unwritten Rules', sub: 'Etika survival jangka panjang', vol: 2 },
   ],
   en: [
     { id: 'p0', num: '1', title: 'Bundle Token', sub: 'Hidden supply monopoly', vol: 1 },
@@ -48,6 +49,7 @@ export const sidebarItemsData = {
     { id: 'pa5', num: 'A6', title: 'Rent Refund', sub: 'Claim back rent deposits', vol: 2 },
     { id: 'pa6', num: 'A7', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
     { id: 'pa7', num: 'A8', title: 'Multi Wallet', sub: 'The trading miracle', vol: 2 },
+    { id: 'pa8', num: 'A9', title: 'Unwritten Rules', sub: 'Long-term survival ethics', vol: 2 },
   ],
 };
 
@@ -221,9 +223,19 @@ export const panelsData = {
       eyebrowLabel: 'Advance — Multi Wallet',
       title: 'Multi Wallet —\nKeajaiban yang Bukan Keajaiban',
       sub: 'Multi wallet bukan tentang menyembunyikan diri. Ini tentang bermain lebih cerdas di ekosistem yang memang seperti itu adanya.',
-      breadcrumb: ['Vol. 2 Advance', 'Multi Wallet', 'A8 dari A8'],
-      nav: { prev: 'pa6', next: 'p0', counter: 'A8 / A8', prevLabel: '← Instant Scalping', nextLabel: 'Mulai dari awal ↺' },
+      breadcrumb: ['Vol. 2 Advance', 'Multi Wallet', 'A8 dari A9'],
+      nav: { prev: 'pa6', next: 'pa8', counter: 'A8 / A9', prevLabel: '← Instant Scalping', nextLabel: 'Unwritten Rules →' },
       type: 'multiwallet',
+      vol: 2
+    },
+    pa8: {
+      eyebrow: 'A9',
+      eyebrowLabel: 'Advance — Etika',
+      title: 'Unwritten Rules —\nJangan Makan Orang Sendiri',
+      sub: 'Ada aturan tak tertulis yang menentukan siapa yang bertahan sampai akhir cycle. Ini bukan soal banyak-banyakan porto — tapi siapa yang bisa survive.',
+      breadcrumb: ['Vol. 2 Advance', 'Unwritten Rules', 'A9 dari A9'],
+      nav: { prev: 'pa7', next: 'p0', counter: 'A9 / A9', prevLabel: '← Multi Wallet', nextLabel: 'Mulai dari awal ↺' },
+      type: 'unwritten',
       vol: 2
     },
   },
@@ -394,8 +406,18 @@ export const panelsData = {
       title: 'Multi Wallet —\nThe Miracle That Isn\'t a Miracle',
       sub: 'Multi wallet isn\'t about hiding yourself. It\'s about playing smarter in an ecosystem that naturally works this way.',
       breadcrumb: ['Vol. 2 Advance', 'Multi Wallet', 'A8 of A8'],
-      nav: { prev: 'pa6', next: 'p0', counter: 'A8 / A8', prevLabel: '← Instant Scalping', nextLabel: 'Start from beginning ↺' },
+      nav: { prev: 'pa6', next: 'pa8', counter: 'A8 / A8', prevLabel: '← Instant Scalping', nextLabel: 'Unwritten Rules →' },
       type: 'multiwallet',
+      vol: 2
+    },
+    pa8: {
+      eyebrow: 'A9',
+      eyebrowLabel: 'Advance — Etika',
+      title: 'Unwritten Rules —\nJangan Makan Orang Sendiri',
+      sub: 'Ada aturan tak tertulis yang menentukan siapa yang bertahan sampai akhir cycle. Ini bukan soal banyak-banyakan porto — tapi siapa yang bisa survive.',
+      breadcrumb: ['Vol. 2 Advance', 'Unwritten Rules', 'A9 dari A9'],
+      nav: { prev: 'pa7', next: 'p0', counter: 'A9 / A9', prevLabel: '← Multi Wallet', nextLabel: 'Mulai dari awal ↺' },
+      type: 'unwritten',
       vol: 2
     },
   },

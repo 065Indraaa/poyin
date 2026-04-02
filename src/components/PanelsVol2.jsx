@@ -5,6 +5,20 @@ import T2 from '../data/translationsVol2';
 import RefundImg from '../assets/Refund.jpg';
 import { useState } from 'react';
 
+// ─── Helper: Check/Uncheck SVG Icons ───
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const CrossIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
 /* Helper: get translations for a section */
 function useT(section) {
   const { lang } = useLang();
@@ -421,6 +435,140 @@ export function PanelRefundSol() {
           fontWeight: 800, textDecoration: 'none', fontSize: '16px',
           boxShadow: '0 8px 24px rgba(124, 58, 237, 0.15)', transition: 'all 0.2s ease'
         }}>{t.ctaBtn}</a>
+      </div>
+    </>
+  );
+}
+
+// ═══════ PA8: UNWRITTEN RULES ═══════
+export function PanelUnwritten() {
+  const t = useT('unwritten');
+  const { lang } = useLang();
+
+  return (
+    <>
+      <p className="prose reveal" dangerouslySetInnerHTML={{ __html: t.intro }} />
+
+      {/* Visual Infographic */}
+      <div className="illus-box reveal">
+        <svg viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', display: 'block' }}>
+          <rect width="700" height="340" fill="transparent" />
+          <text x="350" y="32" textAnchor="middle" fontFamily="Georgia,serif" fontSize="18" fontWeight="700" fill="#18182b">
+            {lang === 'en' ? 'The Survival Formula' : 'Rumus Bertahan Hidup'}
+          </text>
+
+          {/* Box 1: Early Access */}
+          <rect x="20" y="55" width="200" height="120" rx="14" fill="#eff6ff" stroke="#93c5fd" strokeWidth="2" />
+          <text x="120" y="85" textAnchor="middle" fontFamily="sans-serif" fontSize="28">🎁</text>
+          <text x="120" y="108" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="700" fill="#1e40af">
+            {lang === 'en' ? 'Early Access' : 'Akses Early'}
+          </text>
+          <text x="120" y="126" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#1d4ed8">
+            {lang === 'en' ? 'Got entry + floor price' : 'Dapat entry + floor price'}
+          </text>
+          <text x="120" y="158" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#16a34a" fontWeight="700">
+            {lang === 'en' ? '✓ Good opportunity' : '✓ Peluang bagus'}
+          </text>
+
+          <text x="235" y="120" textAnchor="middle" fontSize="24" fill="#94a3b8">→</text>
+
+          {/* Box 2: One Clip Warning */}
+          <rect x="250" y="55" width="200" height="120" rx="14" fill="#fef2f2" stroke="#fca5a5" strokeWidth="2" />
+          <text x="350" y="85" textAnchor="middle" fontFamily="sans-serif" fontSize="28">🚫</text>
+          <text x="350" y="108" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="700" fill="#991b1b">
+            {lang === 'en' ? 'ONE CLIP' : 'JUAL SATU KALI'}
+          </text>
+          <text x="350" y="126" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#dc2626">
+            {lang === 'en' ? 'Chart crashes' : 'Chart hancur'}
+          </text>
+          <text x="350" y="158" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#dc2626" fontWeight="700">
+            {lang === 'en' ? '✗ No more early access' : '✗ Tidak dapat early lagi'}
+          </text>
+
+          <text x="465" y="120" textAnchor="middle" fontSize="24" fill="#94a3b8">→</text>
+
+          {/* Box 3: Correct Way */}
+          <rect x="480" y="55" width="200" height="120" rx="14" fill="#f0fdf4" stroke="#86efac" strokeWidth="2" />
+          <text x="580" y="85" textAnchor="middle" fontFamily="sans-serif" fontSize="28">✅</text>
+          <text x="580" y="108" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="700" fill="#065f46">
+            {lang === 'en' ? 'SPLIT SELL' : 'JUAL BERTAHAP'}
+          </text>
+          <text x="580" y="126" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#047857">
+            {lang === 'en' ? 'Chart stays healthy' : 'Chart tetap sehat'}
+          </text>
+          <text x="580" y="158" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#16a34a" fontWeight="700">
+            {lang === 'en' ? '✓ More opportunities' : '✓ Peluang terus datang'}
+          </text>
+
+          {/* Case Study Box */}
+          <rect x="20" y="195" width="660" height="125" rx="14" fill="#fef3c7" stroke="#fde68a" strokeWidth="2" />
+          <text x="350" y="220" textAnchor="middle" fontFamily="sans-serif" fontSize="14" fill="#92400e" fontWeight="700">
+            {lang === 'en' ? '📊 Case Study: The 15 SOL Dilemma' : '📊 Studi Kasus: Dilema 15 SOL'}
+          </text>
+          <text x="40" y="245" fontFamily="sans-serif" fontSize="12" fill="#b45309">
+            {lang === 'en'
+              ? '• Given entry at 5K market cap → Buy 1.5 SOL'
+              : '• Dikasih entry di 5K market cap → Beli 1.5 SOL'}
+</text>
+          <text x="40" y="263" fontFamily="sans-serif" fontSize="12" fill="#b45309">
+            {lang === 'en'
+              ? '• At 50K market cap: Profit = 15 SOL'
+              : '• Di 50K market cap: Profit = 15 SOL'}
+          </text>
+          <text x="40" y="281" fontFamily="sans-serif" fontSize="12" fill="#b45309">
+            {lang === 'en'
+              ? '• One clip = Chart crashes + Reputation destroyed'
+              : '• One clip = Chart hancur + Reputasi hancur'}
+          </text>
+          <text x="40" y="299" fontFamily="sans-serif" fontSize="12" fill="#b45309">
+            {lang === 'en'
+              ? '• Split to new wallet = Long-term relationship'
+              : '• Split ke wallet baru = Hubungan jangka panjang'}
+          </text>
+          <text x="660" y="305" textAnchor="end" fontFamily="sans-serif" fontSize="11" fill="#d97706" fontWeight="600">
+            {lang === 'en' ? 'Choose wisely →' : 'Pilih dengan bijak →'}
+          </text>
+        </svg>
+      </div>
+
+      <Callout type="warn" icon="💡" title={t.rule1Title}>
+        <div dangerouslySetInnerHTML={{ __html: t.rule1 }} />
+        <div style={{ marginTop: 12, padding: '12px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #86efac' }}>
+          <strong style={{ color: '#065f46' }}>{lang === 'en' ? 'The right way:' : 'Cara yang benar:'}</strong>
+          <div style={{ color: '#047857', marginTop: 6 }}>{t.rule1Detail}</div>
+        </div>
+      </Callout>
+
+      <Callout type="danger" icon="🚫" title={t.rule2Title}>
+        <div dangerouslySetInnerHTML={{ __html: t.rule2 }} />
+        <div style={{ marginTop: 10, padding: '10px', background: '#fef2f2', borderRadius: 8, border: '1px solid #fca5a5' }}>
+          <div style={{ color: '#991b1b' }}>{t.rule2Detail}</div>
+        </div>
+      </Callout>
+
+      <Callout type="info" icon="📈" title={t.rule3Title}>
+        <div dangerouslySetInnerHTML={{ __html: t.rule3 }} />
+        <ul style={{ marginTop: 12, marginLeft: 20, color: '#1e40af' }}>
+          {t.rule3Benefits.map((benefit, i) => (
+            <li key={i} style={{ marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+              <span style={{ color: '#16a34a', flexShrink: 0 }}><CheckIcon /></span>
+              <span>{benefit}</span>
+            </li>
+          ))}
+        </ul>
+      </Callout>
+
+      <Callout type="purple" icon="🌍" title={t.rule4Title}>
+        <span dangerouslySetInnerHTML={{ __html: t.rule4 }} />
+      </Callout>
+
+      <div className="reveal" style={{ marginTop: 32, padding: '24px', background: 'linear-gradient(135deg, #1e3a8a 0%, #312e81 100%)', borderRadius: 16, textAlign: 'center' }}>
+        <h3 style={{ color: '#fff', fontSize: 20, marginBottom: 12, fontFamily: 'Georgia, serif' }}>
+          {t.conclusionTitle}
+        </h3>
+        <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, lineHeight: 1.7 }}>
+          {t.conclusion}
+        </p>
       </div>
     </>
   );

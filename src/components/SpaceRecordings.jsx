@@ -5,6 +5,41 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-april-1',
+      date: '1 April 2026',
+      xLink: 'https://x.com/i/spaces/1nxnRYOoNVLxO?s=20',
+      title: 'Rahasia Trading Memecoin: Strategi Multi-Wallet dan Etika di Dunia Crypto',
+      desc: 'Pembahasan mendalam soal tracking dev fee, strategi multi-wallet, etika calling, cara cari caller berkualitas, dan analisis token Blackout.',
+      tag: 'Multi-Wallet · Etika',
+      insights: [
+        {
+          num: '1',
+          title: 'Cara Melacak Klaim Fee Developer',
+          body: 'Ada yang nanya nih gimana caranya liat dev yang udah narik atau klaim fee mereka. Ponyin jelasin kalau di bot Trojan fitur ini belum update, tapi kita bisa ngecek manual lewat profil Pump.fun atau pakai tool kayak Axiom dan Gemgem. Ini penting banget terutama buat project yang punya utilitas biar kita tahu dev-nya beneran kerja atau cuma narik duit doang.',
+        },
+        {
+          num: '2',
+          title: 'Strategi Multi-Wallet: Jujur-jujuran Soal Rahasia Dapur',
+          body: 'Ponyin blak-blakan soal penggunaan banyak dompet (multi-wallet) saat trading. Padahal banyak influencer lain yang nganggep ini tabu, dia ngerasa lebih baik jujur. Tujuannya bukan buat nipu, tapi buat manajemen likuiditas. Dengan bagi-bagi modal ke banyak wallet, dia bisa nge-sell pelan-pelan tanpa bikin grafik harganya anjlok parah (dump) yang bisa bikin panik holder lain.',
+        },
+        {
+          num: '3',
+          title: "Etika 'Calling' dan Rasa Kasihan ke Trader Lokal",
+          body: 'Sisi humanis Ponyin kelihatan di sini. Dia ngaku sering nahan diri buat gak nge-dump token karena tahu audiensnya kebanyakan orang Indonesia yang modalnya kecil (selevel UMR). Dia ngerasa gak tega kalau harus makan "duit rakyat" sendiri. Makanya, dia juga sering galak ke developer lokal yang hobi nge-scam atau "rug" di market cap kecil karena itu ngerugiin banget buat komunitas lokal.',
+        },
+        {
+          num: '4',
+          title: "Tips Mencari 'Caller' Token yang Berkualitas",
+          body: 'Saran buat para trader: jangan cuma terpaku sama akun-akun besar yang followernya puluhan ribu. Kenapa? Karena akun gede biasanya udah dipantau bot copy-trade yang bakal masuk duluan sebelum kalian, jadinya kalian cuma jadi "exit liquidity". Ponyin nyaranin cari akun kecil tapi konsisten ngasih "call" token bagus (sleeper) yang belum kecium radar banyak orang.',
+        },
+        {
+          num: '5',
+          title: "Analisis Token 'Blackout' dan Narasi Elon Musk",
+          body: 'Ada pembahasan seru soal token bernama "Blackout". Mereka bahas soal narasinya yang unik tentang krisis energi. Ada spekulasi juga kalau Elon Musk tweet soal ini, harganya bisa terbang. Tapi Ponyin tetep ngingetin kalau ini kayak casino, jadi harus pinter-pinter baca situasi dan jangan asal "all-in".',
+        },
+      ],
+    },
+    {
       id: 'space-new',
       date: '26 Maret 2026',
       xLink: 'https://x.com/i/spaces/1DxLdvEqgraxm?s=20',
@@ -216,6 +251,41 @@ const SPACES_DATA = {
     },
   ],
   en: [
+    {
+      id: 'space-april-1',
+      date: 'April 1, 2026',
+      xLink: 'https://x.com/i/spaces/1nxnRYOoNVLxO?s=20',
+      title: 'Memecoin Trading Secrets: Multi-Wallet Strategy and Ethics in Crypto',
+      desc: 'Deep discussion on tracking dev fees, multi-wallet strategies, calling ethics, finding quality callers, and Blackout token analysis.',
+      tag: 'Multi-Wallet · Ethics',
+      insights: [
+        {
+          num: '1',
+          title: 'How to Track Developer Fee Claims',
+          body: "Someone asked how to see if devs have already withdrawn or claimed their fees. Ponyin explained that Trojan bot's feature isn't updated yet, but we can check manually through Pump.fun profiles or use tools like Axiom and Gemgem. This is super important especially for utility projects so we know if the dev is actually working or just draining funds.",
+        },
+        {
+          num: '2',
+          title: 'Multi-Wallet Strategy: Being Honest About Kitchen Secrets',
+          body: "Ponyin was straightforward about using multiple wallets for trading. Even though many other influencers consider this taboo, he feels it's better to be honest. The purpose isn't to scam people, but for liquidity management. By spreading capital across many wallets, he can sell gradually without causing the price chart to crash hard, which would panic other holders.",
+        },
+        {
+          num: '3',
+          title: "Ethics of 'Calling' and Sympathy for Local Traders",
+          body: "Ponyin's human side shows here. He admits to often restraining himself from dumping tokens because he knows his audience mostly consists of Indonesian people with small capital (around minimum wage level). He feels guilty about eating 'people's money' himself. That's why he's also tough on local developers who love to scam or 'rug' in small market caps because it really hurts the local community.",
+        },
+        {
+          num: '4',
+          title: "Tips for Finding Quality Token 'Callers'",
+          body: "Advice for traders: don't just focus on big accounts with tens of thousands of followers. Why? Because big accounts are usually monitored by copy-trade bots that will enter before you do, so you're just 'exit liquidity'. Ponyin recommends finding small accounts that consistently give calls on good tokens (sleepers) that haven't been picked up by many people's radar yet.",
+        },
+        {
+          num: '5',
+          title: "Analysis of 'Blackout' Token and Elon Musk Narrative",
+          body: "There's an interesting discussion about a token called 'Blackout'. They talk about its unique narrative around the energy crisis. There's also speculation that if Elon Musk tweets about it, the price could soar. But Ponyin still reminds that this is like gambling, so you need to carefully read the situation and don't just 'all-in'.",
+        },
+      ],
+    },
     {
       id: 'space-0',
       date: 'March 11, 2026',
