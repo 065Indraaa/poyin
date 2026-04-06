@@ -2,7 +2,6 @@ import { useLang } from '../context/LanguageContext';
 
 const SCAMMER_DATA = {
   twitter: [
-    { username: '@Ramsetx', platform: 'X', link: 'https://x.com/Ramsetx' },
     { username: '@fadeproXBT', platform: 'X', link: 'https://x.com/fadeproXBT' },
     { username: '@Hopium_papa', platform: 'X', link: 'https://x.com/Hopium_papa' },
   ],
@@ -14,7 +13,7 @@ const SCAMMER_DATA = {
 export default function ScammerList() {
   const { lang } = useLang();
 
-  const titleId = lang === 'id' 
+  const titleId = lang === 'id'
     ? 'Daftar Scammer'
     : 'Scammer List';
 
@@ -30,19 +29,19 @@ export default function ScammerList() {
       <div className="scammer-header">
         <span className="scammer-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2"/>
-            <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" />
+            <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </span>
         <span className="scammer-title">{titleId}</span>
       </div>
       <p className="scammer-desc">{descId}</p>
-      
+
       <div className="scammer-face-section">
         <div className="scammer-face-container">
-          <img 
-            src="/hopium.jpg" 
-            alt="Scammer Face" 
+          <img
+            src="/hopium.jpg"
+            alt="Scammer Face"
             className="scammer-face-image"
           />
           <div className="scammer-face-label">
@@ -51,7 +50,7 @@ export default function ScammerList() {
           </div>
         </div>
       </div>
-      
+
       <div className="scammer-lists">
         <div className="scammer-list-group">
           <div className="scammer-platform-label">
@@ -60,12 +59,12 @@ export default function ScammerList() {
           </div>
           <div className="scammer-items">
             {SCAMMER_DATA.twitter.map((account) => (
-              <a 
-                href={account.link} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                key={account.username} 
-                className="scammer-item" 
+              <a
+                href={account.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={account.username}
+                className="scammer-item"
                 style={{ textDecoration: 'none' }}
               >
                 <span className="scammer-badge">SCAM</span>
@@ -79,19 +78,19 @@ export default function ScammerList() {
           <div className="scammer-platform-label">
             <span className="platform-icon-tiktok">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
               </svg>
             </span>
             {tiktokLabel}
           </div>
           <div className="scammer-items">
             {SCAMMER_DATA.tiktok.map((account) => (
-              <a 
-                href={account.link} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                key={account.username} 
-                className="scammer-item" 
+              <a
+                href={account.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={account.username}
+                className="scammer-item"
                 style={{ textDecoration: 'none' }}
               >
                 <span className="scammer-badge">SCAM</span>
