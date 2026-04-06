@@ -50,6 +50,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
       <div className="ft-copy">
         {t(
           '© 2025 Ponyin Trading Intel Hub · Semua konten dilindungi · Dilarang menyalin tanpa izin',

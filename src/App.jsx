@@ -14,6 +14,7 @@ import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import SpaceRecordings from './components/SpaceRecordings';
 import ProofGallery from './components/ProofGallery';
+import ScammerList from './components/ScammerList';
 import './styles/main.css';
 
 export default function App() {
@@ -70,6 +71,8 @@ export default function App() {
       <SpaceRecordings />
 
       <ProofGallery />
+
+      <ScammerList />
 
       <Footer />
       <Chatbot />
