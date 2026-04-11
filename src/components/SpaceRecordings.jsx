@@ -5,6 +5,41 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-april-12',
+      date: '12 April 2026',
+      xLink: 'https://x.com/i/spaces/1AKEmOnWLDOKL?s=20',
+      title: 'Rahasia Trading Memecoin: Nge-Micin Bareng Bang Ponnyin: Strategi, Kabal, dan Cerita di Balik Layar Crypto',
+      desc: 'Membahas strategi dev new pair, fenomena kabal di koin micin, tips tracking wallet ROI tinggi, hingga kelucuan scam nastar dan peluang karir Web3.',
+      tag: 'Strategi · Kabal',
+      insights: [
+        {
+          num: '1',
+          title: 'Strategi Token New Pair & Manipulasi Developer',
+          body: 'Di sesi ini, Bang Ponnyin ngejelasin kenapa token yang di-deploy developer baru dengan modal minim seringkali harganya malah ngeroket dibandingin token yang dikelola dev berpengalaman. Ternyata, rahasianya ada di histori dev-nya. Kalau dev sehari nge-deploy ribuan token, kemungkinan besar itu cuma buat ngejar \'farming fee\'. Sebaliknya, token yang harganya naik tajam biasanya hasil koordinasi \'kabal\' atau kelompok tertentu yang sengaja nge-push harganya lewat strategi terencana.',
+        },
+        {
+          num: '2',
+          title: 'Fenomena \'Kabal\' dalam Crypto Micin',
+          body: 'Kabal itu sebenernya nggak sesakti yang dikira orang-orang. Mereka itu cuma grup temen-temen (FNF) yang bareng-bareng nge-deploy token. Ada kabal yang kaya banget dan siap bakar duit buat naikin harga, ada juga kabal \'farmer\' yang cuma pengen ngambil untung dari follower-nya. Kunci main di token kabal adalah tahu kapan harus masuk (entry) dan kapan harus keluar (exit) biar nggak jadi \'exit liquidity\' alias tumbal buat mereka.',
+        },
+        {
+          num: '3',
+          title: 'Tips Jitu Tracking Wallet Sukses',
+          body: 'Buat yang mau belajar melacak (tracking) wallet trader jagoan, jangan asal ikutan wallet yang winrate-nya tinggi doang. Kadang trader jago sengaja ngecilin winrate mereka biar nggak diikuti orang (copy trade). Tipsnya adalah cek ROI (Return on Investment)-nya, cari wallet yang beli 5-15 menit sebelum harganya naik (pump), dan pantau lewat tools kayak Cielo.finance. Penting juga buat misahin wallet berdasarkan jenis permainannya, misal khusus main token meme atau utility.',
+        },
+        {
+          num: '4',
+          title: 'Cerita Kocak \'Scam Nastar\' dan Flexing Influencer',
+          body: 'Bang Ponnyin juga cerita pengalaman lucunya kena tipu jualan kue nastar pas bulan puasa, yang nunjukin kalau sepinter-pinternya trader, tetep bisa apes di kehidupan nyata. Selain itu, dia ngingetin buat nggak gampang percaya sama influencer yang suka flexing (pamer kekayaan) mobil atau tumpukan duit. Banyak dari mereka yang mobilnya cuma sewaan dan duitnya cuma buat konten biar orang mau join kelas atau copy trade mereka.',
+        },
+        {
+          num: '5',
+          title: 'Peluang Karier Web3: Dari City ke Streamer',
+          body: 'Buat yang mau cari duit di Web3 selain trading, potensinya masih luas banget. Sekarang lagi tren jadi streamer atau content creator yang live trading atau ngasih edukasi. Pasar Indonesia masih butuh banyak kreator yang jujur dan pake bahasa sederhana. Kuncinya cuma satu: mulai aja dulu! Nggak perlu nunggu pinter banget, karena ilmu itu bisa dipelajari sambil jalan.',
+        },
+      ],
+    },
+    {
       id: 'space-april-1',
       date: '1 April 2026',
       xLink: 'https://x.com/i/spaces/1nxnRYOoNVLxO?s=20',
@@ -251,6 +286,41 @@ const SPACES_DATA = {
     },
   ],
   en: [
+    {
+      id: 'space-april-12',
+      date: 'April 12, 2026',
+      xLink: 'https://x.com/i/spaces/1AKEmOnWLDOKL?s=20',
+      title: 'Memecoin Trading Secrets: Micin with Bang Ponnyin: Strategy, Cabals, and Behind the Scenes',
+      desc: 'Discussing new pair dev strategies, the cabal phenomenon, tracking high ROI wallets, the funny nastar scam, and Web3 career opportunities.',
+      tag: 'Strategy · Cabal',
+      insights: [
+        {
+          num: '1',
+          title: 'New Pair Strategy & Developer Manipulation',
+          body: 'In this session, Bang Ponnyin explains why tokens deployed by new developers with minimal capital often skyrocket compared to tokens managed by experienced devs. The secret lies in the dev\'s history. If a dev deploys thousands of tokens a day, it\'s likely just for \'farming fees.\' Conversely, tokens that pump sharply are usually the result of coordination by a \'cabal\' pushing the price through planned strategies.',
+        },
+        {
+          num: '2',
+          title: 'The \'Cabal\' Phenomenon in Micin Crypto',
+          body: 'Cabals aren\'t actually as omnipotent as people think. They are basically just a group of friends (FNF) deploying tokens together. There are rich cabals ready to burn money to pump prices, and \'farmer\' cabals who just want to profit off their followers. The key to playing cabal tokens is knowing when to enter and exit so you don\'t become their \'exit liquidity\'.',
+        },
+        {
+          num: '3',
+          title: 'Tips for Successfully Tracking Wallets',
+          body: 'If you want to track top traders\' wallets, don\'t just blindly follow wallets with high win rates. Badass traders sometimes intentionally lower their win rates so they aren\'t copy-traded. The tip is to check the ROI, look for wallets buying 5-15 minutes before a pump, and monitor using tools like Cielo.finance. It\'s also important to separate wallets based on playstyle, like having a dedicated meme or utility wallet.',
+        },
+        {
+          num: '4',
+          title: 'Funny \'Nastar Scam\' Story & Influencer Flexing',
+          body: 'Bang Ponnyin also shared a funny experience of getting scammed buying nastar cookies during fasting month, showing that even the smartest traders can still have bad luck in real life. Also, he warned not to easily trust influencers flexing cars or stacks of cash. Many of them only have rented cars and the money is just for content so people join their classes or copy trade them.',
+        },
+        {
+          num: '5',
+          title: 'Web3 Career Opportunities: City to Streamer',
+          body: 'For those looking to make money in Web3 besides trading, the potential is still vast. It\'s a trend now to become a streamer or content creator for live trading or education. The Indonesian market still needs many honest creators who use simple language. The key is just to start! You don\'t have to wait until you\'re super smart, because you can learn along the way.',
+        },
+      ],
+    },
     {
       id: 'space-april-1',
       date: 'April 1, 2026',
