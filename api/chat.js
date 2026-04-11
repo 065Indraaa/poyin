@@ -12,19 +12,24 @@ export default async function handler(req, res) {
       });
     }
 
-    const key = process.env.MEGALLM_API_KEY;
+    const key = (process.env.MOONSHOT_API_KEY || '').trim();
 
-    const response = await fetch('https://ai.megallm.io/v1/chat/completions', {
+    if (!key) {
+      return res.status(500).json({ error: 'MOONSHOT_API_KEY tidak ditemukan di environment' });
+    }
+
+    console.log(`[Moonshot] Using key: ${key.substring(0, 12)}... (len=${key.length})`);
+
+    const response = await fetch('https://api.moonshot.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${key}`,
-        'User-Agent': 'Mozilla/5.0'
       },
       body: JSON.stringify({
-        model: 'deepseek-ai/deepseek-v3.1',
+        model: 'kimi-k2.5',
         messages: messages,
-        temperature: 0.7,
+        temperature: 1,
         max_tokens: 1000
       })
     });
@@ -32,13 +37,13 @@ export default async function handler(req, res) {
     const text = await response.text();
 
     if (!response.ok) {
-      console.error('MegaLLM Error:', text);
+      console.error('Moonshot AI Error:', text);
       return res.status(response.status).send(text);
     }
 
     res.setHeader('Content-Type', 'application/json');
     res.send(text);
-    console.log("🔥 FILE CHAT.JS YANG DIPAKAI");
+    console.log("🔥 Moonshot AI (Kimi k2.5) response OK");
   } catch (error) {
     console.error('Server Error:', error);
     res.status(500).json({
