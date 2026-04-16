@@ -8,6 +8,7 @@ const SCAMMER_DATA = {
   ],
   tiktok: [
     { username: '@hussainyn2', platform: 'TikTok', link: 'https://www.tiktok.com/@hussainyn2' },
+    { username: '@mrpepe.idn', platform: 'TikTok', link: 'https://www.tiktok.com/@mrpepe.idn' },
   ],
 };
 
