@@ -5,6 +5,86 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-april-18',
+      date: '18 April 2026',
+      xLink: 'https://x.com/i/spaces/1DxleEwlVagKL?s=20',
+      title: 'Tips Jitu Jaga Keamanan Wallet Crypto Biar Gak Kena Drain',
+      desc: 'Bahas tuntas dari bahaya doxxing, pentingnya VPN, backdoor dari file, scam airdrop drainer, sampai strategi multi-wallet anti bubble link.',
+      tag: 'Keamanan · Anti-Drain',
+      insights: [
+        {
+          num: '1',
+          title: 'Doxxing vs. Anonim: Plus Minus Tampil atau Sembunyi',
+          body: 'Memilih untuk menunjukkan wajah (<strong>doxxing</strong>) atau tetap <strong>anonim</strong> itu ada nilai plus dan minusnya. Kalau orang tahu siapa kamu, memang tingkat kepercayaan publik lebih tinggi, tapi risikonya juga besar. Kalau kamu sering pamer portofolio, kamu bisa jadi incaran orang jahat di dunia nyata.<br/><br/>Di Indonesia sih jarang ada kasus begal gara-gara pamer portofolio, tapi tetap harus waspada sama drama atau musuh yang mungkin muncul.',
+        },
+        {
+          num: '2',
+          title: 'Keamanan Internet Dasar & VPN',
+          body: 'Gunakan <strong>VPN</strong> setiap kali berinternet untuk menjaga keamanan saat mengakses website dan menutupi alamat IP asli kamu. Rekomendasinya pakai <strong>Warp (1.1.1.1)</strong> yang harganya terjangkau.<br/><br/>Selain itu, hati-hati sama situs palsu atau <em>spoofing</em>. Contohnya, ada link yang mirip banget sama bank resmi tapi ternyata hurufnya dimodifikasi sedikit (misal huruf kapital diganti huruf kecil) buat menipu kamu.',
+        },
+        {
+          num: '3',
+          title: 'Bahaya Backdoor dari File Kiriman',
+          body: 'Jangan sembarangan klik file atau foto yang dikirim lewat <strong>WhatsApp atau Telegram</strong>, apalagi kalau bentuknya file dokumen yang mencurigakan. Hacker bisa menyisipkan <em>backdoor</em> yang fungsinya buat memata-matai atau <strong>mirroring</strong> HP kamu.<br/><br/>Jadi, apa pun yang kamu ketik atau buka di HP bisa kelihatan sama mereka secara real-time.',
+        },
+        {
+          num: '4',
+          title: 'Scam Airdrop & Drainer: Gratisan yang Berbahaya',
+          body: 'Hati-hati kalau tiba-tiba dapet token gratisan (<em>airdrop</em>) yang nilainya lumayan. Kalau kamu mencoba berinteraksi atau menjual token itu, sebenarnya kamu sedang memberikan akses ke <strong>drainer</strong> untuk menyedot habis seluruh isi wallet kamu.<br/><br/>Selain itu, waspadai link bot yang tidak resmi. <strong>Bot drainer</strong> biasanya akan langsung meminta <em>private key</em> saat kamu mau melakukan transaksi beli.',
+        },
+        {
+          num: '5',
+          title: 'Private Key vs. Seed Phrase: Bedanya Penting Banget!',
+          body: 'Penting banget buat paham perbedaannya:<br/>• Kalau <strong>Private Key</strong> satu dompet bocor, ya cuma dompet itu aja yang hilang.<br/>• Tapi kalau <strong>Seed Phrase</strong> (passkey) akun wallet kamu bocor, <em>semua dompet baru</em> yang kamu buat di bawah akun tersebut bakal ikut kebobolan semua.<br/><br/>Jadi, simpan Seed Phrase seaman mungkin dan <strong>jangan pernah kasih tahu siapa pun</strong>.',
+        },
+        {
+          num: '6',
+          title: 'Hardware Wallet (Cold Wallet) untuk Aset Besar',
+          body: 'Buat kamu yang punya aset dalam jumlah besar, sangat disarankan pakai <strong>hardware wallet</strong> seperti <em>Ledger</em>, <em>Trezor</em>, atau <em>SafePal</em>.<br/><br/>Dompet fisik ini lebih aman karena kunci rahasianya disimpan <strong>offline</strong> dan nggak gampang diakses hacker lewat koneksi internet biasa.',
+        },
+        {
+          num: '7',
+          title: 'Strategi Multi-Wallet & Hindari Bubble Link',
+          body: 'Jangan pakai cuma satu wallet buat semuanya. Pisahin wallet khusus untuk:<br/>• <strong>Modal utama</strong><br/>• <strong>Trading aktif</strong><br/>• <strong>Cari airdrop</strong><br/><br/>Biar makin aman dan nggak ketahuan saling terhubung (<em>bubble link</em>), kalau mau isi saldo ke wallet-wallet itu, kirimnya jangan dari sesama dompet digital (DEX). Kirim langsung dari <strong>bursa pusat (CEX)</strong> kayak Binance atau Indodax.',
+        },
+      ],
+    },
+    {
+      id: 'space-april-18b',
+      date: '18 April 2026',
+      xLink: 'https://x.com/i/spaces/1mxPaLpMVXYKN?s=20',
+      title: 'Tips Aman dan Cuan Trading Memecoin ala Bang Ponyin',
+      desc: 'Strategi pemula, fleksibilitas panduan, pentingnya target PnL, keamanan OpSec multi-wallet, hingga tips Telegram dan burner wallet.',
+      tag: 'Strategi · OpSec',
+      insights: [
+        {
+          num: '1',
+          title: 'Strategi Trading untuk Pemula',
+          body: 'Bang Ponyin memberikan saran krusial bagi para pemula: <strong>hindari grup VIP berbayar</strong> dan jangan asal melakukan <em>copy trading</em>. Memecoin seringkali bersifat spekulatif seperti skema <strong>Ponzi</strong> — mereka yang masuk lebih awal biasanya yang paling diuntungkan.<br/><br/>Oleh karena itu, penting untuk memahami prinsip <strong>supply and demand</strong> serta menemukan gaya trading sendiri daripada sekadar mengikuti arus orang lain.',
+        },
+        {
+          num: '2',
+          title: 'Fleksibilitas dalam Menggunakan Panduan',
+          body: 'Saat ditanya soal strategi <em>dip</em> pada pasangan baru (<em>new pairs</em>), Bang Ponyin menekankan agar trader tidak terlalu kaku pada tutorial atau <em>manual book</em>.<br/><br/>Panduan hanyalah dasar; trader harus <strong>fleksibel dan menyesuaikan diri</strong> dengan kondisi pasar yang bergerak sangat cepat, terutama di jaringan <strong>Solana</strong> di mana waktu memegang peranan sangat penting.',
+        },
+        {
+          num: '3',
+          title: 'Pentingnya Target dan Motivasi',
+          body: 'Sebelum mulai trading, sangat penting untuk menetapkan <strong>target PnL (Profit and Loss)</strong> yang jelas. Memiliki motivasi personal — seperti keluarga atau orang tua — bisa membantu trader tetap disiplin.<br/><br/>Tanpa target yang jelas, kamu mudah terjebak dalam sifat <strong>serakah (greedy)</strong> atau <em>overtrade</em> yang bisa berujung pada kerugian besar.',
+        },
+        {
+          num: '4',
+          title: 'Keamanan Operasional (OpSec) dan Multi-Wallet',
+          body: 'Salah satu poin utama: gunakan <strong>banyak wallet (multi-wallet)</strong> dan jangan simpan semua dana di satu tempat. Kalau satu wallet terkena <em>drainer</em> atau diretas, aset di wallet lain tetap aman.<br/><br/>Trader juga diingatkan untuk sangat waspada terhadap <strong>link phishing</strong> dan <em>bot custom</em> yang mungkin menyimpan jebakan — seringkali baru aktif menguras saldo saat sudah mencapai angka tertentu.',
+        },
+        {
+          num: '5',
+          title: 'Tips Telegram dan Burner Wallet',
+          body: 'Gunakan <strong>Telegram Premium</strong> untuk menghindari iklan yang seringkali merupakan link penipu.<br/><br/>Selain itu, selalu gunakan <strong>burner wallet</strong> (wallet kosong/sekali pakai) saat ingin mencoba airdrop atau menghubungkan wallet ke platform baru yang belum terjamin keamanannya. Dan ingat: <strong>jangan pernah membagikan private key atau seed phrase kepada siapapun</strong>.',
+        },
+      ],
+    },
+    {
       id: 'space-april-12',
       date: '12 April 2026',
       xLink: 'https://x.com/i/spaces/1AKEmOnWLDOKL?s=20',
@@ -286,6 +366,86 @@ const SPACES_DATA = {
     },
   ],
   en: [
+    {
+      id: 'space-april-18',
+      date: 'April 18, 2026',
+      xLink: 'https://x.com/i/spaces/1DxleEwlVagKL?s=20',
+      title: 'Pro Tips to Keep Your Crypto Wallet Safe From Drainers',
+      desc: 'A deep dive into the risks of doxxing, why VPNs matter, backdoors hidden in files, airdrop drainer scams, and multi-wallet strategies to avoid bubble links.',
+      tag: 'Security · Anti-Drain',
+      insights: [
+        {
+          num: '1',
+          title: 'Doxxing vs. Being Anonymous: Pros and Cons',
+          body: 'Choosing to show your face (<strong>doxxing</strong>) versus staying <strong>anonymous</strong> both have trade-offs. Being known publicly builds trust, but it also increases your risk. Showing off your portfolio can make you a real-world target for bad actors.<br/><br/>In Indonesia, physical robberies over crypto portfolios are rare, but you should still be wary of drama or enemies that might emerge from being too public.',
+        },
+        {
+          num: '2',
+          title: 'Basic Internet Security & VPNs',
+          body: 'Always use a <strong>VPN</strong> when browsing to stay protected and mask your real IP address. A recommended and affordable option is <strong>Warp (1.1.1.1)</strong>.<br/><br/>Also, watch out for fake sites or <em>spoofing</em>. Scammers create URLs that look nearly identical to official bank or exchange sites, with subtle letter swaps (e.g., capital vs lowercase letters) designed to trick you.',
+        },
+        {
+          num: '3',
+          title: 'The Hidden Danger of Backdoors in Shared Files',
+          body: 'Never carelessly click files or photos sent to you via <strong>WhatsApp or Telegram</strong>, especially suspicious document files. Hackers can embed a <em>backdoor</em> that allows them to spy on or <strong>mirror</strong> your phone.<br/><br/>This means everything you type or open on your device could be visible to them in real-time.',
+        },
+        {
+          num: '4',
+          title: 'Airdrop Scams & Drainers: The Dangerous Freebie',
+          body: 'Be extremely careful if you suddenly receive free tokens (<em>airdrop</em>) with seemingly real value. The moment you try to interact with or sell those tokens, you may actually be granting a <strong>drainer</strong> full access to empty your entire wallet.<br/><br/>Also, beware of unofficial bot links. <strong>Drainer bots</strong> will typically ask for your <em>private key</em> the moment you try to make a purchase.',
+        },
+        {
+          num: '5',
+          title: 'Private Key vs. Seed Phrase: A Critical Difference',
+          body: 'Understanding the difference is crucial:<br/>• If your <strong>Private Key</strong> for one wallet leaks, only that specific wallet is compromised.<br/>• But if your <strong>Seed Phrase</strong> (passkey) leaks, <em>every single wallet</em> you create under that account is exposed too.<br/><br/>Store your Seed Phrase as securely as possible and <strong>never share it with anyone</strong>.',
+        },
+        {
+          num: '6',
+          title: 'Hardware Wallets (Cold Wallets) for Large Holdings',
+          body: 'If you hold a significant amount of assets, it is strongly recommended to use a <strong>hardware wallet</strong> such as <em>Ledger</em>, <em>Trezor</em>, or <em>SafePal</em>.<br/><br/>These physical wallets are far more secure because the private keys are stored <strong>offline</strong> and cannot be easily accessed by hackers through a regular internet connection.',
+        },
+        {
+          num: '7',
+          title: 'Multi-Wallet Strategy & Avoiding Bubble Links',
+          body: 'Never use a single wallet for everything. Separate your wallets by purpose:<br/>• <strong>Main capital</strong><br/>• <strong>Active trading</strong><br/>• <strong>Airdrop hunting</strong><br/><br/>To stay safe and avoid revealing wallet connections (<em>bubble links</em>), always fund these wallets directly from a <strong>centralized exchange (CEX)</strong> like Binance or Indodax — never transfer directly between your own wallets via DEX.',
+        },
+      ],
+    },
+    {
+      id: 'space-april-18b',
+      date: 'April 18, 2026',
+      xLink: 'https://x.com/i/spaces/1mxPaLpMVXYKN?s=20',
+      title: 'Safe & Profitable Memecoin Trading Tips by Bang Ponyin',
+      desc: 'Beginner strategies, guide flexibility, setting PnL targets, OpSec & multi-wallet security, plus Telegram and burner wallet best practices.',
+      tag: 'Strategy · OpSec',
+      insights: [
+        {
+          num: '1',
+          title: 'Trading Strategy for Beginners',
+          body: 'Bang Ponyin delivers a crucial warning for newcomers: <strong>avoid paid VIP groups</strong> and resist blindly doing <em>copy trading</em>. Memecoins are often highly speculative — structured like a <strong>Ponzi scheme</strong> where those who enter earliest benefit the most.<br/><br/>It\'s far more important to understand <strong>supply and demand</strong> and develop your own trading style rather than simply riding the coattails of others.',
+        },
+        {
+          num: '2',
+          title: 'Flexibility When Following Trading Guides',
+          body: 'When asked about <em>dip</em> strategies on <em>new pairs</em>, Bang Ponyin stressed that traders shouldn\'t rigidly follow tutorials or <em>manual books</em>.<br/><br/>Guides are just a foundation. Traders must be <strong>flexible and adaptive</strong> to fast-moving market conditions, especially on <strong>Solana</strong> where timing is absolutely everything.',
+        },
+        {
+          num: '3',
+          title: 'The Importance of Targets and Motivation',
+          body: 'Before you start trading, always define a clear <strong>PnL (Profit and Loss) target</strong>. Having a personal motivation — like providing for family or your parents — helps you stay disciplined and grounded.<br/><br/>Without a clear target, it\'s easy to fall into <strong>greed</strong> and <em>overtrading</em>, which almost always leads to significant losses.',
+        },
+        {
+          num: '4',
+          title: 'Operational Security (OpSec) & Multi-Wallet',
+          body: 'One of the key takeaways: use <strong>multiple wallets (multi-wallet)</strong> and never keep all your funds in one place. If one wallet gets hit by a <em>drainer</em> or gets hacked, your assets in other wallets remain safe.<br/><br/>Also be extremely vigilant against <strong>phishing links</strong> and <em>custom bots</em> that may contain hidden traps — these often lie dormant and only drain your wallet once your balance reaches a certain threshold.',
+        },
+        {
+          num: '5',
+          title: 'Telegram Tips & Burner Wallets',
+          body: 'Use <strong>Telegram Premium</strong> to avoid ads that are frequently disguised phishing links.<br/><br/>Always use a <strong>burner wallet</strong> (an empty, disposable wallet) when trying out airdrops or connecting to any new platform whose security hasn\'t been verified. And the golden rule: <strong>never share your private key or seed phrase with anyone, ever</strong>.',
+        },
+      ],
+    },
     {
       id: 'space-april-12',
       date: 'April 12, 2026',
