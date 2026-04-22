@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { PANEL_ORDER } from './data/panelData';
 import { useScrollReveal } from './hooks/useScrollReveal';
 import { useSecurity } from './hooks/useSecurity';
@@ -55,28 +56,30 @@ export default function App() {
   }, [switchPanel]);
 
   return (
-    <LanguageProvider>
-      <Navbar />
-      <Hero />
+    <ThemeProvider>
+      <LanguageProvider>
+        <Navbar />
+        <Hero />
 
-      <MobileTabs activePanel={activePanel} onSwitch={switchPanel} />
+        <MobileTabs activePanel={activePanel} onSwitch={switchPanel} />
 
-      <MateriIntro />
+        <MateriIntro />
 
-      <div className="materi-shell">
-        <Sidebar activePanel={activePanel} onSwitch={switchPanel} />
-        <PanelArea activePanel={activePanel} onSwitch={switchPanel} />
-      </div>
+        <div className="materi-shell">
+          <Sidebar activePanel={activePanel} onSwitch={switchPanel} />
+          <PanelArea activePanel={activePanel} onSwitch={switchPanel} />
+        </div>
 
-      <SpaceRecordings />
+        <SpaceRecordings />
 
-      <ProofGallery />
+        <ProofGallery />
 
-      <ScammerList />
+        <ScammerList />
 
-      <Footer />
-      <Chatbot />
-      <Analytics />
-    </LanguageProvider>
+        <Footer />
+        <Chatbot />
+        <Analytics />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

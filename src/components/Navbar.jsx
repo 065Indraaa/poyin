@@ -1,5 +1,6 @@
 import avatarSrc from '../assets/avatar.png';
 import LangToggle from './LangToggle';
+import ThemeToggle from './ThemeToggle';
 import PriceTicker from './PriceTicker';
 
 export default function Navbar() {
@@ -18,6 +19,7 @@ export default function Navbar() {
       <div className="nav-spacer" />
       <div className="nav-links">
         <LangToggle />
+        <ThemeToggle />
         <a href="https://x.com/elponyin" target="_blank" rel="noopener" className="nav-link">
           𝕏 @elponyin
         </a>
