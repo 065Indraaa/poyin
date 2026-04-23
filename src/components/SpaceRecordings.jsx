@@ -5,6 +5,61 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-april-23',
+      date: '23 April 2026',
+      xLink: 'https://x.com/i/spaces/1MJgNgydPayGL?s=20',
+      title: 'Ponyin x Ave AI ID: Kupas Tuntas Strategi Trenching dan On-Chain',
+      desc: 'Bahas tuntas strategi trenching, literasi on-chain, manajemen wallet, hingga psikologi trading bareng Ave AI ID.',
+      tag: 'Strategi · On-Chain',
+      insights: [
+        {
+          num: '1',
+          title: 'Siapa sih Sosok Bro Ponyin dan Asal-usul Namanya?',
+          body: 'Ponyin ternyata mulai masuk ke dunia crypto dari tahun 2018, awalnya malah main di jaringan TON sebelum akhirnya fokus di Solana. Nama <strong>Ponyin</strong> sendiri diambil dari kata <strong>Pinyin</strong> (bahasa Mandarin yang artinya bunyi). Filosofinya, dia ingin jadi "suara" yang didengar teman-teman untuk membantu eksplorasi Web3 dengan cara yang lebih simpel dan menyenangkan.',
+        },
+        {
+          num: '2',
+          title: 'Perjalanan Menjadi Edukator dan Admin Komunitas',
+          body: 'Awalnya Ponyin nggak niat jadi tokoh publik atau admin. Dia cuma member biasa yang aktif membantu orang-orang yang kena tipu bot drainer atau grup VIP abal-abal di grup Bang Izzy Redington. Karena dedikasinya bantu orang (gratisan pula!), dia dilirik jadi admin. Namanya makin naik setelah berhasil nge-push project Opium bareng komunitas Tomcat Lovers sampai menyentuh market cap miliaran, hingga akhirnya ditarik jadi admin di Cupang Venture.',
+        },
+        {
+          num: '3',
+          title: 'Perbedaan Culture Crypto Twitter (CT) Indo vs Global',
+          body: "Menurut Ponyin, CT luar itu jauh lebih brutal and 'ganas'—mereka nggak segan makan temen sendiri demi profit. Sedangkan di Indo, orangnya lebih 'nggak enakan' kalau mau nge-sell duluan, tapi kalau project-nya gagal atau di-rug, komunitas Indo bisa dendam banget sampai nge-bounty developer-nya. Selain itu, trader luar berani main 'size' gede di DEX, sementara orang Indo biasanya main size gede di CEX tapi main kecil di DEX.",
+        },
+        {
+          num: '4',
+          title: 'Pentingnya Belajar Baca Blockchain (On-Chain Literacy)',
+          body: 'Ponyin gelisah lihat banyak orang cuma modal depo dan ikut-ikutan (fomo) tanpa tahu cara baca on-chain. Padahal, baca on-chain itu ilmu dasar paling penting. Dia menekankan pentingnya tahu ke mana duit lari, cara cek balance holder, dan cara membedakan mana real player mana bot. Inilah alasan dia bikin website <strong>ponyin.id</strong> supaya teman-teman punya panduan dasar buat belajar.',
+        },
+        {
+          num: '5',
+          title: "Kenapa Solana Jadi 'Rumah' Favorit buat Trencher?",
+          body: 'Solana dipilih karena perputaran duitnya sangat cepat dan transaksinya jauh lebih mudah dibaca secara on-chain dibanding Ethereum (EVM). Buat pemula yang mau belajar baca data on-chain, Solana adalah tempat paling pas karena alur transaksinya sangat gamblang.',
+        },
+        {
+          num: '6',
+          title: 'Strategi Manajemen Wallet ala Ponyin',
+          body: "Ponyin selalu memisahkan wallet-nya berdasarkan tujuan: ada <strong>wallet khusus challenge</strong> (buat melatih disiplin dan konten), <strong>wallet 'jajan'</strong> (hasil profit yang boleh dipakai buat spend), dan <strong>wallet tabungan</strong> (untuk main size besar dan disimpan). Dia menyarankan jangan pernah pakai lebih dari 5% portofolio buat trenching, dan harus pakai 'duit dingin'.",
+        },
+        {
+          num: '7',
+          title: 'Indikator Memilih Token: Green Flags vs Red Flags',
+          body: "Beberapa 'Green Flag' yang dicari Ponyin antara lain: funding wallet dari <strong>Coinbase</strong> (karena KYC-nya susah), narasi yang kuat (seperti meta hewan atau meta Elon Musk), dan rasio Global Gas Fee yang pas. Sebaliknya, 'Red Flag' yang harus dihindari adalah holder yang balancenya seragam (indikasi bundling/tim) dan dev yang pernah nge-rug project sebelumnya.",
+        },
+        {
+          num: '8',
+          title: 'Apa Itu Smart Wallet yang Sesungguhnya?',
+          body: 'Banyak orang salah kaprah cuma lihat Win Rate. Bagi Ponyin, Smart Wallet itu dilihat dari <strong>ROI (Return on Investment)</strong>. Percuma win rate 90% kalau profitnya receh atau cuma main di token micin yang nggak likuid. Dia juga mengelompokkan smart wallet berdasarkan gayanya: ada yang jago cari token tidur (sleeper), ada yang jago front-run narasi.',
+        },
+        {
+          num: '9',
+          title: 'Ego: Pembunuh Nomor Satu di Crypto',
+          body: 'Pesan terakhir dari Ponyin untuk teman-teman yang mau terjun: turunin ego. Banyak orang yang sudah sukses atau merasa jago akhirnya balik ke titik nol karena egonya tinggi. Crypto itu dinamis, setiap minggu tren bisa berubah, jadi kita harus tetap mau belajar dan fleksibel mengikuti arah pasar.',
+        },
+      ],
+    },
+    {
       id: 'space-april-18',
       date: '18 April 2026',
       xLink: 'https://x.com/i/spaces/1DxleEwlVagKL?s=20',
@@ -366,6 +421,61 @@ const SPACES_DATA = {
     },
   ],
   en: [
+    {
+      id: 'space-april-23',
+      date: 'April 23, 2026',
+      xLink: 'https://x.com/i/spaces/1MJgNgydPayGL?s=20',
+      title: 'Ponyin x Ave AI ID: Deep Dive into Trenching and On-Chain Strategies',
+      desc: 'Exploring trenching strategies, on-chain literacy, wallet management, and trading psychology with Ave AI ID.',
+      tag: 'Strategy · On-Chain',
+      insights: [
+        {
+          num: '1',
+          title: 'Who is Ponyin and the Origin of His Name?',
+          body: 'Ponyin started his crypto journey in 2018, initially playing on the TON network before focusing on Solana. The name <strong>Ponyin</strong> is derived from <strong>Pinyin</strong> (Mandarin for "sound"). His philosophy is to be the "voice" that friends hear to help explore Web3 in a simpler and more fun way.',
+        },
+        {
+          num: '2',
+          title: 'Journey to Becoming an Educator and Community Admin',
+          body: 'Initially, Ponyin had no intention of becoming a public figure or admin. He was just a regular member actively helping people who were scammed by drainer bots or fake VIP groups. Due to his dedication to helping others (for free!), he was scouted as an admin. His reputation grew after successfully pushing the Opium project with the Tomcat Lovers community to a billion-dollar market cap, eventually leading him to become an admin at Cupang Venture.',
+        },
+        {
+          num: '3',
+          title: 'Differences in Crypto Twitter (CT) Culture: Indo vs Global',
+          body: "According to Ponyin, global CT is much more brutal and 'fierce'—they don't hesitate to eat their own for profit. In contrast, Indonesians tend to be more 'hesitant' to sell first, but if a project fails or rugs, the Indo community can be very vengeful, even putting bounties on developers. Additionally, global traders are bolder with 'size' on DEXs, while Indonesians typically trade large sizes on CEXs but play small on DEXs.",
+        },
+        {
+          num: '4',
+          title: 'The Importance of Learning to Read the Blockchain (On-Chain Literacy)',
+          body: "Ponyin is concerned that many people just deposit and follow the crowd (FOMO) without knowing how to read on-chain data. On-chain literacy is the most fundamental skill. He emphasizes knowing where the money goes, checking holder balances, and distinguishing real players from bots. This is why he created the <strong>ponyin.id</strong> website as a basic guide for learning.",
+        },
+        {
+          num: '5',
+          title: "Why Solana is the Favorite 'Home' for Trenchers?",
+          body: 'Solana was chosen because of its high capital velocity and transactions that are much easier to read on-chain compared to Ethereum (EVM). For beginners wanting to learn on-chain data, Solana is the perfect place because its transaction flow is very transparent.',
+        },
+        {
+          num: '6',
+          title: 'Wallet Management Strategy ala Ponyin',
+          body: "Ponyin always separates his wallets by purpose: a <strong>challenge wallet</strong> (to practice discipline and for content), a <strong>'spending' wallet</strong> (profits for personal use), and a <strong>savings wallet</strong> (for large sizes and long-term storage). He suggests never using more than 5% of your portfolio for trenching, and always using 'cold money'.",
+        },
+        {
+          num: '7',
+          title: 'Token Selection Indicators: Green Flags vs Red Flags',
+          body: "Some 'Green Flags' Ponyin looks for include: funding from <strong>Coinbase</strong> (due to strict KYC), strong narratives (like animal metas or Elon Musk metas), and a proper Global Gas Fee ratio. Conversely, 'Red Flags' include uniform holder balances (indicating bundling/team control) and developers who have rugged projects before.",
+        },
+        {
+          num: '8',
+          title: 'What is a True Smart Wallet?',
+          body: "Many people mistakenly only look at Win Rate. For Ponyin, a Smart Wallet is defined by <strong>ROI (Return on Investment)</strong>. A 90% win rate is useless if profits are measly or made on illiquid tokens. He also categorizes smart wallets by style: some excel at finding 'sleeper' tokens, while others are great at front-running narratives.",
+        },
+        {
+          num: '9',
+          title: 'Ego: The Number One Killer in Crypto',
+          body: "Ponyin's final message: lower your ego. Many successful or experienced people end up back at zero because of high egos. Crypto is dynamic; trends can change every week, so we must remain willing to learn and flexible to follow the market's direction.",
+        },
+      ],
+    },
     {
       id: 'space-april-18',
       date: 'April 18, 2026',
