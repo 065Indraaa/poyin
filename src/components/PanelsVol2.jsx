@@ -573,3 +573,91 @@ export function PanelUnwritten() {
     </>
   );
 }
+
+// ═══════ PA9: SCAMS & DRAINERS ═══════
+export function PanelScamDrainer() {
+  const t = useT('scam');
+  const { lang } = useLang();
+
+  return (
+    <>
+      <p className="prose reveal" dangerouslySetInnerHTML={{ __html: t.p1 }} />
+
+      <div className="illus-box reveal" style={{ marginBottom: '24px' }}>
+        <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', display: 'block' }}>
+          <rect width="700" height="240" fill="transparent" />
+          <text x="350" y="32" textAnchor="middle" fontFamily="Georgia,serif" fontSize="18" fontWeight="700" fill="#18182b">
+            {lang === 'en' ? 'Crypto Danger Zones' : 'Zona Bahaya Kripto'}
+          </text>
+
+          {/* Pig Butchering */}
+          <rect x="20" y="55" width="200" height="150" rx="14" fill="#fef2f2" stroke="#fca5a5" strokeWidth="2" />
+          <text x="120" y="95" textAnchor="middle" fontFamily="sans-serif" fontSize="32">🐷</text>
+          <text x="120" y="125" textAnchor="middle" fontFamily="Georgia,serif" fontSize="14" fontWeight="700" fill="#991b1b">
+            {lang === 'en' ? 'Pig Butchering' : 'Penjagalan Babi'}
+          </text>
+          <text x="120" y="145" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#b91c1c">
+            {lang === 'en' ? 'Fake trust building' : 'Bangun trust palsu'}
+          </text>
+          <text x="120" y="160" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#b91c1c">
+            {lang === 'en' ? 'Then steals everything' : 'Lalu ambil semuanya'}
+          </text>
+          <text x="120" y="185" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#7f1d1d" fontWeight="700">
+            {lang === 'en' ? '⚠️ Target: Anyone' : '⚠️ Target: Siapapun'}
+          </text>
+
+          {/* Airdrop Drainer */}
+          <rect x="250" y="55" width="200" height="150" rx="14" fill="#fffbeb" stroke="#fcd34d" strokeWidth="2" />
+          <text x="350" y="95" textAnchor="middle" fontFamily="sans-serif" fontSize="32">🪂</text>
+          <text x="350" y="125" textAnchor="middle" fontFamily="Georgia,serif" fontSize="14" fontWeight="700" fill="#92400e">
+            {lang === 'en' ? 'Airdrop Drainer' : 'Airdrop Drainer'}
+          </text>
+          <text x="350" y="145" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#b45309">
+            {lang === 'en' ? 'Free token trap' : 'Jebakan token gratis'}
+          </text>
+          <text x="350" y="160" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#b45309">
+            {lang === 'en' ? 'Steals when sold' : 'Mencuri saat dijual'}
+          </text>
+          <text x="350" y="185" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#78350f" fontWeight="700">
+            {lang === 'en' ? '⚠️ Target: Wallet' : '⚠️ Target: Wallet'}
+          </text>
+
+          {/* Bot Drainer */}
+          <rect x="480" y="55" width="200" height="150" rx="14" fill="#eff6ff" stroke="#93c5fd" strokeWidth="2" />
+          <text x="580" y="95" textAnchor="middle" fontFamily="sans-serif" fontSize="32">🤖</text>
+          <text x="580" y="125" textAnchor="middle" fontFamily="Georgia,serif" fontSize="14" fontWeight="700" fill="#1e40af">
+            {lang === 'en' ? 'VIP Bot Drainer' : 'Bot VIP Drainer'}
+          </text>
+          <text x="580" y="145" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#1d4ed8">
+            {lang === 'en' ? 'Fake telegram bots' : 'Bot telegram palsu'}
+          </text>
+          <text x="580" y="160" textAnchor="middle" fontFamily="sans-serif" fontSize="11" fill="#1d4ed8">
+            {lang === 'en' ? 'Asks for phrases' : 'Minta seed phrase'}
+          </text>
+          <text x="580" y="185" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fill="#1e3a8a" fontWeight="700">
+            {lang === 'en' ? '⚠️ Target: Seed Phrase' : '⚠️ Target: Seed Phrase'}
+          </text>
+
+        </svg>
+      </div>
+
+      <Callout type="danger" icon="🐷" title={t.pigTitle}>
+        <p style={{ marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: t.pigDesc1 }} />
+        <p style={{ marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: t.pigDesc2 }} />
+        <p style={{ marginBottom: 0 }} dangerouslySetInnerHTML={{ __html: t.pigDesc3 }} />
+      </Callout>
+
+      <Callout type="warn" icon="🪂" title={t.airdropTitle}>
+        <p style={{ marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: t.airdropDesc1 }} />
+        <p style={{ marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: t.airdropDesc2 }} />
+        <p style={{ marginBottom: 0 }} dangerouslySetInnerHTML={{ __html: t.airdropDesc3 }} />
+      </Callout>
+
+      <Callout type="info" icon="🤖" title={t.botTitle}>
+        <p style={{ marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: t.botDesc1 }} />
+        <p style={{ marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: t.botDesc2 }} />
+        <p style={{ marginBottom: 0 }} dangerouslySetInnerHTML={{ __html: t.botDesc3 }} />
+      </Callout>
+    </>
+  );
+}

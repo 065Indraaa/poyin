@@ -5,7 +5,7 @@
 
 export const PANEL_ORDER = [
   'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9',
-  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6', 'pa7', 'pa8'
+  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6', 'pa7', 'pa8', 'pa9'
 ];
 
 export const sidebarItemsData = {
@@ -29,6 +29,7 @@ export const sidebarItemsData = {
     { id: 'pa6', num: 'A7', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
     { id: 'pa7', num: 'A8', title: 'Multi Wallet', sub: 'Keajaiban trading', vol: 2 },
     { id: 'pa8', num: 'A9', title: 'Unwritten Rules', sub: 'Etika survival jangka panjang', vol: 2 },
+    { id: 'pa9', num: 'A10', title: 'Skema Penipuan', sub: 'Pig butchering & drainer', vol: 2 },
   ],
   en: [
     { id: 'p0', num: '1', title: 'Bundle Token', sub: 'Hidden supply monopoly', vol: 1 },
@@ -50,6 +51,7 @@ export const sidebarItemsData = {
     { id: 'pa6', num: 'A7', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
     { id: 'pa7', num: 'A8', title: 'Multi Wallet', sub: 'The trading miracle', vol: 2 },
     { id: 'pa8', num: 'A9', title: 'Unwritten Rules', sub: 'Long-term survival ethics', vol: 2 },
+    { id: 'pa9', num: 'A10', title: 'Scams & Drainers', sub: 'Pig butchering & airdrops', vol: 2 },
   ],
 };
 
@@ -233,9 +235,19 @@ export const panelsData = {
       eyebrowLabel: 'Advance — Etika',
       title: 'Unwritten Rules —\nJangan Makan Orang Sendiri',
       sub: 'Ada aturan tak tertulis yang menentukan siapa yang bertahan sampai akhir cycle. Ini bukan soal banyak-banyakan porto — tapi siapa yang bisa survive.',
-      breadcrumb: ['Vol. 2 Advance', 'Unwritten Rules', 'A9 dari A9'],
-      nav: { prev: 'pa7', next: 'p0', counter: 'A9 / A9', prevLabel: '← Multi Wallet', nextLabel: 'Mulai dari awal ↺' },
+      breadcrumb: ['Vol. 2 Advance', 'Unwritten Rules', 'A9 dari A10'],
+      nav: { prev: 'pa7', next: 'pa9', counter: 'A9 / A10', prevLabel: '← Multi Wallet', nextLabel: 'Skema Penipuan →' },
       type: 'unwritten',
+      vol: 2
+    },
+    pa9: {
+      eyebrow: 'A10',
+      eyebrowLabel: 'Advance — Security',
+      title: 'Skema Penipuan —\nPig Butchering & Drainer',
+      sub: 'Di dunia kripto, uangmu bisa hilang bukan cuma karena market turun, tapi karena jebakan manipulasi psikologis dan smart contract.',
+      breadcrumb: ['Vol. 2 Advance', 'Skema Penipuan', 'A10 dari A10'],
+      nav: { prev: 'pa8', next: 'p0', counter: 'A10 / A10', prevLabel: '← Unwritten Rules', nextLabel: 'Mulai dari awal ↺' },
+      type: 'scam',
       vol: 2
     },
   },
@@ -412,12 +424,22 @@ export const panelsData = {
     },
     pa8: {
       eyebrow: 'A9',
-      eyebrowLabel: 'Advance — Etika',
-      title: 'Unwritten Rules —\nJangan Makan Orang Sendiri',
-      sub: 'Ada aturan tak tertulis yang menentukan siapa yang bertahan sampai akhir cycle. Ini bukan soal banyak-banyakan porto — tapi siapa yang bisa survive.',
-      breadcrumb: ['Vol. 2 Advance', 'Unwritten Rules', 'A9 dari A9'],
-      nav: { prev: 'pa7', next: 'p0', counter: 'A9 / A9', prevLabel: '← Multi Wallet', nextLabel: 'Mulai dari awal ↺' },
+      eyebrowLabel: 'Advance — Ethics',
+      title: 'Unwritten Rules —\nDon\'t Eat Your Own',
+      sub: 'There are unwritten rules that determine who survives until the end of the cycle. This isn\'t about having the biggest portfolio — it\'s about who can survive.',
+      breadcrumb: ['Vol. 2 Advance', 'Unwritten Rules', 'A9 of A10'],
+      nav: { prev: 'pa7', next: 'pa9', counter: 'A9 / A10', prevLabel: '← Multi Wallet', nextLabel: 'Scams & Drainers →' },
       type: 'unwritten',
+      vol: 2
+    },
+    pa9: {
+      eyebrow: 'A10',
+      eyebrowLabel: 'Advance — Security',
+      title: 'Scams & Drainers —\nPig Butchering & Traps',
+      sub: 'In crypto, your money can be lost not just because the market goes down, but through psychological manipulation and smart contract traps.',
+      breadcrumb: ['Vol. 2 Advance', 'Scams & Drainers', 'A10 of A10'],
+      nav: { prev: 'pa8', next: 'p0', counter: 'A10 / A10', prevLabel: '← Unwritten Rules', nextLabel: 'Start from beginning ↺' },
+      type: 'scam',
       vol: 2
     },
   },

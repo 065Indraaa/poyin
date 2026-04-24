@@ -23,6 +23,8 @@ const MATERI_MAP_DATA = {
     { keywords: ['rent refund', 'refund', 'sewa', 'rent', 'solana rent'], panelId: 'pa5', label: '📖 Buka Materi: Rent Refund' },
     { keywords: ['scalping', 'instant scalping', 'new pair', 'fresh launch'], panelId: 'pa6', label: '📖 Buka Materi: Instant Scalping' },
     { keywords: ['multi wallet', 'multiwallet', 'banyak wallet'], panelId: 'pa7', label: '📖 Buka Materi: Multi Wallet' },
+    { keywords: ['unwritten rules', 'etika', 'jangan makan orang', 'one clip', 'split sell'], panelId: 'pa8', label: '📖 Buka Materi: Unwritten Rules' },
+    { keywords: ['scam', 'drainer', 'penipuan', 'pig butchering', 'airdrop drainer', 'bot vip', 'dicuri', 'hack', 'hilang'], panelId: 'pa9', label: '📖 Buka Materi: Skema Penipuan' },
     { keywords: ['bukti', 'testimoni', 'screenshot', 'galeri bukti', 'jejak bukti', 'foto perjalanan'], sectionId: 'proof-gallery', label: '📸 Buka Galeri Bukti' },
   ],
   en: [
@@ -43,6 +45,8 @@ const MATERI_MAP_DATA = {
     { keywords: ['rent refund', 'refund', 'rent', 'solana rent'], panelId: 'pa5', label: '📖 Open Material: Rent Refund' },
     { keywords: ['scalping', 'instant scalping', 'new pair', 'fresh launch'], panelId: 'pa6', label: '📖 Open Material: Instant Scalping' },
     { keywords: ['multi wallet', 'multiwallet', 'multiple wallet'], panelId: 'pa7', label: '📖 Open Material: Multi Wallet' },
+    { keywords: ['unwritten rules', 'ethics', 'one clip', 'split sell', 'survive'], panelId: 'pa8', label: '📖 Open Material: Unwritten Rules' },
+    { keywords: ['scam', 'drainer', 'fraud', 'pig butchering', 'airdrop drainer', 'bot vip', 'stolen', 'hack', 'lost'], panelId: 'pa9', label: '📖 Open Material: Scams & Drainers' },
     { keywords: ['proof gallery', 'screenshot', 'testimonial', 'social proof', 'journey', 'proof', 'results'], sectionId: 'proof-gallery', label: '📸 View Proof Gallery' },
   ],
 };
@@ -105,7 +109,7 @@ EMPATI (Cara Kamu Merespon):
 
 KONTEKS MATERI WEBSITE:
 Vol.1 (Basic): Bundle Token, Global Fees, Revoke & Minting, Meme vs Utility, Dex Paid Ads & Boost, 3 Konfirmasi Candle, Cabal Play, Membaca Holder, Market Cap Tier.
-Vol.2 (Advance): Snipe Early, First 1K dari $100, Wallet Ping, Money Management, Transaksi Murah & Cepat, Rent Refund Solana, Instant Scalping, Multi Wallet.
+Vol.2 (Advance): Snipe Early, First 1K dari $100, Wallet Ping, Money Management, Transaksi Murah & Cepat, Rent Refund Solana, Instant Scalping, Multi Wallet, Skema Penipuan (Pig Butchering & Drainer).
 Bonus/Ekstra: Rangkuman Twitter Space (Space Recordings) di bagian bawah halaman berisi bahasan memecoin, multi-wallet, kabal, cerita perjuangan dari warnet, portfolio aman, dan gaya trading dari Bang Ponyin.
 
 BATASAN TOPIK (WAJIB DIPATUHI):
@@ -144,7 +148,7 @@ EMPATHY (How You Respond):
 
 WEBSITE MATERIAL CONTEXT:
 Vol.1 (Basic): Bundle Token, Global Fees, Revoke & Minting, Meme vs Utility, Dex Paid Ads & Boost, 3 Candle Confirmation, Cabal Play, Reading Holders, Market Cap Tier.
-Vol.2 (Advance): Snipe Early, First 1K from $100, Wallet Ping, Money Management, Cheap & Fast Transactions, Rent Refund Solana, Instant Scalping, Multi Wallet.
+Vol.2 (Advance): Snipe Early, First 1K from $100, Wallet Ping, Money Management, Cheap & Fast Transactions, Rent Refund Solana, Instant Scalping, Multi Wallet, Scams & Drainers (Pig Butchering).
 Bonus/Extras: Twitter Space Recordings summary at the bottom of the page, covering memecoins, multi-wallets, cabals, cybercafe origin story, safe portfolios, and trading styles from Bang Ponyin.
 
 TOPIC RESTRICTIONS (MUST FOLLOW):

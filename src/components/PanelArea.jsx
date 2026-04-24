@@ -10,7 +10,7 @@ import {
 import {
   PanelSnipe, PanelFirst1K, PanelWalletPing, PanelModal,
   PanelTransaksi, PanelScalping, PanelMultiWallet, PanelRefundSol,
-  PanelUnwritten
+  PanelUnwritten, PanelScamDrainer
 } from './PanelsVol2';
 
 const CONTENT_MAP = {
@@ -33,6 +33,7 @@ const CONTENT_MAP = {
   pa6: PanelScalping,
   pa7: PanelMultiWallet,
   pa8: PanelUnwritten,
+  pa9: PanelScamDrainer,
 };
 
 export default function PanelArea({ activePanel, onSwitch }) {

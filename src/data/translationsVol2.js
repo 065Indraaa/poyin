@@ -324,6 +324,39 @@ rule3: 'Crypto isn\'t about having the biggest portfolio. <strong>This is about 
       conclusion: 'Become a trader who is <strong>respected</strong>, not one who is <strong>feared</strong>. Build your reputation by maintaining ethics. Blessings will come on their own if you survive and stay on the right path.',
     },
   },
+  // ─── PA9: SCAMS & DRAINERS ───
+  scam: {
+    id: {
+      p1: '<strong>Ini thread tentang macam-macam scam paling umum di kripto.</strong> Fenomena penipuan ini sasarannya justru bukan pemula, tapi orang-orang yang sudah advance dan portofolionya sudah pada besar. Jangan sampai kamu lengah.',
+      pigTitle: '1. Pig Butchering (Penjagalan Babi)',
+      pigDesc1: 'Bayangin kamu ini kayak babi yang dikasih makan, dibikin gendut. Pas udah banyak dagingnya... kamu langsung dipotong buat dipanen.',
+      pigDesc2: '<strong>Skemanya:</strong> Si pelaku akan berusaha approach kamu secara halus. Ngeluh, cerita, curhat, sampai dia dapat atensi dari kamu. Modusnya nanti dia akan minta ajarin gimana cara nge-trade dsb. Diajak teleponan, share screen, dll. Bahkan mereka tidak takut untuk mengirim kamu uang duluan.',
+      pigDesc3: 'Nanti pas kamu lengah dan percaya, baru mereka beraksi menguras hartamu. Di luar kripto juga ada: job online dibayar ShopeePay cuma suruh like comment YouTube, nanti ujungnya kamu disuruh kirim uang untuk "klaim" uang. Mirip persis.',
+      airdropTitle: '2. Airdrop Drainer',
+      airdropDesc1: 'Bayangin kamu lagi asik trade, tiba-tiba ada yang mengirim kamu koin dengan nama yang sama dengan koin bagus. Kamu gak pernah beli itu, pure dikirim ke wallet kamu.',
+      airdropDesc2: 'Niatnya kamu mau jual koin gratisan itu, tapi tiba-tiba habis interact dengan smart contract-nya... <strong>Wallet kamu ter-drain. Isinya dikuras habis.</strong>',
+      airdropDesc3: 'Si pembuat scam menyisipkan "Backdoor" pada smart contract di koin yang dia airdrop. Pas korban interact (jual token tersebut), pelaku langsung dapat akses ke wallet korban. <strong>Cara hindarinya:</strong> Jangan pernah interact sama koin yang kamu merasa tidak garap atau beli.',
+      botTitle: '3. Bot VIP Drainer',
+      botDesc1: 'Banyak banget yang udah kena ini. Paling sering muncul dari iklan Telegram.',
+      botDesc2: 'Pelaku membuat iklan bot trading VIP palsu, saat kamu klik dan start, bot tersebut meminta akses atau mnemonic phrase-mu. <strong>Makanya gw sangat menyarankan:</strong> kalau kamu punya uang, beli Telegram Premium.',
+      botDesc3: 'Gunanya apa? Untuk menghindari salah pencet / fat finger iklan Telegram yang mengarah ke bot drainer ini.',
+    },
+    en: {
+      p1: '<strong>This is a thread about the most common scams in crypto.</strong> The target for these scams isn\'t just beginners, but actually advanced players whose portfolios are already large. Don\'t let your guard down.',
+      pigTitle: '1. Pig Butchering',
+      pigDesc1: 'Imagine you\'re a pig being fed, made fat. Once you have a lot of meat... you\'re slaughtered for harvest.',
+      pigDesc2: '<strong>The scheme:</strong> The scammer will approach you smoothly. Complaining, sharing stories, venting, until they get your attention. Their modus operandi is asking you to teach them how to trade, etc. They\'ll ask for calls, screen shares. They\'re not even afraid to send you money first.',
+      pigDesc3: 'Once your guard is down and you trust them, they strike and drain your assets. It exists outside crypto too: online jobs paying you just to like YouTube comments, eventually asking you to send money to "claim" your payment. Exactly the same.',
+      airdropTitle: '2. Airdrop Drainer',
+      airdropDesc1: 'Imagine you\'re trading comfortably, suddenly someone sends you a coin with the same name as a good coin. You never bought it, it was purely sent to your wallet.',
+      airdropDesc2: 'Your intention is to sell that free coin, but suddenly after interacting with its smart contract... <strong>Your wallet gets drained. Everything is wiped out.</strong>',
+      airdropDesc3: 'The scammer inserts a "Backdoor" in the smart contract of the coin they airdropped. When the victim interacts (sells the token), the scammer instantly gains access to the wallet. <strong>How to avoid:</strong> Never interact with coins you didn\'t farm or buy yourself.',
+      botTitle: '3. VIP Bot Drainer',
+      botDesc1: 'Many have fallen for this. Most often it comes from Telegram ads.',
+      botDesc2: 'Scammers create fake VIP trading bot ads. When you click and start, the bot asks for access or your mnemonic phrase. <strong>That\'s why I highly recommend:</strong> if you have the money, buy Telegram Premium.',
+      botDesc3: 'What\'s it for? To avoid misclicking / fat-fingering Telegram ads that lead to these drainer bots.',
+    },
+  },
 };
 
 export default T2;
