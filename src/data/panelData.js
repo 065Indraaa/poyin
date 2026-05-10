@@ -5,7 +5,7 @@
 
 export const PANEL_ORDER = [
   'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9',
-  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6', 'pa7', 'pa8', 'pa9'
+  'pa0', 'pa1', 'pa2', 'pa3', 'pa4', 'pa5', 'pa6', 'padp', 'pa7', 'pa8', 'pa9'
 ];
 
 export const sidebarItemsData = {
@@ -27,6 +27,7 @@ export const sidebarItemsData = {
     { id: 'pa4', num: 'A5', title: 'Transaksi Murah', sub: 'RUST + RPC direct', vol: 2 },
     { id: 'pa5', num: 'A6', title: 'Rent Refund', sub: 'Tarik kembali uang sewa', vol: 2 },
     { id: 'pa6', num: 'A7', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
+    { id: 'padp', num: '✦', title: 'Day Phase Trade', sub: 'Short swing 3–7 hari', vol: 2 },
     { id: 'pa7', num: 'A8', title: 'Multi Wallet', sub: 'Keajaiban trading', vol: 2 },
     { id: 'pa8', num: 'A9', title: 'Unwritten Rules', sub: 'Etika survival jangka panjang', vol: 2 },
     { id: 'pa9', num: 'A10', title: 'Skema Penipuan', sub: 'Pig butchering & drainer', vol: 2 },
@@ -49,6 +50,7 @@ export const sidebarItemsData = {
     { id: 'pa4', num: 'A5', title: 'Cheap Transactions', sub: 'RUST + RPC direct', vol: 2 },
     { id: 'pa5', num: 'A6', title: 'Rent Refund', sub: 'Claim back rent deposits', vol: 2 },
     { id: 'pa6', num: 'A7', title: 'Instant Scalping', sub: '4 step new pair', vol: 2 },
+    { id: 'padp', num: '✦', title: 'Day Phase Trade', sub: 'Short swing 3–7 days', vol: 2 },
     { id: 'pa7', num: 'A8', title: 'Multi Wallet', sub: 'The trading miracle', vol: 2 },
     { id: 'pa8', num: 'A9', title: 'Unwritten Rules', sub: 'Long-term survival ethics', vol: 2 },
     { id: 'pa9', num: 'A10', title: 'Scams & Drainers', sub: 'Pig butchering & airdrops', vol: 2 },
@@ -216,8 +218,18 @@ export const panelsData = {
       title: 'Instant Scalping —\nCara Filter New Pair',
       sub: 'Ini rahasia dapur yang sebenernya. 4 langkah sederhana yang bisa menghindarkan kamu dari rug — dan membuka peluang scalp 60–70% di fresh launch.',
       breadcrumb: ['Vol. 2 Advance', 'Instant Scalping', 'A7 dari A8'],
-      nav: { prev: 'pa5', next: 'pa7', counter: 'A7 / A8', prevLabel: '← Rent Refund', nextLabel: 'Multi Wallet →' },
+      nav: { prev: 'pa5', next: 'padp', counter: 'A7 / A8', prevLabel: '← Rent Refund', nextLabel: 'Day Phase Trade →' },
       type: 'scalping',
+      vol: 2
+    },
+    padp: {
+      eyebrow: '✦',
+      eyebrowLabel: 'Advance — Bonus Strat',
+      title: 'Day Phase Trade —\nShort Swing 3–7 Hari',
+      sub: 'Udah lama gak update materi trenching. Oke gw spill satu strat yang lumayan ampuh buat nambahin porto — bukan scalp cepet, bukan hold panjang, tapi di tengah-tengah. Cocok buat yang udah punya capital sehat.',
+      breadcrumb: ['Vol. 2 Advance', 'Day Phase Trade', 'Bonus Strat'],
+      nav: { prev: 'pa6', next: 'pa7', counter: '✦ Bonus', prevLabel: '← Instant Scalping', nextLabel: 'Multi Wallet →' },
+      type: 'dayphase',
       vol: 2
     },
     pa7: {
@@ -226,7 +238,7 @@ export const panelsData = {
       title: 'Multi Wallet —\nKeajaiban yang Bukan Keajaiban',
       sub: 'Multi wallet bukan tentang menyembunyikan diri. Ini tentang bermain lebih cerdas di ekosistem yang memang seperti itu adanya.',
       breadcrumb: ['Vol. 2 Advance', 'Multi Wallet', 'A8 dari A9'],
-      nav: { prev: 'pa6', next: 'pa8', counter: 'A8 / A9', prevLabel: '← Instant Scalping', nextLabel: 'Unwritten Rules →' },
+      nav: { prev: 'padp', next: 'pa8', counter: 'A8 / A9', prevLabel: '← Day Phase Trade', nextLabel: 'Unwritten Rules →' },
       type: 'multiwallet',
       vol: 2
     },
@@ -408,8 +420,18 @@ export const panelsData = {
       title: 'Instant Scalping —\nHow to Filter New Pairs',
       sub: 'This is the real kitchen secret. 4 simple steps that can save you from rugs — and open up 60–70% scalp opportunities on fresh launches.',
       breadcrumb: ['Vol. 2 Advance', 'Instant Scalping', 'A7 of A8'],
-      nav: { prev: 'pa5', next: 'pa7', counter: 'A7 / A8', prevLabel: '← Rent Refund', nextLabel: 'Multi Wallet →' },
+      nav: { prev: 'pa5', next: 'padp', counter: 'A7 / A8', prevLabel: '← Rent Refund', nextLabel: 'Day Phase Trade →' },
       type: 'scalping',
+      vol: 2
+    },
+    padp: {
+      eyebrow: '✦',
+      eyebrowLabel: 'Advance — Bonus Strat',
+      title: 'Day Phase Trade —\nShort Swing 3–7 Days',
+      sub: 'It\'s been a minute since the last trenching drop. Here\'s a pretty lethal strat for porto growth — not fast scalps, not long holds, but the sweet spot in between. Made for traders with healthy capital.',
+      breadcrumb: ['Vol. 2 Advance', 'Day Phase Trade', 'Bonus Strat'],
+      nav: { prev: 'pa6', next: 'pa7', counter: '✦ Bonus', prevLabel: '← Instant Scalping', nextLabel: 'Multi Wallet →' },
+      type: 'dayphase',
       vol: 2
     },
     pa7: {
@@ -418,7 +440,7 @@ export const panelsData = {
       title: 'Multi Wallet —\nThe Miracle That Isn\'t a Miracle',
       sub: 'Multi wallet isn\'t about hiding yourself. It\'s about playing smarter in an ecosystem that naturally works this way.',
       breadcrumb: ['Vol. 2 Advance', 'Multi Wallet', 'A8 of A8'],
-      nav: { prev: 'pa6', next: 'pa8', counter: 'A8 / A8', prevLabel: '← Instant Scalping', nextLabel: 'Unwritten Rules →' },
+      nav: { prev: 'padp', next: 'pa8', counter: 'A8 / A8', prevLabel: '← Day Phase Trade', nextLabel: 'Unwritten Rules →' },
       type: 'multiwallet',
       vol: 2
     },

@@ -354,6 +354,129 @@ export function PanelScalping() {
   );
 }
 
+// ═══════ PADP: DAY PHASE TRADE (Bonus Strat) ═══════
+export function PanelDayPhase() {
+  const t = useT('dayphase');
+  const { lang } = useLang();
+  return (
+    <>
+      <p className="prose reveal" dangerouslySetInnerHTML={{ __html: t.intro }} />
+      <p className="prose reveal" dangerouslySetInnerHTML={{ __html: t.idea }} />
+
+      {/* Visual: 4 life phases of a token — we play phase 3 */}
+      <div className="illus-box reveal">
+        <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', display: 'block' }}>
+          <rect width="700" height="280" fill="transparent" />
+          <text x="350" y="28" textAnchor="middle" fontFamily="Georgia,serif" fontSize="17" fontWeight="700" fill="#18182b">
+            {lang === 'en' ? 'Token Life Phases — Day Phase Trade lives in Phase 3' : 'Fase Hidup Token — Day Phase Trade main di Fase 3'}
+          </text>
+
+          {/* Price curve (stylized) */}
+          <path d="M 40 220 Q 140 60, 220 70 T 360 190 L 520 195 Q 600 140, 660 170"
+                fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" />
+
+          {/* Phase markers */}
+          {/* Phase 1 */}
+          <rect x="30" y="235" width="130" height="30" rx="8" fill="#eff6ff" stroke="#93c5fd" strokeWidth="1.5" />
+          <text x="95" y="254" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="700" fill="#1e40af">
+            {lang === 'en' ? '1. Early Hype' : '1. Hype Awal'}
+          </text>
+
+          {/* Phase 2 */}
+          <rect x="170" y="235" width="130" height="30" rx="8" fill="#fef2f2" stroke="#fca5a5" strokeWidth="1.5" />
+          <text x="235" y="254" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="700" fill="#991b1b">
+            {lang === 'en' ? '2. Parabolic' : '2. Parabolic'}
+          </text>
+
+          {/* Phase 3 — highlight */}
+          <rect x="310" y="235" width="200" height="30" rx="8" fill="#f0fdf4" stroke="#4ade80" strokeWidth="2.5" />
+          <text x="410" y="254" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="700" fill="#14532d">
+            {lang === 'en' ? '3. Cooldown → Sideway ✦' : '3. Cooldown → Sideway ✦'}
+          </text>
+
+          {/* Phase 4 */}
+          <rect x="520" y="235" width="150" height="30" rx="8" fill="#fefce8" stroke="#fde68a" strokeWidth="1.5" />
+          <text x="595" y="254" textAnchor="middle" fontFamily="sans-serif" fontSize="12" fontWeight="700" fill="#92400e">
+            {lang === 'en' ? '4. Revival / Death' : '4. Revival / Death'}
+          </text>
+
+          {/* Entry zone annotation */}
+          <rect x="320" y="165" width="180" height="50" rx="10" fill="#ecfdf5" stroke="#86efac" strokeWidth="2" />
+          <text x="410" y="184" textAnchor="middle" fontFamily="Georgia,serif" fontSize="12" fontWeight="700" fill="#065f46">
+            {lang === 'en' ? 'BUY ZONE (weekend)' : 'ZONA BELI (weekend)'}
+          </text>
+          <text x="410" y="202" textAnchor="middle" fontFamily="sans-serif" fontSize="10.5" fill="#047857">
+            {lang === 'en' ? 'Dip 50–70% · sideways · meme alive' : 'Dip 50–70% · sideway · meme hidup'}
+          </text>
+
+          {/* Exit annotation */}
+          <rect x="540" y="120" width="140" height="40" rx="10" fill="#fdf4ff" stroke="#c084fc" strokeWidth="1.8" />
+          <text x="610" y="137" textAnchor="middle" fontFamily="Georgia,serif" fontSize="11.5" fontWeight="700" fill="#6b21a8">
+            {lang === 'en' ? 'TP (weekday)' : 'TP (weekday)'}
+          </text>
+          <text x="610" y="152" textAnchor="middle" fontFamily="sans-serif" fontSize="10.5" fill="#7c3aed">
+            +40% → +70%
+          </text>
+        </svg>
+      </div>
+
+      <p className="prose reveal" dangerouslySetInnerHTML={{ __html: t.hunt }} />
+
+      <p className="prose reveal" style={{ fontWeight: 700, color: 'var(--ink)', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, marginTop: 24 }}>
+        {t.checklistTitle}
+      </p>
+      <ul className="cklist reveal">
+        {t.checklistItems.map((item, i) => (
+          <li key={i}>
+            <span className="ck" style={{ background: '#7c3aed' }}>{i + 1}</span>
+            <span dangerouslySetInnerHTML={{ __html: item }} />
+          </li>
+        ))}
+      </ul>
+
+      <Callout type="purple" icon="🌀" title={t.phaseTitle}>
+        <div style={{ display: 'grid', gap: 10, marginTop: 8 }}>
+          {t.phases.map((phase, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <strong style={{ color: i === 2 ? '#15803d' : 'var(--ink)', minWidth: 120, flexShrink: 0 }}>
+                {phase.name}
+              </strong>
+              <span dangerouslySetInnerHTML={{ __html: phase.desc }} />
+            </div>
+          ))}
+        </div>
+      </Callout>
+
+      <div className="two-col reveal" style={{ marginTop: 24 }}>
+        <div>
+          <Callout type="info" icon="📅" title={t.execTitle}>
+            <span dangerouslySetInnerHTML={{ __html: t.exec }} />
+          </Callout>
+        </div>
+        <div>
+          <Callout type="ok" icon="🎯" title={t.execSellTitle}>
+            <span dangerouslySetInnerHTML={{ __html: t.execSell }} />
+          </Callout>
+        </div>
+      </div>
+
+      <Callout type="purple" icon="👛" title={t.multiTitle}>
+        <span dangerouslySetInnerHTML={{ __html: t.multi }} />
+      </Callout>
+
+      <Callout type="warn" icon="✦" title={t.ruleTitle}>
+        <span dangerouslySetInnerHTML={{ __html: t.rule }} />
+      </Callout>
+
+      <Callout type="danger" icon="🚨" title={t.warnTitle}>
+        <span dangerouslySetInnerHTML={{ __html: t.warn }} />
+      </Callout>
+
+      <p className="prose reveal" style={{ fontStyle: 'italic', marginTop: 16 }} dangerouslySetInnerHTML={{ __html: t.closing }} />
+    </>
+  );
+}
+
 // ═══════ PA6: MULTI WALLET ═══════
 export function PanelMultiWallet() {
   const t = useT('multiwallet');

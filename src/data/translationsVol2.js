@@ -203,6 +203,72 @@ const T2 = {
     },
   },
 
+  // ─── PADP: DAY PHASE TRADE (Bonus Strat) ───
+  dayphase: {
+    id: {
+      intro: '<strong>Udah lama gak update materi trenching.</strong> Oke gw spill dikit — salah satu strat yang lumayan ampuh buat nambahin porto. Namanya <em>Day Phase Trade</em>. Bukan scalp cepet, bukan hold panjang — dia main di fase tengah: <strong>short swing 3–7 harian</strong>.',
+      idea: '<strong>Idenya simpel.</strong> Setiap koin punya fase hidupnya masing-masing: <em>hype awal → parabolic → cooldown → sideway</em>. Nah, Day Phase Trade main di fase <strong>cooldown ke sideway</strong>. Di titik ini, sellers udah capek, FOMO udah ilang, tapi meme-nya masih hidup. Ini zona yang paling sering dilewatin trader karena kelihatannya "boring" — justru di sini cuannya.',
+      hunt: 'Cari token yang lagi trending seminggu atau dua minggu lalu — bukan yang lagi panas hari ini. Target yang kamu mau: <strong>harganya udah dip 50–70% dari ATH awal, chart lagi sideway, tapi komunitas masih aktif</strong>. Hype turun, meme-nya tetep bagus. Kombinasi ini yang bikin strat ini kerja.',
+      checklistTitle: 'Kriteria token yang layak masuk watchlist',
+      checklistItems: [
+        '<strong>FDV di atas $1M</strong> — Skip micro cap. Di tier ini exit liquidity-mu aman dan chart lebih "jujur" dibanding koin-koin recehan.',
+        '<strong>Dip 50–70% dari ATH</strong> — Sweet spot-nya di sini. Dip kurang dari 40% biasanya masih distribution; dip lebih dari 80% biasanya udah mati beneran.',
+        '<strong>Chart udah sideway minimal 3–5 hari</strong> — Artinya sellers udah kehabisan tenaga. Bukan kamu yang nangkap pisau jatuh.',
+        '<strong>Meme / narrative masih relevan</strong> — Cek Twitter/X, grup TG, Discord. Kalau masih ada yang ngomongin (walaupun pelan) — itu sinyal bagus. Kalau udah zero engagement = lewat.',
+        '<strong>Holder count stabil atau naik tipis</strong> — Kalau holder turun cepet selama sideway, itu distribution terselubung. Skip.',
+      ],
+      phaseTitle: 'Empat fase hidup token (yang kita main di fase 3)',
+      phases: [
+        { name: '1. Hype Awal', desc: 'Koin baru launch, pump 5–20x. Volume liar, chart vertikal. Ini zona scalper & sniper.' },
+        { name: '2. Parabolic / Peak', desc: 'ATH dibuat. Influencer mulai masuk, retail FOMO. Fase paling berbahaya buat entry.' },
+        { name: '3. Cooldown → Sideway', desc: 'Turun 50–70%, volume kalem, sideway 3–7 hari. <strong>Ini zona kita.</strong> Day Phase Trade main di sini.' },
+        { name: '4. Revival / Death', desc: 'Kalau meme masih hidup, biasanya pump lagi 40–70%. Kalau udah mati total, slow bleed ke zero.' },
+      ],
+      execTitle: 'Eksekusi: Timing & Cara Masuk',
+      exec: 'Jurusnya gampang tapi butuh disiplin. <strong>Beli di weekend.</strong> Volume weekend lebih tipis = dip lebih dalem + lebih mudah dapet harga bagus tanpa kompetisi sama bot & day trader. Gunakan waktu Sabtu–Minggu buat DCA (nyicil beli) — kamu punya ~2 hari penuh buat nyusun posisi, gak perlu all-in sekaligus.',
+      execSellTitle: 'Target exit & kapan jual',
+      execSell: 'Target: <strong>cuan 40–70%</strong> dari average entry. Jangan serakah nunggu 5x — strat ini bukan untuk itu. Jual di <strong>weekday</strong> saat volume balik naik (Selasa–Kamis biasanya paling rame). Retail masuk lagi, revival pump kepicu — di situ kamu tepe.',
+      multiTitle: 'Size Position & Multi Wallet',
+      multi: 'Karena kamu DCA dalam 2 hari, pecah posisi ke <strong>beberapa wallet</strong> (minimal 2–3). Tiap wallet masuk di harga beda-beda. Ini ngebantu 2 hal sekaligus: (1) average entry kamu lebih rata, dan (2) saat exit, kamu bisa keluar bertahap tanpa bikin chart keliatan dihajar satu orang.',
+      ruleTitle: '✦ Aturan penting yang sering dilupain',
+      rule: 'Strat ini cuma jalan buat yang <strong>udah punya capital sehat</strong>. Kalau modalmu masih kecil banget, kamu gak akan punya kesabaran buat nahan 3–7 hari — pasti tergoda exit early atau doubling down emosional. Fokus dulu ke Instant Scalping (A7) sampe porto naik, baru masuk ke ritme swing kayak gini.',
+      warnTitle: 'Jebakan yang harus dihindari',
+      warn: '<strong>Jangan DCA ke koin yang holder-nya turun drastis.</strong> Itu bukan sideway, itu distribution rapi. <strong>Jangan pegang lewat 7 hari</strong> walaupun belum profit — kalau nggak bergerak dalam window itu, biasanya koin itu udah masuk fase 4 (slow death). Cut, cari yang lain. <strong>Jangan campur frame</strong> — kalau kamu masuk sebagai swing, jangan tiba-tiba jadi "holder selamanya" pas harga nyangkut.',
+      closing: 'Day Phase Trade itu bukan strat sensasional. Ga akan bikin kamu viral. Tapi konsisten dijalanin 10–15 kali dalam sebulan, dia bisa jadi tulang punggung porto kamu di sela-sela main scalp & snipe. <em>Sabar, sistematis, selesai.</em>',
+    },
+    en: {
+      intro: '<strong>It\'s been a minute since the last trenching update.</strong> Let me spill one — a strat that\'s been reliable for porto growth. It\'s called <em>Day Phase Trade</em>. Not fast scalping, not long-term holding — it lives in the middle phase: <strong>short swing, 3–7 days</strong>.',
+      idea: '<strong>The core idea is simple.</strong> Every token has life phases: <em>early hype → parabolic → cooldown → sideway</em>. Day Phase Trade plays the <strong>cooldown-to-sideway</strong> zone. By this point, sellers are exhausted, FOMO has faded, but the meme is still alive. This is the zone most traders skip because it looks "boring" — that\'s exactly where the money sits.',
+      hunt: 'Hunt for tokens that were trending a week or two ago — not the ones pumping today. What you want: <strong>price already dipped 50–70% from initial ATH, chart going sideways, community still active</strong>. Hype is down, meme is still good. That combo is what makes this strat work.',
+      checklistTitle: 'Criteria for watchlist-worthy tokens',
+      checklistItems: [
+        '<strong>FDV above $1M</strong> — Skip micro caps. At this tier your exit liquidity is safe and the chart is more "honest" than shitcoin territory.',
+        '<strong>50–70% dip from ATH</strong> — This is the sweet spot. Less than 40% usually means distribution is still ongoing; more than 80% usually means it\'s actually dead.',
+        '<strong>Chart sideways for at least 3–5 days</strong> — That means sellers are out of ammo. You\'re not catching a falling knife.',
+        '<strong>Meme / narrative still relevant</strong> — Check Twitter/X, TG groups, Discord. If people are still talking (even quietly), that\'s a good signal. Zero engagement = pass.',
+        '<strong>Holder count stable or slightly increasing</strong> — If holders drop fast during the sideway, that\'s stealth distribution. Skip.',
+      ],
+      phaseTitle: 'The four life phases of a token (we play phase 3)',
+      phases: [
+        { name: '1. Early Hype', desc: 'Fresh launch, pumps 5–20x. Wild volume, vertical chart. This is scalper & sniper territory.' },
+        { name: '2. Parabolic / Peak', desc: 'ATH gets printed. Influencers pile in, retail FOMOs. The most dangerous phase to enter.' },
+        { name: '3. Cooldown → Sideway', desc: 'Down 50–70%, volume calm, sideways 3–7 days. <strong>This is our zone.</strong> Day Phase Trade lives here.' },
+        { name: '4. Revival / Death', desc: 'If the meme is still breathing, a 40–70% revival pump usually follows. If it\'s fully dead, slow bleed to zero.' },
+      ],
+      execTitle: 'Execution: Timing & Entry',
+      exec: 'The move is easy but demands discipline. <strong>Buy on the weekend.</strong> Weekend volume is thinner = deeper dips + easier to snipe good prices without fighting bots and day traders. Use Saturday–Sunday to DCA (ladder in) — you\'ve got a full ~2 days to build a position, no need to go all-in at once.',
+      execSellTitle: 'Exit target & when to sell',
+      execSell: 'Target: <strong>40–70% profit</strong> from your average entry. Don\'t get greedy waiting for a 5x — this strat isn\'t that. Sell on <strong>weekdays</strong> when volume returns (Tuesday–Thursday usually busiest). Retail comes back, revival pump triggers — that\'s where you TP.',
+      multiTitle: 'Position Size & Multi Wallet',
+      multi: 'Since you\'re DCA\'ing over 2 days, split the position across <strong>multiple wallets</strong> (at least 2–3). Each wallet enters at different prices. This helps two things at once: (1) your average entry is smoother, and (2) on exit, you can bleed out gradually without the chart looking like one person got dumped on.',
+      ruleTitle: '✦ The rule people forget',
+      rule: 'This strat only works if you <strong>already have healthy capital</strong>. If your bankroll is still tiny, you won\'t have the patience to hold 3–7 days — you\'ll get tempted into early exits or emotional doubling down. Focus on Instant Scalping (A7) first until your porto grows, then step up to swing rhythm like this.',
+      warnTitle: 'Traps to avoid',
+      warn: '<strong>Don\'t DCA into a coin whose holder count is dropping fast.</strong> That\'s not sideway, that\'s neat distribution. <strong>Don\'t hold past 7 days</strong> even if you\'re not in profit yet — if it doesn\'t move within that window, the coin is usually entering phase 4 (slow death). Cut, find another. <strong>Don\'t shift timeframes</strong> — if you entered as a swing, don\'t suddenly become a "forever holder" just because you\'re stuck underwater.',
+      closing: 'Day Phase Trade isn\'t a sensational strat. It won\'t make you go viral. But run it consistently 10–15 times a month and it becomes the backbone of your porto alongside scalping and sniping. <em>Patient, systematic, done.</em>',
+    },
+  },
+
   // ─── PA6: MULTI WALLET ───
   multiwallet: {
     id: {

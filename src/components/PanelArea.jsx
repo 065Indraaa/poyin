@@ -9,7 +9,7 @@ import {
 } from './PanelsVol1';
 import {
   PanelSnipe, PanelFirst1K, PanelWalletPing, PanelModal,
-  PanelTransaksi, PanelScalping, PanelMultiWallet, PanelRefundSol,
+  PanelTransaksi, PanelScalping, PanelDayPhase, PanelMultiWallet, PanelRefundSol,
   PanelUnwritten, PanelScamDrainer
 } from './PanelsVol2';
 
@@ -31,6 +31,7 @@ const CONTENT_MAP = {
   pa4: PanelTransaksi,
   pa5: PanelRefundSol,
   pa6: PanelScalping,
+  padp: PanelDayPhase,
   pa7: PanelMultiWallet,
   pa8: PanelUnwritten,
   pa9: PanelScamDrainer,
