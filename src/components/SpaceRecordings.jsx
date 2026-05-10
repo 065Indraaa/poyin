@@ -5,6 +5,41 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-may-10',
+      date: '10 Mei 2026',
+      xLink: 'https://x.com/i/spaces/1qKDzPEPLPAJV?s=20',
+      title: 'Rahasia Main Dapur Developer Meme Coin: Dari Teknik Bundle Sampai Multi-Wallet',
+      desc: 'Kupas tuntas strategi multi-wallet buat trader, teknik bundle ala developer, perbedaan kultur CT Indo vs luar, cara lacak smart wallet, plus wanti-wanti soal "trading for living".',
+      tag: 'Multi-Wallet · Bundle',
+      insights: [
+        {
+          num: '1',
+          title: 'Strategi Multi-Wallet untuk Para Trader',
+          body: 'Kalau porto kamu udah tembus di atas <strong>10 SOL</strong>, jangan kekeh cuma pakai satu dompet buat trading. Teknik <em>multi-wallet</em> itu krusial banget, apalagi pas main koin baru (<em>new pair</em>) di market cap kecil. Tujuannya supaya kamu bisa borong <em>supply</em> lebih banyak tanpa langsung keciduk orang luar.<br/><br/><strong>Buat pemula:</strong> cukup 2–3 wallet aja biar gak ribet di gas fee sama slippage. Strategi jitunya: <strong>satu wallet buat beli pas harga lagi naik, satu lagi buat nambah pas harga lagi dip</strong>. Dengan cara ini, rata-rata harga belimu bisa jauh lebih rendah dibanding cuma pake satu wallet.',
+        },
+        {
+          num: '2',
+          title: "Bundle Koin: Teknik 'Pancing' Volume Buat Developer",
+          body: 'Buat yang lagi belajar jadi developer koin, teknik <strong>bundle</strong> itu hukumnya wajib. Fungsinya buat mancing volume transaksi dari luar biar koinmu masuk radar <em>tracker</em> kayak <strong>DexScreener</strong>.<br/><br/>Developer generasi sekarang biasanya nyiapin modal sekitar <strong>50 SOL</strong> buat bundling. Cara mainnya: koin diborong di awal, terus wallet bundle-nya <strong>jangan diem</strong> — harus rajin keluar-masuk transaksi buat ngebentuk chart yang "hidup" dan ngundang orang lain buat ikut beli. Ini taktik yang bikin chart kelihatan stabil sebelum koinnya beneran meledak.',
+        },
+        {
+          num: '3',
+          title: 'Perbedaan Cara Main Trader Indonesia vs Luar Negeri',
+          body: 'Kultur komunitas meme coin di <strong>CT Indo</strong> sama <strong>CT Luar</strong> itu lumayan beda jauh. Di luar negeri, developer biasanya <em>bundling</em> koin terus langsung <strong>"dump brutal"</strong> pas udah cuan gede.<br/><br/>Tapi di Indo, developer-nya lebih sering bundling terus masuk lagi buat <em>buyback</em> pas harga turun — jadi chart-nya keliatan lebih "bernyawa". Sayangnya, <em>crab mentality</em> (saling jatuhin) masih lumayan berasa di komunitas lokal — beda sama CT luar yang lebih fokus belajar strategi kalau ada yang sukses.',
+        },
+        {
+          num: '4',
+          title: "Tips Melacak 'Smart Wallet' yang Menguntungkan",
+          body: 'Banyak yang kepo gimana caranya nemu dompet trader jagoan (<em>smart wallet</em>). <strong>Jangan cuma lihat di daftar top trader</strong> — biasanya isinya cuma kiriman supply koin aja, bukan player beneran.<br/><br/><strong>Tips jitu:</strong> cek riwayat transaksi (TX) terus scroll ke bawah buat lihat dompet mana yang udah masuk <strong>2–15 menit sebelum harga koinnya meroket</strong>. Ciri khas dompet jagoan: saldo SOL-nya gak harus gede (di bawah 5 SOL), tapi <strong>ROI-nya konsisten di atas 80%</strong>. Kalau kamu nemu dompet yang rajin ganti alamat tiap abis untung gede, kemungkinan besar itu dompet <em>insider</em> alias orang dalam.',
+        },
+        {
+          num: '5',
+          title: "Risiko Besar 'Trading for Living' di Dunia Meme Coin",
+          body: 'Banyak banget yang kebelet resign dari kerjaan demi trading meme coin seharian. Sarannya cuma satu: <strong>JANGAN</strong>. Dunia meme coin itu <em>high risk, high reward</em> — risikonya beneran tinggi.<br/><br/>Lebih aman kalau kamu tetep punya penghasilan tetap harian buat kebutuhan hidup. Trading itu harus pakai <strong>uang dingin</strong> (uang nganggur), bukan uang panas buat makan besok. Kalau trading pakai uang panas, psikologimu bakal keganggu — gampang panik dan akhirnya malah rugi karena keputusan yang salah.',
+        },
+      ],
+    },
+    {
       id: 'space-april-23',
       date: '23 April 2026',
       xLink: 'https://x.com/i/spaces/1MJgNgydPayGL?s=20',
@@ -421,6 +456,41 @@ const SPACES_DATA = {
     },
   ],
   en: [
+    {
+      id: 'space-may-10',
+      date: 'May 10, 2026',
+      xLink: 'https://x.com/i/spaces/1qKDzPEPLPAJV?s=20',
+      title: 'Inside the Meme Coin Developer Kitchen: From Bundle Tactics to Multi-Wallet',
+      desc: 'A deep dive into multi-wallet strategy for traders, developer bundle techniques, Indo vs global CT culture, how to track smart wallets, plus hard warnings about "trading for a living".',
+      tag: 'Multi-Wallet · Bundle',
+      insights: [
+        {
+          num: '1',
+          title: 'Multi-Wallet Strategy for Traders',
+          body: 'If your portfolio is past <strong>10 SOL</strong>, don\'t trade out of a single wallet anymore. <em>Multi-wallet</em> is crucial, especially on small-cap new pairs. The goal: accumulate more <em>supply</em> without instantly getting spotted by outsiders.<br/><br/><strong>For beginners:</strong> 2–3 wallets are enough to avoid gas fee and slippage headaches. The sharp play: <strong>use one wallet to buy pumps, and another to add on dips</strong>. Done right, your average entry drops far lower than single-wallet averaging.',
+        },
+        {
+          num: '2',
+          title: "Coin Bundling: The Developer's Volume-Bait Technique",
+          body: 'If you\'re learning to become a coin developer, <strong>bundle</strong> is mandatory. Its purpose: generate outside transaction volume so your coin lands on trackers like <strong>DexScreener</strong>.<br/><br/>Modern developers usually prep around <strong>50 SOL</strong> for bundling. The play: bulk-buy at launch, then the bundle wallets <strong>can\'t sit idle</strong> — they need to rotate buys and sells to produce a "living" chart that pulls other traders in. This is the tactic that makes a chart look stable before the coin actually takes off.',
+        },
+        {
+          num: '3',
+          title: 'How Indonesian Traders Play vs Global Traders',
+          body: 'The cultural gap between <strong>Indo CT</strong> and <strong>Global CT</strong> is real. Overseas, developers typically <em>bundle</em> a coin then <strong>"brutal dump"</strong> the second they\'re deep in profit.<br/><br/>In Indonesia, developers are more likely to bundle and then <em>buyback</em> during dips — making the chart feel more "alive". The downside: <em>crab mentality</em> (pulling each other down) still runs strong in local communities — unlike global CT, which tends to study strategies from successful traders instead.',
+        },
+        {
+          num: '4',
+          title: "How to Track Profitable 'Smart Wallets'",
+          body: 'Everyone wants to know how to find the truly sharp trader wallets (<em>smart wallets</em>). <strong>Don\'t rely on the "Top Traders" list</strong> — those are often just wallets that got gifted supply, not real players.<br/><br/><strong>The sharp method:</strong> open the TX history and scroll deep to find wallets that entered <strong>2–15 minutes before a coin mooned</strong>. Smart wallet traits: SOL balance doesn\'t have to be huge (under 5 SOL is fine), but <strong>ROI should consistently exceed 80%</strong>. If you find a wallet that rotates addresses right after every big win, odds are it\'s an <em>insider</em>.',
+        },
+        {
+          num: '5',
+          title: "The Big Risk of 'Trading for a Living' in Meme Coins",
+          body: 'Tons of people want to quit their day job to trade meme coins full-time. One piece of advice: <strong>DON\'T</strong>. Meme coins are <em>high risk, high reward</em> — the risk part is very real.<br/><br/>It\'s safer to keep a steady daily income for basic needs. Trading should only be done with <strong>cold money</strong> (money you don\'t need) — never hot money earmarked for tomorrow\'s meals. Hot money wrecks your psychology, makes you panic easy, and pushes you into bad decisions that turn into real losses.',
+        },
+      ],
+    },
     {
       id: 'space-april-23',
       date: 'April 23, 2026',
