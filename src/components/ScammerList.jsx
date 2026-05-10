@@ -6,6 +6,7 @@ const SCAMMER_DATA = {
     { username: '@Hopium_papa', platform: 'X', link: 'https://x.com/Hopium_papa' },
     { username: '@fabolousgringo', platform: 'X', link: 'https://x.com/fabolousgringo' },
     { username: '@zeusyxyz', platform: 'X', link: 'https://x.com/zeusyxyz' },
+    { username: '@maverickthefirst', platform: 'X', link: 'https://x.com/maverickthefirst', note: 'Cloning scam orang' },
   ],
   tiktok: [
     { username: '@hussainyn2', platform: 'TikTok', link: 'https://www.tiktok.com/@hussainyn2' },
@@ -71,7 +72,10 @@ export default function ScammerList() {
                 style={{ textDecoration: 'none' }}
               >
                 <span className="scammer-badge">SCAM</span>
-                {account.username}
+                <div className="scammer-item-main">
+                  <span className="scammer-item-name">{account.username}</span>
+                  {account.note && <span className="scammer-item-note">{account.note}</span>}
+                </div>
               </a>
             ))}
           </div>
@@ -97,7 +101,10 @@ export default function ScammerList() {
                 style={{ textDecoration: 'none' }}
               >
                 <span className="scammer-badge">SCAM</span>
-                {account.username}
+                <div className="scammer-item-main">
+                  <span className="scammer-item-name">{account.username}</span>
+                  {account.note && <span className="scammer-item-note">{account.note}</span>}
+                </div>
               </a>
             ))}
           </div>
