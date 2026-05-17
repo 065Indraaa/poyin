@@ -5,6 +5,86 @@ import { useLang } from '../context/LanguageContext';
 const SPACES_DATA = {
   id: [
     {
+      id: 'space-may-16b',
+      date: '16 Mei 2026',
+      xLink: 'https://x.com/i/spaces/1YGNrZgBolwGw?s=20',
+      title: 'Rahasia Cuan Konsisten: Strategi Multi-Wallet dan Psikologi Trading di Solana',
+      desc: 'Bahas cara kerja multi-wallet di bot Trojan, trik memicu bot volume, strategi exit moonbag vs target harian, testimoni dari 1 SOL ke 10 SOL, plus waspada link scam Trojan palsu.',
+      tag: 'Multi-Wallet · Psikologi',
+      insights: [
+        {
+          num: '1',
+          title: 'Apa itu Strategi Multi-Wallet di Solana?',
+          body: 'Strategi multi-wallet adalah cara trading di mana kita menggunakan banyak dompet kripto secara bersamaan untuk membeli satu token. Pakai fitur multi-wallet di bot seperti <strong>Trojan</strong>, sekali kita klik <em>buy</em>, semua wallet yang terhubung bakal otomatis beli. Keuntungannya, kita bisa dapet entry harga yang variatif dan nggak gampang dideteksi sebagai satu pemain besar, meskipun resikonya ada di <em>price impact</em> saat jualan nanti.',
+        },
+        {
+          num: '2',
+          title: 'Gimana Cara Memicu Bot Volume buat Keuntungan Kita?',
+          body: 'Ada trik menarik: kalau kita trading dengan total di atas <strong>10 SOL</strong> lewat multi-wallet, itu bisa memicu bot-bot volume lain buat masuk. Karena grafik tiba-tiba "hidup", bot algoritma bakal nyerbu token itu dan kasih kita <em>exit liquidity</em> gratis. Artinya, harga naik karena bot lain ikutan beli, jadi kita bisa jualan dengan profit lebih gampang.',
+        },
+        {
+          num: '3',
+          title: 'Strategi Exit: Moonbag vs Target Profit Harian',
+          body: 'Ada dua cara jualan yang dibahas. Pertama, <strong>target profit harian</strong>: kalau udah cuan (misal 20 dollar), ya udah ambil aja, jangan serakah. Kedua, strategi <strong>Moonbag</strong>: kalau narasi tokennya bagus banget, jual 80% buat balik modal plus profit, terus sisain 20% (moonbag) buat jaga-jaga kalau harganya terbang makin tinggi. Yang penting, jangan baper sama satu token aja!',
+        },
+        {
+          num: '4',
+          title: 'Belajar dari Pengalaman: Dari 1 SOL jadi 10 SOL',
+          body: 'Ada testimoni keren dari salah satu pendengar bernama <strong>Derry</strong>. Dia berhasil ngembangin modal dari <strong>1 SOL jadi 10 SOL</strong> dalam waktu 5 bulan. Kuncinya bukan sekali "jackpot", tapi konsisten. Dia main aman, nggak terburu-buru, dan selalu nyisihin profit ke wallet terpisah sebagai <em>safety net</em>. Pelajarannya: trading itu lari maraton, bukan lari sprint.',
+        },
+        {
+          num: '5',
+          title: 'Keuntungan Pakai Trojan dan Waspada Link Scam',
+          body: '<strong>Trojan</strong> direkomendasiin karena kasih cashback biaya transaksi paling tinggi (sampai <strong>45%</strong>), jauh lebih gede dibanding terminal lain. Tapi inget, Trojan itu berbasis web — <strong>nggak ada aplikasinya di Playstore atau Appstore</strong>. Jadi, kalau ada aplikasi Trojan, itu fiks scam! Selalu waspada sama link-link drainer yang bisa nguras isi wallet kamu.',
+        },
+      ],
+    },
+    {
+      id: 'space-may-16',
+      date: '16 Mei 2026',
+      xLink: 'https://x.com/i/spaces/1yxBeMqlylkJN?s=20',
+      title: 'Seni Main Multi-Wallet di Solana: Rahasia Cuan Tanpa Kelihatan Paus',
+      desc: 'Kupas tuntas cara kerja multi-wallet di Solana, strategi setup wallet yang aman, penggunaan bot Trojan untuk DCA, risiko MEV dan slippage, hingga mentalitas zero-sum market.',
+      tag: 'Multi-Wallet · Solana',
+      insights: [
+        {
+          num: '1',
+          title: 'Apa Itu Multi-Wallet?',
+          body: 'Multi-wallet itu intinya kamu pakai banyak dompet kripto buat trading, bukan cuma satu. Di ekosistem Solana, ini hal yang lumrah banget. Tujuannya supaya pergerakan dana kamu nggak gampang dilacak sama orang lain atau bot yang sering memantau transaksi besar di blockchain.',
+        },
+        {
+          num: '2',
+          title: 'Kenapa Harus Pakai Multi-Wallet?',
+          body: 'Kalau kamu punya modal besar (misalnya di atas <strong>10 SOL</strong>) dan mau beli koin yang market cap-nya masih kecil banget, satu kali beli aja bisa bikin kamu pegang persentase suplai koin yang gede. Masalahnya, kalau satu dompet pegang koin terlalu banyak, pembeli lain bakal takut masuk karena ngerasa kamu bisa <em>dump</em> kapan aja. Dengan multi-wallet, kamu memecah kepemilikan koin seolah-olah dibeli sama banyak orang berbeda.',
+        },
+        {
+          num: '3',
+          title: 'Strategi Setup Wallet yang Aman',
+          body: 'Penting banget buat nggak menghubungkan wallet-wallet ini secara langsung di blockchain supaya nggak dituduh sebagai dev atau tim koin itu sendiri. Caranya? Kirim SOL dari <strong>CEX</strong> (Centralized Exchange seperti Binance atau OKX) ke tiap wallet secara manual. Terus, saldo tiap wallet jangan dibikin sama persis — misal yang satu isi 2 SOL, satunya lagi 1,2 SOL, biar kelihatan natural.',
+        },
+        {
+          num: '4',
+          title: 'DCA dan Penggunaan Bot Trojan',
+          body: 'Untuk eksekusi, <strong>bot Trojan</strong> jadi favorit karena gampang buat ganti-ganti wallet. Strateginya, pakai satu wallet utama buat <em>DCA (Dollar Cost Averaging)</em>. Jadi pas harga koin baru rilis dan mulai koreksi, kamu masuk lagi pakai wallet yang beda. Ini bikin grafik transaksi kelihatan lebih hidup dan sehat di mata trader lain.',
+        },
+        {
+          num: '5',
+          title: 'Risiko MEV dan Slippage',
+          body: 'Main multi-wallet ada tantangannya, salah satunya risiko kena <strong>MEV (Maximal Extractable Value)</strong>. Bot MEV yang canggih sering ngincer transaksi gede. Kamu juga harus paham banget soal kalkulasi <em>Gas Fee</em> dan <em>Slippage</em>. Jangan sampai pas beli di banyak wallet, kamu malah rugi di biaya transaksi atau selisih harga yang nggak masuk akal karena rebutan sama wallet kamu sendiri.',
+        },
+        {
+          num: '6',
+          title: 'Strategi Jual: Keluar dari Pucuk',
+          body: 'Pas mau jual, jangan asal klik. Disaranin buat narik atau jual dulu dari wallet yang harga belinya paling tinggi (paling "pucuk"). Tujuannya biar wallet yang itu nggak rugi. Kalau kamu asal jual, bisa jadi kelihatannya kamu profit 20% di layar, tapi setelah dihitung biaya gas dan penurunan harga saat kamu jual di wallet lain, aslinya kamu cuma balik modal atau malah rugi.',
+        },
+        {
+          num: '7',
+          title: 'Mentalitas Market Zero-Sum',
+          body: 'Ingat kalau market itu sistemnya <em>"siapa cepat dia dapat"</em> atau <strong>Zero-Sum Game</strong>. Kalau kamu nggak ambil untung, ya orang lain yang ambil. Jadi, jangan baper kalau dikatain "ngeruk" koin atau apa di media sosial. Fokus aja sama strategi cuan kamu sendiri karena di blockchain semuanya transparan tapi kejam.',
+        },
+      ],
+    },
+    {
       id: 'space-may-10',
       date: '10 Mei 2026',
       xLink: 'https://x.com/i/spaces/1qKDzPEPLPAJV?s=20',
@@ -456,6 +536,86 @@ const SPACES_DATA = {
     },
   ],
   en: [
+    {
+      id: 'space-may-16b',
+      date: 'May 16, 2026',
+      xLink: 'https://x.com/i/spaces/1YGNrZgBolwGw?s=20',
+      title: 'Secrets to Consistent Profit: Multi-Wallet Strategy and Trading Psychology on Solana',
+      desc: 'How multi-wallet works in the Trojan bot, tricks to trigger volume bots, moonbag vs daily profit exit strategies, a 1 SOL to 10 SOL success story, and staying safe from fake Trojan scam links.',
+      tag: 'Multi-Wallet · Psychology',
+      insights: [
+        {
+          num: '1',
+          title: 'What Is the Multi-Wallet Strategy on Solana?',
+          body: 'Multi-wallet strategy means trading using multiple crypto wallets simultaneously to buy a single token. With the multi-wallet feature in bots like <strong>Trojan</strong>, one click of <em>buy</em> automatically fires across all connected wallets. The advantage: you get varied entry prices and avoid being detected as a single large player — though the trade-off is <em>price impact</em> when it\'s time to sell.',
+        },
+        {
+          num: '2',
+          title: 'How to Trigger Volume Bots for Your Own Benefit?',
+          body: 'Here\'s an interesting trick: if you trade with a total above <strong>10 SOL</strong> via multi-wallet, it can trigger other volume bots to pile in. Because the chart suddenly "comes alive," algorithmic bots swarm the token and hand you free <em>exit liquidity</em>. In other words, the price rises because other bots join the buy — making it easier to sell at a profit.',
+        },
+        {
+          num: '3',
+          title: 'Exit Strategy: Moonbag vs Daily Profit Target',
+          body: 'Two selling approaches were discussed. First, the <strong>daily profit target</strong>: once you\'re in profit (say, $20), just take it — don\'t be greedy. Second, the <strong>Moonbag strategy</strong>: if the token\'s narrative is really strong, sell 80% to recover capital plus profit, then keep 20% (the moonbag) in case the price flies even higher. The key rule: don\'t get emotionally attached to any single token.',
+        },
+        {
+          num: '4',
+          title: 'Learning from Experience: From 1 SOL to 10 SOL',
+          body: 'A great testimonial from a listener named <strong>Derry</strong>. He grew his capital from <strong>1 SOL to 10 SOL</strong> in just 5 months. The secret wasn\'t a single jackpot — it was consistency. He played it safe, never rushed, and always moved profits into a separate wallet as a <em>safety net</em>. The lesson: trading is a marathon, not a sprint.',
+        },
+        {
+          num: '5',
+          title: 'Why Use Trojan — and Watch Out for Scam Links',
+          body: '<strong>Trojan</strong> is recommended because it offers the highest transaction fee cashback (up to <strong>45%</strong>), far more than other terminals. But remember — Trojan is web-based only. <strong>There is no Trojan app on the Play Store or App Store.</strong> So if you see a Trojan app anywhere, it\'s definitely a scam. Always stay alert to drainer links that can drain your wallet dry.',
+        },
+      ],
+    },
+    {
+      id: 'space-may-16',
+      date: 'May 16, 2026',
+      xLink: 'https://x.com/i/spaces/1yxBeMqlylkJN?s=20',
+      title: 'The Art of Multi-Wallet on Solana: Profiting Without Looking Like a Whale',
+      desc: 'A full breakdown of how multi-wallet works on Solana, safe wallet setup strategies, using Trojan bot for DCA, MEV and slippage risks, and the zero-sum market mindset.',
+      tag: 'Multi-Wallet · Solana',
+      insights: [
+        {
+          num: '1',
+          title: 'What Is Multi-Wallet?',
+          body: 'Multi-wallet simply means using multiple crypto wallets for trading instead of just one. In the Solana ecosystem, this is completely normal. The goal is to make your fund movements harder to track by others or bots that constantly monitor large blockchain transactions.',
+        },
+        {
+          num: '2',
+          title: 'Why Use Multi-Wallet?',
+          body: 'If you have significant capital (say, above <strong>10 SOL</strong>) and want to buy a coin with a very small market cap, a single purchase can put you holding a large percentage of the coin\'s supply. The problem: if one wallet holds too much, other buyers get scared because they think you can <em>dump</em> at any time. With multi-wallet, you split ownership so it looks like many different people are buying.',
+        },
+        {
+          num: '3',
+          title: 'Safe Wallet Setup Strategy',
+          body: 'It\'s crucial not to link these wallets directly on-chain, or you risk being labeled as the dev or team behind the coin. The solution: send SOL from a <strong>CEX</strong> (Centralized Exchange like Binance or OKX) to each wallet manually. Also, don\'t make the balances identical — for example, one wallet gets 2 SOL, another gets 1.2 SOL, so it looks natural.',
+        },
+        {
+          num: '4',
+          title: 'DCA and Using the Trojan Bot',
+          body: 'For execution, the <strong>Trojan bot</strong> is a favorite because it makes switching between wallets easy. The strategy: use one main wallet for <em>DCA (Dollar Cost Averaging)</em>. So when a new coin launches and starts correcting, you re-enter using a different wallet. This makes the transaction chart look more alive and healthy to other traders.',
+        },
+        {
+          num: '5',
+          title: 'MEV and Slippage Risks',
+          body: 'Multi-wallet trading comes with challenges, one being the risk of <strong>MEV (Maximal Extractable Value)</strong>. Sophisticated MEV bots often target large transactions. You also need to fully understand <em>Gas Fee</em> and <em>Slippage</em> calculations. Don\'t let buying across multiple wallets end up costing you more in fees or irrational price gaps from competing with your own wallets.',
+        },
+        {
+          num: '6',
+          title: 'Exit Strategy: Selling From the Top',
+          body: 'When it\'s time to sell, don\'t just click randomly. It\'s recommended to withdraw or sell first from the wallet with the highest buy price (the "peak" wallet). The goal is to make sure that wallet doesn\'t end up at a loss. If you sell carelessly, you might see 20% profit on screen, but after accounting for gas fees and price drops when selling from other wallets, you\'ve actually just broken even — or worse.',
+        },
+        {
+          num: '7',
+          title: 'Zero-Sum Market Mindset',
+          body: 'Remember that the market operates on a <em>"first come, first served"</em> or <strong>Zero-Sum Game</strong> basis. If you don\'t take profit, someone else will. So don\'t get emotional if people call you out for "scooping" coins on social media. Stay focused on your own profit strategy — because on the blockchain, everything is transparent but ruthless.',
+        },
+      ],
+    },
     {
       id: 'space-may-10',
       date: 'May 10, 2026',
