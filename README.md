@@ -74,6 +74,18 @@ npm run build
 
 Output di folder `dist/`.
 
+## Env SIA
+
+SIA bisa mengenali Smart Money dari dua jalur:
+
+```bash
+VITE_SMART_WALLETS=wallet:name:type:x, wallet2:name:type:x
+VITE_MADEONSOL_API_KEY=msk_...
+VITE_USE_MADEONSOL_DEMO=false
+```
+
+`VITE_SMART_WALLETS` cocok untuk daftar manual/curated. `VITE_MADEONSOL_API_KEY` dipakai untuk mengambil leaderboard KOL dan Alpha Wallet otomatis dari MadeOnSol. Untuk production, pakai key read-only atau proxy backend karena env `VITE_` ikut masuk bundle browser.
+
 ## Credits
 - Konten: [@elpoyin](https://x.com/elpoyin)
 - Partner: [trojan.com/@Keusel](https://trojan.com/@Keusel)

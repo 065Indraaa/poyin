@@ -760,6 +760,7 @@ function ForensicPanel({ token, report, status, now }) {
           <div className="provider-list">
             <ProviderLine label="Pair DexScreener" ok={Boolean(token.rawProviders?.dexPair)} detail={token.pairDex || token.source} />
             <ProviderLine label="Mint RPC Solana" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah revoke' : 'masih terbuka'}`} />
+            <ProviderLine label="Registry Smart Money" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet dari ${token.rawProviders?.holderMeta?.smartWalletSource || flags.smartWalletSource || 'belum dikonfigurasi'}`} />
             <ProviderLine label="Trade PumpPortal" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaca' : 'belum ada packet trade terbaru'} />
             <ProviderLine label="Order Dex paid" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost approved`} />
             <ProviderLine label="Keyakinan data live" ok={report.confidence >= 45} detail={`${report.confidence}% confidence, ${report.primaryRisk}`} />

@@ -1,6 +1,10 @@
 const DEX_API = 'https://api.dexscreener.com';
+const MADEONSOL_API = 'https://madeonsol.com/api/v1';
 const PUMP_PORTAL_WS = 'wss://pumpportal.fun/api/data';
 const HELIUS_KEY = (import.meta.env.VITE_HELIUS_API_KEY || '').trim();
+const MADEONSOL_KEY = (import.meta.env.VITE_MADEONSOL_API_KEY || '').trim();
+const USE_MADEONSOL_DEMO = import.meta.env.VITE_USE_MADEONSOL_DEMO === 'true';
+const MADEONSOL_DEMO_KEY = 'msk_demo_try_the_solana_api_2026';
 const SOLANA_RPC = HELIUS_KEY
   ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
   : 'https://api.mainnet-beta.solana.com';
@@ -320,6 +324,7 @@ async function fetchMintAuthority(address) {
 }
 
 const WALLET_LABELS = parseWalletLabels(import.meta.env.VITE_SMART_WALLETS || '');
+let smartWalletLabelsPromise = null;
 
 async function fetchTopHolders(address, supplyFromMint = null) {
   try {
@@ -367,7 +372,9 @@ async function fetchTopHolders(address, supplyFromMint = null) {
     let kolDetected = null;
     let smartMoneyCount = 0;
 
-    // 3. Cocokkan Owner dengan Database Label kita (GMGN Method)
+    const smartWalletLabels = await getSmartWalletLabels();
+
+    // 3. Cocokkan owner dengan registry Smart Money/KOL yang tersedia.
     const owners = [];
     if (accountInfos?.value) {
       accountInfos.value.forEach((info, index) => {
@@ -375,10 +382,10 @@ async function fetchTopHolders(address, supplyFromMint = null) {
         if (ownerWallet) {
           owners.push(ownerWallet);
           holderDetails[index].owner = ownerWallet;
-          if (WALLET_LABELS[ownerWallet]) {
-            const label = WALLET_LABELS[ownerWallet];
+          if (smartWalletLabels.labels[ownerWallet]) {
+            const label = smartWalletLabels.labels[ownerWallet];
             if (label.type === 'KOL') kolDetected = { address: ownerWallet, ...label };
-            if (label.type === 'Smart Wallet') smartMoneyCount++;
+            if (label.type === 'Smart Wallet' || label.type === 'Alpha Wallet' || label.type === 'KOL') smartMoneyCount++;
             holderDetails[index].label = label.name;
             holderDetails[index].type = label.type;
           }
@@ -428,11 +435,105 @@ async function fetchTopHolders(address, supplyFromMint = null) {
       uniqueOwnerCount: uniqueOwners.length,
       kol: kolDetected,
       whales,
-      burners
+      burners,
+      smartWalletRegistrySize: smartWalletLabels.size,
+      smartWalletSource: smartWalletLabels.source
     };
   } catch (error) {
     return null;
   }
+}
+
+async function getSmartWalletLabels() {
+  if (!smartWalletLabelsPromise) {
+    smartWalletLabelsPromise = buildSmartWalletLabels().catch(() => ({
+      labels: WALLET_LABELS,
+      size: Object.keys(WALLET_LABELS).length,
+      source: Object.keys(WALLET_LABELS).length ? 'VITE_SMART_WALLETS' : 'belum dikonfigurasi'
+    }));
+  }
+
+  return smartWalletLabelsPromise;
+}
+
+async function buildSmartWalletLabels() {
+  const labels = { ...WALLET_LABELS };
+  const sources = [];
+  if (Object.keys(WALLET_LABELS).length) sources.push('VITE_SMART_WALLETS');
+
+  const madeOnSolKey = MADEONSOL_KEY || (USE_MADEONSOL_DEMO ? MADEONSOL_DEMO_KEY : '');
+  if (madeOnSolKey) {
+    const madeOnSolLabels = await fetchMadeOnSolWalletLabels(madeOnSolKey);
+    Object.assign(labels, madeOnSolLabels);
+    if (Object.keys(madeOnSolLabels).length) sources.push(MADEONSOL_KEY ? 'MadeOnSol API' : 'MadeOnSol demo');
+  }
+
+  return {
+    labels,
+    size: Object.keys(labels).length,
+    source: sources.length ? sources.join(' + ') : 'belum dikonfigurasi'
+  };
+}
+
+async function fetchMadeOnSolWalletLabels(apiKey) {
+  const [kolWinrate, kolPnl, alpha] = await Promise.allSettled([
+    fetchMadeOnSolJson('/kol/leaderboard?period=7d&limit=50&sort=winrate&min_winrate=55', apiKey),
+    fetchMadeOnSolJson('/kol/leaderboard?period=30d&limit=50&sort=profit_factor&min_winrate=50', apiKey),
+    fetchMadeOnSolJson('/alpha/leaderboard?limit=100&sort=win_rate', apiKey)
+  ]);
+
+  const labels = {};
+  [
+    ...(kolWinrate.status === 'fulfilled' ? normalizeWalletRows(kolWinrate.value, 'KOL') : []),
+    ...(kolPnl.status === 'fulfilled' ? normalizeWalletRows(kolPnl.value, 'KOL') : []),
+    ...(alpha.status === 'fulfilled' ? normalizeWalletRows(alpha.value, 'Alpha Wallet') : [])
+  ].forEach((item) => {
+    if (!item.address) return;
+    labels[item.address] = {
+      name: item.name,
+      type: item.type,
+      x: item.x,
+      source: 'MadeOnSol',
+      winRate: item.winRate,
+      pnl: item.pnl
+    };
+  });
+
+  return labels;
+}
+
+async function fetchMadeOnSolJson(path, apiKey) {
+  const response = await fetchWithTimeout(`${MADEONSOL_API}${path}`, {
+    headers: {
+      accept: 'application/json',
+      authorization: `Bearer ${apiKey}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`MadeOnSol ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+function normalizeWalletRows(value, fallbackType) {
+  const rows = normalizeList(value?.leaderboard || value?.wallets || value?.data || value?.results || value);
+  return rows
+    .map((row) => {
+      const address = row.wallet || row.wallet_address || row.address || row.owner || row.publicKey || row.trader;
+      if (!isSolanaAddress(address)) return null;
+
+      return {
+        address,
+        name: row.name || row.kol_name || row.label || row.twitter || shortAddress(address),
+        type: row.type || row.category || fallbackType,
+        x: row.twitter_url || row.kol_twitter || row.twitter || null,
+        winRate: Number(row.win_rate || row.winrate || row.winRate || 0) || null,
+        pnl: Number(row.pnl || row.realized_pnl || row.profit || 0) || null
+      };
+    })
+    .filter(Boolean);
 }
 
 async function rpc(method, params) {
@@ -903,6 +1004,8 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       smartMoneyCount: holders ? holders.smartMoneyCount : base.flags.smartMoneyCount,
       whales: holders ? holders.whales : base.flags.whales,
       burners: holders ? holders.burners : base.flags.burners,
+      smartWalletRegistrySize: holders ? holders.smartWalletRegistrySize : base.flags.smartWalletRegistrySize,
+      smartWalletSource: holders ? holders.smartWalletSource : base.flags.smartWalletSource,
       pumpPortalTradeSeen: Boolean(pump),
       dexPaidTiming: orderTiming.timing || base.flags.dexPaidTiming,
       activeBoosts: orderTiming.count || base.flags.activeBoosts,
@@ -914,6 +1017,10 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       pump,
       dexOrders,
       holders: holders?.holderDetails || null,
+      holderMeta: holders ? {
+        smartWalletRegistrySize: holders.smartWalletRegistrySize,
+        smartWalletSource: holders.smartWalletSource
+      } : null,
       providerErrors
     },
     providerConfidence: dexPair && mint ? 'high' : dexPair || mint ? 'medium' : 'low'
@@ -1054,6 +1161,10 @@ export function formatUsd(value) {
 
 function shortAddress(address) {
   return `${address.slice(0, 4)}...${address.slice(-4)}`.toUpperCase();
+}
+
+function isSolanaAddress(value) {
+  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(String(value || ''));
 }
 
 function capitalize(value) {
