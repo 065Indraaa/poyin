@@ -382,9 +382,9 @@ export default function App() {
 
       <section className="feed-section" id="feed">
         <SectionHeader
-          kicker="Feed Discovery"
-          title="Feed live, bukan daftar dummy."
-          text="Feed memprioritaskan token baru Pump.fun dari websocket PumpPortal dan hanya memakai pair DexScreener yang masih muda, aktif, dan belum terindikasi mati."
+          kicker="Feed Entry"
+          title="Feed live untuk kandidat entry valid."
+          text="Feed memprioritaskan token dengan peluang entry lebih sehat: likuiditas cukup, transaksi aktif, buy pressure wajar, volume tidak janggal, dan drawdown belum rusak."
         />
 
         <ProviderStrip status={feedStatus} count={feedTokens.length} onRefresh={refreshFeed} />
@@ -413,7 +413,7 @@ export default function App() {
               )}
               {!feedStatus.loading && feedTokens.length === 0 && (
                 <tr>
-                  <td colSpan="10" className="empty-row">Belum ada token live yang memenuhi kriteria (Semua rug/token mati difilter).</td>
+                  <td colSpan="10" className="empty-row">Belum ada token live yang memenuhi kriteria entry valid. Token baru tanpa bukti pasar tidak diprioritaskan.</td>
                 </tr>
               )}
               {feedTokens.map((token) => (
@@ -618,7 +618,7 @@ function ProviderStrip({ status, count, onRefresh }) {
           <span>
             {status.error
               ? status.error
-            : `${count} token Solana aktif${status.fetchedAt ? `, Dex refresh ${formatTime(status.fetchedAt)}` : ''}${status.streamConnected ? ', PumpPortal live' : ', stream menyambung ulang'}`}
+            : `${count} token Solana aktif${status.fetchedAt ? `, Dex refresh ${formatTime(status.fetchedAt)}` : ''}, ${formatStreamStatus(status)}`}
           </span>
         </div>
       </div>
@@ -847,6 +847,16 @@ function translateProviderError(message) {
   return message;
 }
 
+function formatStreamStatus(status) {
+  if (!status.streamConnected) return 'PumpPortal menyambung ulang, fallback DexScreener aktif';
+  if (!status.streamLastTokenAt) return 'PumpPortal terhubung, menunggu token baru';
+
+  const seconds = Math.max(0, Math.floor((Date.now() - status.streamLastTokenAt) / 1000));
+  if (seconds < 45) return `PumpPortal live, packet ${seconds}dtk lalu`;
+  if (seconds < 180) return `PumpPortal sepi ${Math.floor(seconds / 60)}m, fallback DexScreener aktif`;
+  return 'PumpPortal belum memberi packet baru, fallback DexScreener aktif';
+}
+
 function upsertTokens(currentTokens, newTokens) {
   const map = new Map(currentTokens.map((t) => [t.ca, t]));
   newTokens.forEach((t) => {
@@ -871,20 +881,23 @@ function pruneTokens(tokens) {
     if (!t?.ca) return false;
 
     const report = analyzeToken(t);
-    const isPumpBondingCurve = t.provider === 'PumpPortal live websocket' || (t.phase === 'fresh' && t.lpStatus === 'Bonding curve');
+    const isPumpBondingCurve = t.provider === 'PumpPortal live websocket' || t.lpStatus === 'Bonding curve';
     const lastSeenAgeMins = ((now - (t._lastSeenAt || t._fetchedAt || now)) / 60000);
-    const isStrong = report.score >= 50 || t.liquidityUsd >= 30000 || t.flags?.reportedVolume >= 50000;
+    const entryScore = computeEntryScore(t, report);
+    const isStrong = entryScore >= 74 || report.score >= 68 || t.liquidityUsd >= 30000 || t.flags?.reportedVolume >= 50000;
     
-    // ANTI-RUG SHIELD STRICTER (Hanya pakai data pre-scan DexScreener):
-    if (report.score <= 30) return false; // Threshold AI dikembalikan ke 30 (agar token baru pump.fun masuk)
-    if (!isPumpBondingCurve && t.liquidityUsd < 2000) return false; // Pump.fun curve sering belum punya DEX liquidity.
-    if (!isPumpBondingCurve && t.flags?.volumeLiquidityRatio > 15) return false; // Wash trading ekstrem (volume 15x LP)
-    if (!isPumpBondingCurve && t.flags?.sells5m > (t.flags?.buys5m * 4) + 5) return false; // Dump keras (> 4x buy)
+    // Feed ini bukan firehose token baru. Token harus punya bukti entry: market aktif, tidak dump keras, dan tidak wash ekstrem.
+    if (entryScore < 52) return false;
+    if (report.score <= 34 && entryScore < 70) return false;
+    if (isPumpBondingCurve && entryScore < 70) return false;
+    if (!isPumpBondingCurve && t.liquidityUsd < 6500) return false;
+    if (!isPumpBondingCurve && t.flags?.volumeLiquidityRatio > 9) return false;
+    if (!isPumpBondingCurve && t.flags?.sells5m > (t.flags?.buys5m * 2.6) + 8) return false;
     
-    // FILTER TOKEN MATI / DUMP SIGNIFIKAN
-    if (!isPumpBondingCurve && t.priceChange?.m5 < -20) return false; // Terjun bebas 20% dalam 5 menit
-    if (!isPumpBondingCurve && t.priceChange?.h1 < -30) return false; // Turun 30% dalam 1 jam (mati)
-    if (!isPumpBondingCurve && t.flags?.txns5m < 5 && t.liquidityUsd < 15000) return false; // Sepi transaksi
+    // Filter token mati, dump signifikan, atau belum cukup aktif untuk disebut kandidat entry.
+    if (!isPumpBondingCurve && t.priceChange?.m5 < -12) return false;
+    if (!isPumpBondingCurve && t.priceChange?.h1 < -24) return false;
+    if (!isPumpBondingCurve && t.flags?.txns5m < 8 && t.liquidityUsd < 18000) return false;
     if (!isPumpBondingCurve && lastSeenAgeMins > 30 && !isStrong) return false; // Tidak muncul lagi dari refresh aktif.
 
     // Evaluasi umur token
@@ -907,15 +920,17 @@ function pruneTokens(tokens) {
 
 function feedRank(token) {
   const now = Date.now();
-  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || (token.phase === 'fresh' && token.lpStatus === 'Bonding curve');
+  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || token.lpStatus === 'Bonding curve';
   const ageMinutes = token.pairCreatedAt ? Math.max(0, (now - token.pairCreatedAt) / 60000) : 0;
   const lastSeenAge = token._lastSeenAt ? Math.max(0, (now - token._lastSeenAt) / 1000) : 0;
   const txns = Number(token.flags?.txns5m || 0);
   const volume = Number(token.flags?.reportedVolume || 0);
   const liquidity = Number(token.liquidityUsd || 0);
+  const entryScore = computeEntryScore(token);
 
-  return (isPumpBondingCurve ? 900 : 0)
-    + Math.max(0, 240 - ageMinutes * 2)
+  return entryScore * 8
+    + (isPumpBondingCurve ? -120 : 0)
+    + Math.max(0, 180 - Math.abs(ageMinutes - 90))
     + Math.max(0, 120 - lastSeenAge)
     + Math.min(txns * 3, 180)
     + Math.min(volume / 100, 120)
@@ -925,12 +940,51 @@ function feedRank(token) {
 function getFeedHealth(token) {
   const now = Date.now();
   const lastSeenAge = token._lastSeenAt ? (now - token._lastSeenAt) / 1000 : 0;
-  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || (token.phase === 'fresh' && token.lpStatus === 'Bonding curve');
+  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || token.lpStatus === 'Bonding curve';
+  const entryScore = computeEntryScore(token);
 
-  if (isPumpBondingCurve) return { tone: lastSeenAge < 30 ? 'live' : 'watch', label: lastSeenAge < 30 ? 'LIVE' : 'MENUA' };
+  if (entryScore >= 78 && lastSeenAge < 90) return { tone: 'live', label: 'ENTRY' };
+  if (entryScore >= 66) return { tone: 'live', label: 'KUAT' };
+  if (isPumpBondingCurve) return { tone: lastSeenAge < 30 ? 'watch' : 'watch', label: 'AWAL' };
   if (lastSeenAge > 90) return { tone: 'watch', label: 'USANG' };
   if (token.priceChange?.m5 > 0 && token.flags?.txns5m >= 8) return { tone: 'live', label: 'AKTIF' };
   return { tone: 'watch', label: 'PANTAU' };
+}
+
+function computeEntryScore(token, reportOverride = null) {
+  if (!token?.ca) return 0;
+
+  const report = reportOverride || analyzeToken(token);
+  const flags = token.flags || {};
+  const liquidity = Number(token.liquidityUsd || 0);
+  const volume5m = Number(flags.reportedVolume || 0);
+  const txns5m = Number(flags.txns5m || 0);
+  const buys5m = Number(flags.buys5m || 0);
+  const sells5m = Number(flags.sells5m || 0);
+  const priceM5 = Number(token.priceChange?.m5 || 0);
+  const priceH1 = Number(token.priceChange?.h1 || 0);
+  const volumeLiquidityRatio = Number(flags.volumeLiquidityRatio || 0);
+  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || token.lpStatus === 'Bonding curve';
+  const buyRatio = buys5m + sells5m > 0 ? buys5m / (buys5m + sells5m) : 0.5;
+
+  let score = Math.min(report.score, 82) * 0.55;
+  score += Math.min(liquidity / 900, 24);
+  score += Math.min(volume5m / 900, 18);
+  score += Math.min(txns5m * 1.2, 18);
+  score += Math.round((buyRatio - 0.5) * 24);
+
+  if (priceM5 > 0 && priceM5 <= 35) score += 10;
+  else if (priceM5 > 35 && priceM5 <= 120) score += 4;
+  else if (priceM5 < -5) score -= 12;
+
+  if (priceH1 > -8 && priceH1 < 220) score += 8;
+  if (priceH1 < -20) score -= 14;
+  if (volumeLiquidityRatio > 6) score -= 18;
+  else if (volumeLiquidityRatio > 3.5) score -= 8;
+  if (sells5m > buys5m * 2 + 8) score -= 18;
+  if (isPumpBondingCurve && liquidity < 6000 && txns5m < 18) score -= 28;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
 }
 
 function shortAddress(address) {

@@ -13,14 +13,16 @@ const PUMP_PROGRAM_ID = '6EF8rrecthR5Dk4r49j5b3m1TQBTciV4Xed2sW6qx6';
 const WS_TIMEOUT_MS = 4800;
 const HTTP_TIMEOUT_MS = 9500;
 const DEX_DISCOVERY_MAX_AGE_MINUTES = 3 * 24 * 60;
+const DEX_SEARCH_TERMS = ['pumpfun', 'pump.fun', 'pumpswap', 'raydium', 'moonshot'];
 
 export async function fetchDiscoveryFeed() {
-  const [dexFeed, pumpFeed] = await Promise.all([
+  const [dexFeed, dexSearchFeed, pumpFeed] = await Promise.all([
     fetchDexDiscoveryFeed().catch(() => []),
+    fetchDexSearchDiscoveryFeed().catch(() => []),
     collectPumpPortalNewTokens({ limit: 4, timeoutMs: 1800 }).catch(() => [])
   ]);
 
-  const tokens = uniqueTokens([...pumpFeed, ...dexFeed]);
+  const tokens = uniqueTokens([...pumpFeed, ...dexSearchFeed, ...dexFeed]);
 
   if (!tokens.length) {
     throw new Error('No live tokens returned from DexScreener');
@@ -28,7 +30,11 @@ export async function fetchDiscoveryFeed() {
 
   return {
     tokens,
-    provider: pumpFeed.length ? 'PumpPortal stream + DexScreener live API' : 'DexScreener live API (Boosts & Latest)',
+    provider: pumpFeed.length
+      ? 'PumpPortal stream + DexScreener discovery'
+      : dexSearchFeed.length
+        ? 'DexScreener search + latest profiles'
+        : 'DexScreener live API (Boosts & Latest)',
     fetchedAt: new Date().toISOString(),
     degraded: false
   };
@@ -89,6 +95,22 @@ async function fetchDexDiscoveryFeed() {
   }
 
   return tokens;
+}
+
+async function fetchDexSearchDiscoveryFeed() {
+  const searches = await Promise.allSettled(
+    DEX_SEARCH_TERMS.map((term) => fetchJson(`${DEX_API}/latest/dex/search?q=${encodeURIComponent(term)}`))
+  );
+
+  const pairs = searches
+    .flatMap((response) => (response.status === 'fulfilled' ? normalizeList(response.value) : []))
+    .filter((pair) => pair?.chainId === 'solana' && pair?.baseToken?.address)
+    .filter(isFreshSearchPair)
+    .sort(sortDiscoveryPairs);
+
+  return uniquePairs(pairs)
+    .map((pair) => normalizeDexPair(pair, { searchDiscovery: true }))
+    .filter(Boolean);
 }
 
 export async function collectPumpPortalNewTokens({ limit = 6, timeoutMs = 2600 } = {}) {
@@ -530,6 +552,16 @@ function uniqueTokens(items) {
   });
 }
 
+function uniquePairs(items) {
+  const seen = new Set();
+  return items.filter((item) => {
+    const key = item?.baseToken?.address || item?.pairAddress;
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function mapBoosts(items) {
   const map = new Map();
   items.forEach((item) => {
@@ -717,17 +749,40 @@ function isLiveDiscoveryPair(pair) {
   const priceH1 = Number(pair.priceChange?.h1 || 0);
   const fdv = Number(pair.fdv || pair.marketCap || 0);
 
-  if (liquidityUsd < 2500) return false;
-  if (fdv > 0 && fdv < 3000) return false;
-  if (priceM5 <= -18 || priceH1 <= -38) return false;
-  if (sells5m > buys5m * 3 + 4) return false;
+  if (liquidityUsd < 6500) return false;
+  if (fdv > 0 && fdv < 8000) return false;
+  if (priceM5 <= -12 || priceH1 <= -24) return false;
+  if (sells5m > buys5m * 2.6 + 8) return false;
 
-  const hasFreshActivity = txns5m >= 4 || volume5m >= 800;
-  const hasSustainedActivity = txns5m >= 12 || volume5m >= 3500 || liquidityUsd >= 25000;
+  const hasFreshActivity = txns5m >= 8 || volume5m >= 1500;
+  const hasSustainedActivity = txns5m >= 18 || volume5m >= 6500 || liquidityUsd >= 25000;
+  const entryScore = pairEntryScore(pair);
 
   if (ageMinutes > 45 && !hasSustainedActivity) return false;
-  if (ageMinutes > 24 * 60 && txns5m < 8 && volume5m < 2500) return false;
-  return hasFreshActivity;
+  if (ageMinutes > 24 * 60 && txns5m < 14 && volume5m < 4500) return false;
+  return hasFreshActivity && entryScore >= 48;
+}
+
+function isFreshSearchPair(pair) {
+  if (!pair?.baseToken?.address) return false;
+
+  const createdAtMs = Number(pair.pairCreatedAt || 0);
+  const ageMinutes = createdAtMs ? Math.max(0, (Date.now() - createdAtMs) / 60000) : 0;
+  const txns5m = sumTxns(pair.txns?.m5);
+  const txnsH1 = sumTxns(pair.txns?.h1);
+  const volume5m = Number(pair.volume?.m5 || 0);
+  const volumeH1 = Number(pair.volume?.h1 || 0);
+  const buys5m = Number(pair.txns?.m5?.buys || 0);
+  const sells5m = Number(pair.txns?.m5?.sells || 0);
+  const priceM5 = Number(pair.priceChange?.m5 || 0);
+  const fdv = Number(pair.fdv || pair.marketCap || 0);
+
+  if (createdAtMs && ageMinutes > DEX_DISCOVERY_MAX_AGE_MINUTES) return false;
+  if (fdv > 0 && fdv < 8000) return false;
+  if (priceM5 <= -12) return false;
+  if (sells5m > buys5m * 2.6 + 8) return false;
+
+  return (txns5m >= 8 || volume5m >= 1500 || txnsH1 >= 35 || volumeH1 >= 5000) && pairEntryScore(pair) >= 48;
 }
 
 function sortDiscoveryPairs(a, b) {
@@ -742,11 +797,44 @@ function discoveryRank(pair) {
   const liquidityUsd = Number(pair.liquidity?.usd || 0);
   const priceM5 = Number(pair.priceChange?.m5 || 0);
 
-  return Math.max(0, DEX_DISCOVERY_MAX_AGE_MINUTES - ageMinutes) * 4
+  return pairEntryScore(pair) * 10
+    + Math.max(0, 180 - Math.abs(ageMinutes - 90))
     + Math.min(txns5m, 120) * 2
     + Math.min(volume5m / 100, 160)
     + Math.min(liquidityUsd / 1000, 80)
     + Math.max(-40, Math.min(priceM5, 120));
+}
+
+function pairEntryScore(pair) {
+  const liquidityUsd = Number(pair.liquidity?.usd || 0);
+  const volume5m = Number(pair.volume?.m5 || 0);
+  const txns5m = sumTxns(pair.txns?.m5);
+  const buys5m = Number(pair.txns?.m5?.buys || 0);
+  const sells5m = Number(pair.txns?.m5?.sells || 0);
+  const priceM5 = Number(pair.priceChange?.m5 || 0);
+  const priceH1 = Number(pair.priceChange?.h1 || 0);
+  const fdv = Number(pair.fdv || pair.marketCap || 0);
+  const volumeLiquidityRatio = liquidityUsd > 0 ? volume5m / liquidityUsd : 0;
+  const buyRatio = buys5m + sells5m > 0 ? buys5m / (buys5m + sells5m) : 0.5;
+
+  let score = 0;
+  score += Math.min(liquidityUsd / 900, 24);
+  score += Math.min(volume5m / 900, 18);
+  score += Math.min(txns5m * 1.2, 18);
+  score += Math.round((buyRatio - 0.5) * 24);
+  score += fdv >= 12000 ? 8 : 0;
+
+  if (priceM5 > 0 && priceM5 <= 35) score += 12;
+  else if (priceM5 > 35 && priceM5 <= 120) score += 5;
+  else if (priceM5 < -5) score -= 14;
+
+  if (priceH1 > -8 && priceH1 < 220) score += 8;
+  if (priceH1 < -20) score -= 14;
+  if (volumeLiquidityRatio > 6) score -= 18;
+  else if (volumeLiquidityRatio > 3.5) score -= 8;
+  if (sells5m > buys5m * 2 + 8) score -= 18;
+
+  return clamp(Math.round(score), 0, 100);
 }
 
 function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holders, dexPairs, providerErrors }) {
@@ -882,6 +970,7 @@ function inferCurve(pair, ageMinutes) {
 }
 
 function inferLpStatus(pair, liquidityUsd) {
+  if (pair.dexId?.toLowerCase().includes('pump')) return 'Bonding curve';
   if (!pair.pairAddress) return 'Pair not indexed';
   if (liquidityUsd >= 50000) return 'Deep liquidity';
   if (liquidityUsd >= 10000) return 'Tradable liquidity';

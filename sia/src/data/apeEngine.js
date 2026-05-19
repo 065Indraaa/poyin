@@ -105,22 +105,32 @@ function scoreAuthority(flags) {
 
 function scoreHolders(flags, phase) {
   let score = 0;
+  const top10Pct = typeof flags.top10Pct === 'number' ? flags.top10Pct : null;
+  const uniqueOwnerCount = typeof flags.uniqueOwnerCount === 'number' ? flags.uniqueOwnerCount : null;
+  const commonFunderWallets = typeof flags.commonFunderWallets === 'number' ? flags.commonFunderWallets : null;
+  const whales = Number(flags.whales || 0);
+  const burners = Number(flags.burners || 0);
+  const smartMoneyCount = Number(flags.smartMoneyCount || 0);
+  const hasKol = Boolean(flags.kolDetected);
+
   if (typeof flags.top10Pct === 'number') {
     const riskyThreshold = phase === 'fresh' ? 68 : 55;
-    if (flags.top10Pct > riskyThreshold) score -= 22;
-    else if (flags.top10Pct > 40) score -= 11;
-    else if (flags.top10Pct < 28) score += 9;
+    if (top10Pct > riskyThreshold) score -= 22;
+    else if (top10Pct > 40) score -= 11;
+    else if (top10Pct < 28) score += 9;
   }
 
-  if (typeof flags.commonFunderWallets === 'number') {
-    if (flags.commonFunderWallets >= 7) score -= 24;
-    else if (flags.commonFunderWallets >= 4) score -= 13;
-    else if (flags.commonFunderWallets <= 1) score += 6;
+  if (commonFunderWallets != null) {
+    if (commonFunderWallets >= 7) score -= 24;
+    else if (commonFunderWallets >= 4) score -= 13;
+    else if (commonFunderWallets <= 1) score += 6;
   }
 
-  if (typeof flags.uniqueOwnerCount === 'number') {
-    if (flags.uniqueOwnerCount <= 3) score -= 12;
-    else if (flags.uniqueOwnerCount >= 8) score += 5;
+  if (uniqueOwnerCount != null) {
+    if (uniqueOwnerCount <= 2) score -= 18;
+    else if (uniqueOwnerCount <= 4 && burners >= 2) score -= 14;
+    else if (uniqueOwnerCount <= 4) score -= 8;
+    else if (uniqueOwnerCount >= 8) score += 5;
   }
 
   if (typeof flags.firstMinuteHoldingPct === 'number') {
@@ -132,6 +142,19 @@ function scoreHolders(flags, phase) {
     if (flags.cabalSync > 75) score -= 18;
     else if (flags.cabalSync > 55) score -= 9;
     else if (flags.cabalSync < 25) score += 5;
+  }
+
+  if (burners >= 5) score -= 22;
+  else if (burners >= 3) score -= 14;
+  else if (burners >= 1 && uniqueOwnerCount != null && uniqueOwnerCount <= 5) score -= 8;
+
+  const smartSignal = smartMoneyCount + whales + (hasKol ? 2 : 0);
+  const smartCap = top10Pct != null && top10Pct > 60 ? 8 : 18;
+  if (smartSignal > 0) {
+    const cleanEnough = burners <= 1 && (commonFunderWallets == null || commonFunderWallets < 4);
+    const concentrationOk = top10Pct == null || top10Pct <= (phase === 'fresh' ? 72 : 62);
+    const smartBonus = Math.min(smartCap, smartMoneyCount * 4 + whales * 3 + (hasKol ? 7 : 0));
+    score += cleanEnough && concentrationOk ? smartBonus : Math.round(smartBonus * 0.35);
   }
 
   return score;
@@ -232,8 +255,10 @@ function getPrimaryRisk(token, flags, volumeIntegrity, confidence) {
   if (confidence < 28) return 'bukti live belum cukup';
   if (flags.freezeActive === true) return 'freeze authority aktif';
   if (flags.mintRevoked === false) return 'mint authority masih terbuka';
+  if (flags.burners >= 5) return 'banyak burner wallet di top holder';
   if (flags.commonFunderWallets >= 7) return 'monopoli bundle';
-  if (flags.uniqueOwnerCount != null && flags.uniqueOwnerCount <= 3) return 'cluster owner top holder';
+  if (flags.uniqueOwnerCount != null && flags.uniqueOwnerCount <= 3 && flags.burners > 0) return 'cluster owner dengan burner wallet';
+  if (flags.uniqueOwnerCount != null && flags.uniqueOwnerCount <= 2) return 'cluster owner top holder';
   if (volumeIntegrity < 25) return 'risiko wash trading / aktivitas palsu';
   if (flags.dexPaidTiming === 'late' && flags.pumpFromLowPct > 300) return 'timing exit liquidity';
   if (flags.top10Pct > 55) return 'supply holder terkonsentrasi';
@@ -248,10 +273,10 @@ function buildSummary(token, verdict, primaryRisk, volumeIntegrity, confidence) 
   }
 
   const dataLine = `[Keyakinan data live: ${confidence}% | Integritas volume: ${volumeIntegrity}%]`;
-  const kolAlert = token.flags?.kolDetected ? `\n🔥 KOL ALERT: ${token.flags.kolDetected.name} (${token.flags.kolDetected.x}) terpantau memegang supply token ini!` : '';
-  const smartAlert = token.flags?.smartMoneyCount > 0 ? `\n🧠 SMART MONEY: Terdeteksi ${token.flags.smartMoneyCount} dompet Smart Money nyangkut di top holders.` : '';
-  const whaleAlert = token.flags?.whales > 0 ? `\n🐋 WHALE ALGORITHM: ${token.flags.whales} dompet paus (balance > 250 SOL) berada di Top 10.` : '';
-  const burnerAlert = token.flags?.burners > 0 ? `\n⚠️ BURNER ALGORITHM: ${token.flags.burners} dompet proxy/sekali pakai (balance < 0.05 SOL) ada di Top 10. Waspada indikasi Bundle Dev!` : '';
+  const kolAlert = token.flags?.kolDetected ? `\nKOL ALERT: ${token.flags.kolDetected.name} (${token.flags.kolDetected.x}) terpantau memegang supply token ini.` : '';
+  const smartAlert = token.flags?.smartMoneyCount > 0 ? `\nSMART MONEY: ${token.flags.smartMoneyCount} dompet smart/large holder terdeteksi di top holders. Ini sinyal positif kalau tidak bersamaan dengan burner/cluster berat.` : '';
+  const whaleAlert = token.flags?.whales > 0 ? `\nWHALE: ${token.flags.whales} dompet dengan balance besar (> 250 SOL) berada di Top 10.` : '';
+  const burnerAlert = token.flags?.burners > 0 ? `\nBURNER: ${token.flags.burners} dompet proxy/sekali pakai (balance < 0.05 SOL) ada di Top 10. Waspada indikasi bundle dev.` : '';
   const extraAlerts = `${kolAlert}${smartAlert}${whaleAlert}${burnerAlert}`;
 
   if (verdict.tone === 'danger') {
@@ -322,12 +347,20 @@ function buildChecks(token, flags, volumeIntegrity) {
     },
     {
       label: 'Smart Money / KOL',
-      status: (flags.kolDetected || flags.smartMoneyCount > 0 || flags.whales > 0) ? 'pass' : 'watch',
+      status: flags.burners >= 3 ? 'warn' : (flags.kolDetected || flags.smartMoneyCount > 0 || flags.whales > 0) ? 'pass' : 'watch',
       detail: flags.kolDetected
-        ? `KOL terdeteksi: ${flags.kolDetected.name} (${flags.kolDetected.x}) memegang koin ini. ${flags.whales > 0 ? `Ada ${flags.whales} whale di Top 10.` : ''}`
-        : flags.whales > 0
-          ? `${flags.whales} whale terdeteksi (> 250 SOL).`
+        ? `KOL terdeteksi: ${flags.kolDetected.name} (${flags.kolDetected.x}). ${flags.whales > 0 ? `Ada ${flags.whales} whale di Top 10.` : ''} Sinyal ini positif selama tidak ada burner/cluster berat.`
+        : flags.smartMoneyCount > 0 || flags.whales > 0
+          ? `${flags.smartMoneyCount || 0} smart/large wallet dan ${flags.whales || 0} whale terdeteksi. Makin banyak dompet berkualitas makin baik, tetapi tetap cek distribusi supply.`
           : 'Belum ada dompet Smart Money atau whale di top 10.'
+    },
+    {
+      label: 'Burner Wallet',
+      status: flags.burners == null ? 'watch' : flags.burners >= 5 ? 'fail' : flags.burners >= 2 ? 'warn' : 'pass',
+      detail:
+        flags.burners == null
+          ? 'Belum bisa membaca balance owner top holder.'
+          : `${flags.burners} burner wallet terdeteksi di top holder. Burner tinggi lebih buruk jika owner unik sedikit atau top10 supply besar.`
     },
     {
       label: 'Integritas Volume',
@@ -360,6 +393,7 @@ function getKnowledgeHits(flags, primaryRisk) {
   if (primaryRisk.includes('bundle') || flags.cabalSync > 55) matched.add('bundle');
   if (primaryRisk.includes('holder') || flags.top10Pct > 40) matched.add('holders');
   if (flags.txns5m > 0) matched.add('scalping');
+  if (flags.smartMoneyCount > 0 || flags.whales > 0 || flags.kolDetected) matched.add('walletPing');
   return ponyinPrinciples.filter((item) => matched.has(item.id));
 }
 
@@ -410,10 +444,13 @@ function buildMarketSignals(token, flags, volumeIntegrity, confidence) {
   }
 
   if (flags.whales > 0 || flags.burners > 0 || flags.smartMoneyCount > 0) {
+    const smartWallets = Number(flags.smartMoneyCount || 0);
+    const whales = Number(flags.whales || 0);
+    const burners = Number(flags.burners || 0);
     signals.push({
-      tone: flags.burners > flags.whales ? 'warn' : 'good',
+      tone: burners >= 3 && burners > whales + smartWallets ? 'warn' : smartWallets + whales > 0 ? 'good' : 'warn',
       title: 'Proxy kualitas wallet',
-      detail: `${flags.whales || 0} whale, ${flags.smartMoneyCount || 0} smart/large wallet, ${flags.burners || 0} burner di top holders.`
+      detail: `${whales} whale, ${smartWallets} smart/large wallet, ${burners} burner di top holders. Smart wallet menambah kualitas sinyal, burner menambah risiko bundle.`
     });
   }
 
