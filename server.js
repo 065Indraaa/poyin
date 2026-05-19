@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import chatHandler from './api/chat.js';
+import smartWalletsHandler from './api/smart-wallets.js';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // endpoint chatbot
 app.post('/api/chat', chatHandler);
+app.get('/api/smart-wallets', smartWalletsHandler);
 
 // test endpoint
 app.get('/', (req, res) => {

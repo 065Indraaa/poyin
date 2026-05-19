@@ -1,10 +1,9 @@
 const DEX_API = 'https://api.dexscreener.com';
-const MADEONSOL_API = 'https://madeonsol.com/api/v1';
 const PUMP_PORTAL_WS = 'wss://pumpportal.fun/api/data';
 const HELIUS_KEY = (import.meta.env.VITE_HELIUS_API_KEY || '').trim();
-const MADEONSOL_KEY = (import.meta.env.VITE_MADEONSOL_API_KEY || '').trim();
-const USE_MADEONSOL_DEMO = import.meta.env.VITE_USE_MADEONSOL_DEMO === 'true';
-const MADEONSOL_DEMO_KEY = 'msk_demo_try_the_solana_api_2026';
+const SMART_WALLET_ENDPOINT = import.meta.env.DEV
+  ? 'http://localhost:3001/api/smart-wallets'
+  : '/api/smart-wallets';
 const SOLANA_RPC = HELIUS_KEY
   ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
   : 'https://api.mainnet-beta.solana.com';
@@ -461,11 +460,10 @@ async function buildSmartWalletLabels() {
   const sources = [];
   if (Object.keys(WALLET_LABELS).length) sources.push('VITE_SMART_WALLETS');
 
-  const madeOnSolKey = MADEONSOL_KEY || (USE_MADEONSOL_DEMO ? MADEONSOL_DEMO_KEY : '');
-  if (madeOnSolKey) {
-    const madeOnSolLabels = await fetchMadeOnSolWalletLabels(madeOnSolKey);
-    Object.assign(labels, madeOnSolLabels);
-    if (Object.keys(madeOnSolLabels).length) sources.push(MADEONSOL_KEY ? 'MadeOnSol API' : 'MadeOnSol demo');
+  const registry = await fetchSmartWalletRegistry().catch(() => null);
+  if (registry?.labels) {
+    Object.assign(labels, registry.labels);
+    if (registry.size > 0) sources.push(registry.source || 'backend cache');
   }
 
   return {
@@ -475,65 +473,23 @@ async function buildSmartWalletLabels() {
   };
 }
 
-async function fetchMadeOnSolWalletLabels(apiKey) {
-  const [kolWinrate, kolPnl, alpha] = await Promise.allSettled([
-    fetchMadeOnSolJson('/kol/leaderboard?period=7d&limit=50&sort=winrate&min_winrate=55', apiKey),
-    fetchMadeOnSolJson('/kol/leaderboard?period=30d&limit=50&sort=profit_factor&min_winrate=50', apiKey),
-    fetchMadeOnSolJson('/alpha/leaderboard?limit=100&sort=win_rate', apiKey)
-  ]);
-
-  const labels = {};
-  [
-    ...(kolWinrate.status === 'fulfilled' ? normalizeWalletRows(kolWinrate.value, 'KOL') : []),
-    ...(kolPnl.status === 'fulfilled' ? normalizeWalletRows(kolPnl.value, 'KOL') : []),
-    ...(alpha.status === 'fulfilled' ? normalizeWalletRows(alpha.value, 'Alpha Wallet') : [])
-  ].forEach((item) => {
-    if (!item.address) return;
-    labels[item.address] = {
-      name: item.name,
-      type: item.type,
-      x: item.x,
-      source: 'MadeOnSol',
-      winRate: item.winRate,
-      pnl: item.pnl
-    };
-  });
-
-  return labels;
-}
-
-async function fetchMadeOnSolJson(path, apiKey) {
-  const response = await fetchWithTimeout(`${MADEONSOL_API}${path}`, {
+async function fetchSmartWalletRegistry() {
+  const response = await fetchWithTimeout(SMART_WALLET_ENDPOINT, {
     headers: {
-      accept: 'application/json',
-      authorization: `Bearer ${apiKey}`
+      accept: 'application/json'
     }
   });
 
   if (!response.ok) {
-    throw new Error(`MadeOnSol ${response.status} ${response.statusText}`);
+    throw new Error(`Smart wallet registry ${response.status}`);
   }
 
-  return response.json();
-}
-
-function normalizeWalletRows(value, fallbackType) {
-  const rows = normalizeList(value?.leaderboard || value?.wallets || value?.data || value?.results || value);
-  return rows
-    .map((row) => {
-      const address = row.wallet || row.wallet_address || row.address || row.owner || row.publicKey || row.trader;
-      if (!isSolanaAddress(address)) return null;
-
-      return {
-        address,
-        name: row.name || row.kol_name || row.label || row.twitter || shortAddress(address),
-        type: row.type || row.category || fallbackType,
-        x: row.twitter_url || row.kol_twitter || row.twitter || null,
-        winRate: Number(row.win_rate || row.winrate || row.winRate || 0) || null,
-        pnl: Number(row.pnl || row.realized_pnl || row.profit || 0) || null
-      };
-    })
-    .filter(Boolean);
+  const payload = await response.json();
+  return {
+    labels: payload.labels || {},
+    size: Number(payload.size || Object.keys(payload.labels || {}).length),
+    source: payload.source || 'backend cache'
+  };
 }
 
 async function rpc(method, params) {

@@ -79,12 +79,11 @@ Output di folder `dist/`.
 SIA bisa mengenali Smart Money dari dua jalur:
 
 ```bash
-VITE_SMART_WALLETS=wallet:name:type:x, wallet2:name:type:x
-VITE_MADEONSOL_API_KEY=msk_...
-VITE_USE_MADEONSOL_DEMO=false
+SMART_WALLETS=wallet:name:type:x, wallet2:name:type:x
+MADEONSOL_API_KEY=msk_...
 ```
 
-`VITE_SMART_WALLETS` cocok untuk daftar manual/curated. `VITE_MADEONSOL_API_KEY` dipakai untuk mengambil leaderboard KOL dan Alpha Wallet otomatis dari MadeOnSol. Untuk production, pakai key read-only atau proxy backend karena env `VITE_` ikut masuk bundle browser.
+`SMART_WALLETS` cocok untuk daftar manual/curated. `MADEONSOL_API_KEY` dipakai serverless endpoint `/api/smart-wallets` untuk mengambil leaderboard KOL dan Alpha Wallet otomatis dari MadeOnSol lalu cache 1 jam. Frontend SIA hanya membaca cache ini, jadi key MadeOnSol tidak ikut masuk bundle browser.
 
 ## Credits
 - Konten: [@elpoyin](https://x.com/elpoyin)

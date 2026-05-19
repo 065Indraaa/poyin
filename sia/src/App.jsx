@@ -27,6 +27,7 @@ import { fetchDiscoveryFeed, fetchTokenMarketSnapshots, fetchTokenSnapshot, form
 const scanSteps = [
   'Menarik data pair token dari DexScreener...',
   'Mengecek mint authority dan freeze authority Solana...',
+  'Memuat registry Smart Money dari cache MadeOnSol...',
   'Membaca trade stream PumpPortal...',
   'Menilai token memakai ilmu Ponyin dan data live...',
   'Menyusun verdict entry dan catatan risiko...'
@@ -75,11 +76,8 @@ export default function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanIndex, setScanIndex] = useState(0);
   const [copied, setCopied] = useState(false);
-  const autoSelectedRef = useRef(false);
   const refreshRequestRef = useRef(0);
   const selectedTokenRef = useRef(emptyToken);
-  const isScanningRef = useRef(false);
-  const selectedRefreshRef = useRef(0);
   const feedTokensRef = useRef([]);
 
   useEffect(() => {
@@ -89,10 +87,6 @@ export default function App() {
   useEffect(() => {
     feedTokensRef.current = feedTokens;
   }, [feedTokens]);
-
-  useEffect(() => {
-    isScanningRef.current = isScanning;
-  }, [isScanning]);
 
   useEffect(() => {
     refreshFeed();
@@ -128,16 +122,11 @@ export default function App() {
       setFeedTokens((current) => pruneTokens(current));
     }, 3000);
 
-    const selectedInterval = setInterval(() => {
-      refreshSelectedSnapshot();
-    }, 12000);
-
     return () => {
       clearInterval(refreshInterval);
       clearInterval(marketRefreshInterval);
       clearInterval(clockInterval);
       clearInterval(pruneInterval);
-      clearInterval(selectedInterval);
       unsubscribePumpPortal();
     };
   }, []);
@@ -166,14 +155,6 @@ export default function App() {
         error: null
       }));
 
-      if (!autoSelectedRef.current && feed.tokens.length) {
-        const first = feed.tokens[0];
-        autoSelectedRef.current = true;
-        setSelectedToken(first);
-        setQuery(first.ca);
-        setReport(analyzeToken(first));
-        refreshSelectedSnapshot(first.ca);
-      }
     } catch (error) {
       if (requestId !== refreshRequestRef.current) return;
       setFeedStatus((current) => ({
@@ -204,20 +185,6 @@ export default function App() {
       }));
 
       setFeedTokens((current) => pruneTokens(upsertTokens(current, stampedTokens)));
-
-      const selectedAddress = selectedTokenRef.current?.ca;
-      const selectedMarketToken = stampedTokens.find((token) => token.ca === selectedAddress);
-      if (selectedMarketToken && !isScanningRef.current) {
-        applyLiveToken({
-          ...selectedTokenRef.current,
-          ...selectedMarketToken,
-          flags: {
-            ...(selectedTokenRef.current?.flags || {}),
-            ...(selectedMarketToken.flags || {})
-          },
-          rawProviders: selectedTokenRef.current?.rawProviders || selectedMarketToken.rawProviders
-        });
-      }
     } catch {
       // Market refresh ringan boleh gagal tanpa mengganggu hasil scan forensic terakhir.
     }
@@ -230,6 +197,7 @@ export default function App() {
     const optimisticToken = typeof tokenLike === 'string' ? { ...emptyToken, ca: address, ticker: shortAddress(address) } : tokenLike;
 
     setSelectedToken(optimisticToken);
+    setReport(analyzeToken(optimisticToken));
     setQuery(address);
     setCopied(false);
     setIsScanning(true);
@@ -256,26 +224,6 @@ export default function App() {
       document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
-
-  async function refreshSelectedSnapshot(addressOverride = null) {
-    if (isScanningRef.current) return;
-
-    const current = selectedTokenRef.current;
-    const address = addressOverride || current?.ca;
-    if (!address || address === emptyToken.ca) return;
-
-    const requestId = selectedRefreshRef.current + 1;
-    selectedRefreshRef.current = requestId;
-
-    try {
-      const liveToken = await fetchTokenSnapshot(address);
-      if (requestId !== selectedRefreshRef.current) return;
-      if (!addressOverride && selectedTokenRef.current?.ca !== address) return;
-      applyLiveToken(liveToken);
-    } catch {
-      // Pertahankan report terakhir. Satu tick provider yang gagal bukan bukti token berubah.
-    }
-  }
 
   function applyLiveToken(liveToken) {
     const enrichedToken = {
