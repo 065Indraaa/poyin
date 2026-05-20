@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { analyzeToken, emptyToken } from './data/apeEngine';
 import { ponyinPrinciples } from './data/knowledgeBase';
-import { fetchDiscoveryFeed, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
+import { fetchDiscoveryFeed, fetchProviderHealth, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
 
 const scanSteps = [
   'Menarik data pair token dari DexScreener...',
@@ -73,6 +73,14 @@ export default function App() {
     streamConnected: false,
     streamLastTokenAt: null
   });
+  const [providerHealth, setProviderHealth] = useState({
+    loading: true,
+    ok: false,
+    error: null,
+    env: {},
+    rpc: null,
+    smartWallets: null
+  });
   const [isScanning, setIsScanning] = useState(false);
   const [scanIndex, setScanIndex] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -90,6 +98,7 @@ export default function App() {
 
   useEffect(() => {
     refreshFeed();
+    refreshProviderHealth();
 
     const unsubscribePumpPortal = subscribeToPumpPortalStream(
       (token) => {
@@ -114,6 +123,10 @@ export default function App() {
       refreshFeed();
     }, 10000);
 
+    const healthInterval = setInterval(() => {
+      refreshProviderHealth();
+    }, 45000);
+
     const marketRefreshInterval = setInterval(() => {
       refreshFeedMarketSnapshots();
     }, 5000);
@@ -124,12 +137,33 @@ export default function App() {
 
     return () => {
       clearInterval(refreshInterval);
+      clearInterval(healthInterval);
       clearInterval(marketRefreshInterval);
       clearInterval(clockInterval);
       clearInterval(pruneInterval);
       unsubscribePumpPortal();
     };
   }, []);
+
+  async function refreshProviderHealth() {
+    setProviderHealth((current) => ({ ...current, loading: true, error: null }));
+    try {
+      const health = await fetchProviderHealth();
+      setProviderHealth({
+        loading: false,
+        ok: Boolean(health.ok),
+        error: null,
+        ...health
+      });
+    } catch (error) {
+      setProviderHealth((current) => ({
+        ...current,
+        loading: false,
+        ok: false,
+        error: translateProviderError(error.message) || 'Health endpoint belum tersambung'
+      }));
+    }
+  }
 
   const groupedTokens = useMemo(() => {
     return feedTokens.reduce((acc, token) => {
@@ -335,7 +369,15 @@ export default function App() {
           text="Feed memprioritaskan token dengan peluang entry lebih sehat: likuiditas cukup, transaksi aktif, buy pressure wajar, volume tidak janggal, dan drawdown belum rusak."
         />
 
-        <ProviderStrip status={feedStatus} count={feedTokens.length} onRefresh={refreshFeed} />
+        <ProviderStrip
+          status={feedStatus}
+          health={providerHealth}
+          count={feedTokens.length}
+          onRefresh={() => {
+            refreshFeed();
+            refreshProviderHealth();
+          }}
+        />
 
         <div className="table-container">
           <table className="feed-table">
@@ -556,7 +598,7 @@ function SectionHeader({ kicker, title, text }) {
   );
 }
 
-function ProviderStrip({ status, count, onRefresh }) {
+function ProviderStrip({ status, health, count, onRefresh }) {
   return (
     <div className={`provider-strip ${status.error ? 'error' : ''}`}>
       <div>
@@ -568,12 +610,41 @@ function ProviderStrip({ status, count, onRefresh }) {
               ? status.error
             : `${count} token Solana aktif${status.fetchedAt ? `, Dex refresh ${formatTime(status.fetchedAt)}` : ''}, ${formatStreamStatus(status)}`}
           </span>
+          <ProviderHealthChips health={health} />
         </div>
       </div>
       <button type="button" onClick={onRefresh} disabled={status.loading}>
         <RefreshCw size={16} />
         {status.loading ? 'Memuat' : 'Refresh'}
       </button>
+    </div>
+  );
+}
+
+function ProviderHealthChips({ health }) {
+  const smartSize = Number(health?.smartWallets?.size || 0);
+  const chips = [
+    {
+      label: health?.env?.madeOnSolKey ? 'MadeOnSol key aktif' : 'MadeOnSol key kosong',
+      ok: Boolean(health?.env?.madeOnSolKey)
+    },
+    {
+      label: health?.env?.heliusKey || health?.env?.solanaRpcUrl ? 'RPC privat aktif' : 'RPC publik',
+      ok: Boolean(health?.env?.heliusKey || health?.env?.solanaRpcUrl)
+    },
+    {
+      label: smartSize > 0 ? `${smartSize} smart wallet` : 'registry kosong',
+      ok: smartSize > 0
+    }
+  ];
+
+  return (
+    <div className="provider-health-chips">
+      {health?.error ? (
+        <span className="warn">Health API: {health.error}</span>
+      ) : chips.map((chip) => (
+        <span className={chip.ok ? 'ok' : 'warn'} key={chip.label}>{chip.label}</span>
+      ))}
     </div>
   );
 }
@@ -625,7 +696,10 @@ function ForensicPanel({ token, report, status, now }) {
   const flags = token.flags || {};
   const metrics = token.metrics || {};
   const holders = token.rawProviders?.holders || [];
+  const walletIntel = token.rawProviders?.walletIntel || [];
+  const insightSummary = token.rawProviders?.insightSummary || [];
   const providerErrors = token.rawProviders?.providerErrors || {};
+  const madeOnSol = token.rawProviders?.madeOnSol;
   const links = [
     ...(token.websites || []),
     ...(token.socials || []).map((item) => ({ label: item.type, url: item.url }))
@@ -663,6 +737,13 @@ function ForensicPanel({ token, report, status, now }) {
       <div className="forensic-columns">
         <div className="forensic-card">
           <h3>Snapshot Top Holder</h3>
+          {insightSummary.length > 0 && (
+            <div className="intel-summary">
+              {insightSummary.slice(0, 4).map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+          )}
           <div className="holder-list">
             {holders.length ? holders.slice(0, 10).map((holder) => (
               <div className="holder-row" key={`${holder.rank}-${holder.tokenAccount}`}>
@@ -673,6 +754,24 @@ function ForensicPanel({ token, report, status, now }) {
               </div>
             )) : (
               <p className="muted-copy">Top holder belum tersedia. Gunakan Helius key valid agar RPC holder lebih stabil.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="forensic-card">
+          <h3>Skor Wallet Holder</h3>
+          <div className="wallet-score-list">
+            {walletIntel.length ? walletIntel.slice(0, 8).map((wallet) => (
+              <div className="wallet-score-row" key={`${wallet.rank}-${wallet.owner || wallet.label}`}>
+                <div>
+                  <strong>#{wallet.rank} {wallet.label || shortAddress(wallet.owner)}</strong>
+                  <span>{wallet.type || 'holder'} · {wallet.pct == null ? 'supply unknown' : `${wallet.pct.toFixed(2)}% supply`}</span>
+                </div>
+                <em>{wallet.score}</em>
+                <small>{wallet.tags?.length ? wallet.tags.join(', ') : formatSol(wallet.solBalance)}</small>
+              </div>
+            )) : (
+              <p className="muted-copy">Skor wallet belum tersedia. Endpoint token-intel akan mengisi bagian ini saat backend aktif.</p>
             )}
           </div>
         </div>
@@ -704,10 +803,28 @@ function ForensicPanel({ token, report, status, now }) {
         </div>
 
         <div className="forensic-card">
+          <h3>Intelijen MadeOnSol</h3>
+          {madeOnSol ? (
+            <div className="madeonsol-grid">
+              <MetricMini label="Umur indexer" value={madeOnSol.ageSeconds == null ? 'belum diketahui' : formatAgeSeconds(madeOnSol.ageSeconds)} />
+              <MetricMini label="MCap MOS" value={formatUsd(madeOnSol.marketCapUsd)} />
+              <MetricMini label="Volume 24h" value={formatUsd(madeOnSol.volume24hUsd)} />
+              <MetricMini label="MEV 5m" value={formatOptionalPct(readWindow(madeOnSol.mevVolumePct, '5m'))} />
+              <MetricMini label="KOL flow" value={madeOnSol.kolActivity?.signal || 'belum ada'} />
+              <MetricMini label="Deployer" value={madeOnSol.deployer?.tier || 'belum diketahui'} />
+            </div>
+          ) : (
+            <p className="muted-copy">Token intelligence MadeOnSol belum tersedia. Pastikan key MadeOnSol aktif di env Vercel dan token sudah terindeks provider.</p>
+          )}
+        </div>
+
+        <div className="forensic-card">
           <h3>Integritas Provider</h3>
           <div className="provider-list">
             <ProviderLine label="Pair DexScreener" ok={Boolean(token.rawProviders?.dexPair)} detail={token.pairDex || token.source} />
             <ProviderLine label="Mint RPC Solana" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah revoke' : 'masih terbuka'}`} />
+            <ProviderLine label="Token intel" ok={token.rawProviders?.holderMeta?.tokenIntelProvider === 'backend token-intel'} detail={token.rawProviders?.holderMeta?.tokenIntelProvider || 'fallback browser RPC'} />
+            <ProviderLine label="Intel MadeOnSol" ok={Boolean(madeOnSol)} detail={madeOnSol?.provider || 'belum tersedia'} />
             <ProviderLine label="Registry Smart Money" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet dari ${token.rawProviders?.holderMeta?.smartWalletSource || flags.smartWalletSource || 'belum dikonfigurasi'}`} />
             <ProviderLine label="Trade PumpPortal" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaca' : 'belum ada packet trade terbaru'} />
             <ProviderLine label="Order Dex paid" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost approved`} />
@@ -738,6 +855,15 @@ function ForensicPanel({ token, report, status, now }) {
 function MetricBox({ label, value, tone = '' }) {
   return (
     <div className={`metric-box ${tone}`}>
+      <span>{label}</span>
+      <strong>{value ?? 'belum diketahui'}</strong>
+    </div>
+  );
+}
+
+function MetricMini({ label, value }) {
+  return (
+    <div className="metric-mini">
       <span>{label}</span>
       <strong>{value ?? 'belum diketahui'}</strong>
     </div>
@@ -971,6 +1097,26 @@ function formatPct(value) {
   const num = Number(value);
   if (!Number.isFinite(num)) return 'belum diketahui';
   return `${num > 0 ? '+' : ''}${num.toFixed(Math.abs(num) >= 100 ? 0 : 1)}%`;
+}
+
+function formatOptionalPct(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return 'belum diketahui';
+  return `${num.toFixed(Math.abs(num) >= 100 ? 0 : 1)}%`;
+}
+
+function readWindow(value, key) {
+  if (!value || typeof value !== 'object') return null;
+  return value[key] ?? value[key.replace('m', 'min')] ?? value[key.toUpperCase()] ?? null;
+}
+
+function formatAgeSeconds(value) {
+  const seconds = Number(value || 0);
+  if (!Number.isFinite(seconds)) return 'belum diketahui';
+  if (seconds < 60) return `${Math.round(seconds)} dtk`;
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} menit`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} jam`;
+  return `${Math.floor(seconds / 86400)} hari`;
 }
 
 function priceTone(value) {

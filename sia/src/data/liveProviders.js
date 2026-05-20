@@ -4,6 +4,12 @@ const HELIUS_KEY = (import.meta.env.VITE_HELIUS_API_KEY || '').trim();
 const SMART_WALLET_ENDPOINT = import.meta.env.DEV
   ? 'http://localhost:3001/api/smart-wallets'
   : '/api/smart-wallets';
+const TOKEN_INTEL_ENDPOINT = import.meta.env.DEV
+  ? 'http://localhost:3001/api/token-intel'
+  : '/api/token-intel';
+const HEALTH_ENDPOINT = import.meta.env.DEV
+  ? 'http://localhost:3001/api/health'
+  : '/api/health';
 const SOLANA_RPC = HELIUS_KEY
   ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
   : 'https://api.mainnet-beta.solana.com';
@@ -72,6 +78,20 @@ export async function fetchTokenMarketSnapshots(addresses = []) {
   return Array.from(bestByAddress.values())
     .map((pair) => normalizeDexPair(pair, {}))
     .filter(Boolean);
+}
+
+export async function fetchProviderHealth() {
+  const response = await fetchWithTimeout(HEALTH_ENDPOINT, {
+    headers: {
+      accept: 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Health endpoint ${response.status}`);
+  }
+
+  return response.json();
 }
 
 async function fetchDexDiscoveryFeed() {
@@ -179,9 +199,10 @@ export async function fetchTokenSnapshot(address) {
   const pump = pumpResult.status === 'fulfilled' ? pumpResult.value : null;
   const dexOrders = ordersResult.status === 'fulfilled' ? ordersResult.value : [];
   const holdersResult = await Promise.allSettled([
+    fetchBackendTokenIntel(normalizedAddress),
     fetchTopHolders(normalizedAddress, mint?.supply ?? null)
   ]);
-  const holders = holdersResult[0].status === 'fulfilled' ? holdersResult[0].value : null;
+  const holders = holdersResult.find((result) => result.status === 'fulfilled' && result.value)?.value || null;
 
   if (!bestPair && !mint && !pump) {
     throw new Error('No live provider returned token data');
@@ -200,7 +221,9 @@ export async function fetchTokenSnapshot(address) {
       solanaRpc: mintResult.status === 'rejected' ? mintResult.reason?.message : null,
       pumpPortal: pumpResult.status === 'rejected' ? pumpResult.reason?.message : null,
       dexOrders: ordersResult.status === 'rejected' ? ordersResult.reason?.message : null,
-      holders: holdersResult[0].status === 'rejected' ? holdersResult[0].reason?.message : null
+      holders: holdersResult.every((result) => result.status === 'rejected')
+        ? holdersResult.map((result) => result.reason?.message).filter(Boolean).join(' | ')
+        : null
     }
   });
 }
@@ -441,6 +464,37 @@ async function fetchTopHolders(address, supplyFromMint = null) {
   } catch (error) {
     return null;
   }
+}
+
+async function fetchBackendTokenIntel(address) {
+  const response = await fetchWithTimeout(`${TOKEN_INTEL_ENDPOINT}?ca=${encodeURIComponent(address)}`, {
+    headers: {
+      accept: 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Token intel ${response.status}`);
+  }
+
+  const payload = await response.json();
+  return {
+    top10Pct: payload.top10Pct,
+    commonFunderWallets: payload.commonFunderWallets,
+    smartMoneyCount: payload.smartMoneyCount,
+    accounts: payload.accounts || [],
+    holderDetails: payload.holderDetails || [],
+    walletIntel: payload.walletIntel || [],
+    uniqueOwnerCount: payload.uniqueOwnerCount,
+    kol: payload.kol,
+    whales: payload.whales,
+    burners: payload.burners,
+    madeOnSolIntel: payload.madeOnSolIntel || null,
+    insightSummary: payload.insightSummary || [],
+    smartWalletRegistrySize: payload.smartWalletRegistrySize,
+    smartWalletSource: payload.smartWalletSource,
+    provider: 'backend token-intel'
+  };
 }
 
 async function getSmartWalletLabels() {
@@ -960,8 +1014,11 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       smartMoneyCount: holders ? holders.smartMoneyCount : base.flags.smartMoneyCount,
       whales: holders ? holders.whales : base.flags.whales,
       burners: holders ? holders.burners : base.flags.burners,
+      tokenIntelProvider: holders ? holders.provider : base.flags.tokenIntelProvider,
       smartWalletRegistrySize: holders ? holders.smartWalletRegistrySize : base.flags.smartWalletRegistrySize,
       smartWalletSource: holders ? holders.smartWalletSource : base.flags.smartWalletSource,
+      madeOnSolTokenIntel: Boolean(holders?.madeOnSolIntel),
+      madeOnSolBlacklisted: holders?.madeOnSolIntel?.blacklisted ?? base.flags.madeOnSolBlacklisted,
       pumpPortalTradeSeen: Boolean(pump),
       dexPaidTiming: orderTiming.timing || base.flags.dexPaidTiming,
       activeBoosts: orderTiming.count || base.flags.activeBoosts,
@@ -972,10 +1029,14 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       mint,
       pump,
       dexOrders,
+      madeOnSol: holders?.madeOnSolIntel || null,
       holders: holders?.holderDetails || null,
+      walletIntel: holders?.walletIntel || null,
+      insightSummary: holders?.insightSummary || null,
       holderMeta: holders ? {
         smartWalletRegistrySize: holders.smartWalletRegistrySize,
-        smartWalletSource: holders.smartWalletSource
+        smartWalletSource: holders.smartWalletSource,
+        tokenIntelProvider: holders.provider
       } : null,
       providerErrors
     },
