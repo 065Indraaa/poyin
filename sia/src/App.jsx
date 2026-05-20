@@ -696,10 +696,12 @@ function ForensicPanel({ token, report, status, now }) {
   const flags = token.flags || {};
   const metrics = token.metrics || {};
   const holders = token.rawProviders?.holders || [];
+  const excludedHolders = token.rawProviders?.excludedHolders || [];
   const walletIntel = token.rawProviders?.walletIntel || [];
   const insightSummary = token.rawProviders?.insightSummary || [];
   const providerErrors = token.rawProviders?.providerErrors || {};
   const madeOnSol = token.rawProviders?.madeOnSol;
+  const liquidityPool = token.rawProviders?.liquidityPool;
   const links = [
     ...(token.websites || []),
     ...(token.socials || []).map((item) => ({ label: item.type, url: item.url }))
@@ -723,6 +725,7 @@ function ForensicPanel({ token, report, status, now }) {
         <MetricBox label="Umur live" value={formatLiveAge(token, now)} />
         <MetricBox label="MCap / FDV" value={formatLiveMarketCap(token)} />
         <MetricBox label="Likuiditas" value={formatUsd(token.liquidityUsd)} />
+        <MetricBox label="Status LP" value={liquidityPool?.status || token.lpStatus || 'belum diketahui'} tone={token.liquidityUsd < 5000 && token.phase === 'raydium' ? 'danger' : token.liquidityUsd < 25000 ? 'warn' : 'good'} />
         <MetricBox label="Vol 5m / 1h" value={`${formatUsd(metrics.volume?.m5)} / ${formatUsd(metrics.volume?.h1)}`} />
         <MetricBox label="Txns 5m / 1h" value={`${metrics.txns?.m5 ?? flags.txns5m ?? '-'} / ${metrics.txns?.h1 ?? '-'}`} />
         <MetricBox label="Buy/Sell 5m" value={`${metrics.buys?.m5 ?? flags.buys5m ?? 0}/${metrics.sells?.m5 ?? flags.sells5m ?? 0}`} />
@@ -737,6 +740,7 @@ function ForensicPanel({ token, report, status, now }) {
       <div className="forensic-columns">
         <div className="forensic-card">
           <h3>Snapshot Top Holder</h3>
+          <p className="card-note">Akun LP/pool dipisahkan, jadi persentase top holder tidak ikut menghitung liquidity pool.</p>
           {insightSummary.length > 0 && (
             <div className="intel-summary">
               {insightSummary.slice(0, 4).map((item) => (
@@ -756,6 +760,43 @@ function ForensicPanel({ token, report, status, now }) {
               <p className="muted-copy">Top holder belum tersedia. Gunakan jalur RPC privat agar pembacaan holder lebih stabil.</p>
             )}
           </div>
+          {excludedHolders.length > 0 && (
+            <div className="excluded-note">
+              {excludedHolders.length} akun pool/vault dikeluarkan dari top holder.
+            </div>
+          )}
+        </div>
+
+        <div className="forensic-card">
+          <h3>Liquidity Pool</h3>
+          {liquidityPool ? (
+            <>
+              <div className="market-index-grid">
+                <MetricMini label="DEX" value={liquidityPool.dex || token.pairDex || 'belum diketahui'} />
+                <MetricMini label="Nilai LP" value={formatUsd(liquidityPool.usd ?? token.liquidityUsd)} />
+                <MetricMini label="Base / Quote" value={`${formatTokenAmount(liquidityPool.base)} / ${formatTokenAmount(liquidityPool.quote)}`} />
+                <MetricMini label="Pair aktif" value={liquidityPool.pairCount ?? flags.dexPairCount ?? 'belum diketahui'} />
+              </div>
+              <div className="pool-address">
+                <span>Pair</span>
+                <strong>{liquidityPool.pairAddress ? shortAddress(liquidityPool.pairAddress) : 'belum terindeks'}</strong>
+              </div>
+              {liquidityPool.excludedTopAccounts?.length > 0 && (
+                <div className="holder-list compact">
+                  {liquidityPool.excludedTopAccounts.slice(0, 4).map((holder) => (
+                    <div className="holder-row" key={`lp-${holder.rank}-${holder.tokenAccount}`}>
+                      <span>LP</span>
+                      <strong>{shortAddress(holder.owner || holder.tokenAccount)}</strong>
+                      <em>{holder.pct == null ? 'belum diketahui' : `${holder.pct.toFixed(2)}%`}</em>
+                      <small>{holder.label || holder.type || 'pool vault'}</small>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="muted-copy">LP belum terbaca dari pair aktif. Kalau token masih bonding curve, tunggu pair DEX muncul.</p>
+          )}
         </div>
 
         <div className="forensic-card">
@@ -823,7 +864,7 @@ function ForensicPanel({ token, report, status, now }) {
           <div className="provider-list">
             <ProviderLine label="Data pair" ok={Boolean(token.rawProviders?.dexPair)} detail={token.pairDex ? `${token.pairDex} aktif` : cleanPublicCopy(token.source)} />
             <ProviderLine label="Authority on-chain" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah revoke' : 'masih terbuka'}`} />
-            <ProviderLine label="Intel holder" ok={token.rawProviders?.holderMeta?.tokenIntelProvider === 'backend token-intel'} detail={token.rawProviders?.holderMeta?.tokenIntelProvider === 'backend token-intel' ? 'analisis holder aktif' : 'mode pembacaan dasar'} />
+            <ProviderLine label="Intel holder" ok={Boolean(token.rawProviders?.holderMeta)} detail={token.rawProviders?.holderMeta?.tokenIntelProvider ? cleanPublicCopy(token.rawProviders.holderMeta.tokenIntelProvider) : 'mode pembacaan dasar'} />
             <ProviderLine label="Indeks pasar" ok={Boolean(madeOnSol)} detail={madeOnSol ? 'data indeks tambahan aktif' : 'belum tersedia'} />
             <ProviderLine label="Registry wallet" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet pintar terbaca`} />
             <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'belum ada trade terbaru'} />
@@ -1157,6 +1198,15 @@ function formatSol(value) {
   if (!Number.isFinite(num)) return 'owner belum diketahui';
   if (num >= 1000) return `${(num / 1000).toFixed(1)}K SOL`;
   return `${num.toFixed(num >= 10 ? 1 : 3)} SOL`;
+}
+
+function formatTokenAmount(value) {
+  const num = Number(value || 0);
+  if (!Number.isFinite(num) || num <= 0) return 'unknown';
+  if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`;
+  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
+  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+  return num.toFixed(num >= 10 ? 1 : 3);
 }
 
 function extractSolanaAddress(value) {

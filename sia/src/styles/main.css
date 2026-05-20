@@ -1252,6 +1252,13 @@ a {
   font-size: 15px;
 }
 
+.card-note {
+  margin: -4px 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .holder-list,
 .provider-list,
 .provider-errors,
@@ -1260,6 +1267,10 @@ a {
 .intel-summary {
   display: grid;
   gap: 8px;
+}
+
+.holder-list.compact {
+  margin-top: 10px;
 }
 
 .intel-summary {
@@ -1304,6 +1315,41 @@ a {
 
 .holder-row small {
   color: var(--soft);
+}
+
+.excluded-note,
+.pool-address {
+  margin-top: 10px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 176, 32, 0.24);
+  border-radius: var(--radius);
+  background: var(--amber-soft);
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pool-address {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-color: rgba(45, 212, 191, 0.2);
+  background: rgba(45, 212, 191, 0.055);
+  color: var(--soft);
+}
+
+.pool-address span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pool-address strong {
+  overflow-wrap: anywhere;
+  color: var(--cyan);
+  font-size: 12px;
 }
 
 .wallet-score-row {

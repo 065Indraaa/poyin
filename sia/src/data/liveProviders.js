@@ -17,6 +17,7 @@ const TOKEN_PROGRAM_IDS = new Set([
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
   'TokenzQdBNbLqP5VEi98vJb2t1B4jWsXg41dRT5sPp'
 ]);
+const SYSTEM_PROGRAM_ID = '11111111111111111111111111111111';
 
 const PUMP_PROGRAM_ID = '6EF8rrecthR5Dk4r49j5b3m1TQBTciV4Xed2sW6qx6';
 const WS_TIMEOUT_MS = 4800;
@@ -200,9 +201,13 @@ export async function fetchTokenSnapshot(address) {
   const dexOrders = ordersResult.status === 'fulfilled' ? ordersResult.value : [];
   const holdersResult = await Promise.allSettled([
     fetchBackendTokenIntel(normalizedAddress),
-    fetchTopHolders(normalizedAddress, mint?.supply ?? null)
+    fetchTopHolders(normalizedAddress, mint?.supply ?? null, dexPairs)
   ]);
-  const holders = holdersResult.find((result) => result.status === 'fulfilled' && result.value)?.value || null;
+  const holders = mergeHolderIntel(
+    holdersResult
+      .filter((result) => result.status === 'fulfilled' && result.value)
+      .map((result) => result.value)
+  );
 
   if (!bestPair && !mint && !pump) {
     throw new Error('No live provider returned token data');
@@ -348,7 +353,7 @@ async function fetchMintAuthority(address) {
 const WALLET_LABELS = parseWalletLabels(import.meta.env.VITE_SMART_WALLETS || '');
 let smartWalletLabelsPromise = null;
 
-async function fetchTopHolders(address, supplyFromMint = null) {
+async function fetchTopHolders(address, supplyFromMint = null, dexPairs = []) {
   try {
     const [largestAccounts, tokenSupply] = await Promise.all([
       rpc('getTokenLargestAccounts', [
@@ -364,17 +369,10 @@ async function fetchTopHolders(address, supplyFromMint = null) {
     const accounts = data?.value;
     if (!accounts || !accounts.length) return null;
 
-    let top10Amount = 0;
     const totalSupply = Number(tokenSupply?.value?.amount || supplyFromMint || 0);
-
-    accounts.slice(0, 10).forEach((acc) => {
-      top10Amount += Number(acc.amount || 0);
-    });
-
-    const top10Pct = totalSupply > 0 ? (top10Amount / totalSupply) * 100 : null;
-    const topAccounts = accounts.slice(0, 10);
-    const top10TokenAccounts = topAccounts.map(a => a.address);
-    const holderDetails = topAccounts.map((account, index) => ({
+    const largestTokenAccounts = accounts.slice(0, 20);
+    const topTokenAccountAddresses = largestTokenAccounts.map(a => a.address);
+    const holderDetails = largestTokenAccounts.map((account, index) => ({
       rank: index + 1,
       tokenAccount: account.address,
       owner: null,
@@ -382,12 +380,12 @@ async function fetchTopHolders(address, supplyFromMint = null) {
       pct: totalSupply > 0 ? (Number(account.amount || 0) / totalSupply) * 100 : null,
       solBalance: null,
       label: null,
-      type: null
+      type: null,
+      excludedFromTopHolders: false
     }));
 
-    // 2. DATA REAL HELIUS: Ambil data Owner dari tiap Token Account
     const accountInfos = await rpc('getMultipleAccounts', [
-      top10TokenAccounts,
+      topTokenAccountAddresses,
       { encoding: 'jsonParsed', commitment: 'confirmed' }
     ]);
 
@@ -415,11 +413,11 @@ async function fetchTopHolders(address, supplyFromMint = null) {
       });
     }
 
-    // 4. ON-CHAIN ALGORITHMIC DETECTION (Mendeteksi Paus & Insider Burner)
     let whales = 0;
     let burners = 0;
     let algorithmicSmartWallets = 0;
     const uniqueOwners = [...new Set(owners)];
+    const ownerAccountPrograms = new Map();
 
     if (uniqueOwners.length > 0) {
       const ownerInfos = await rpc('getMultipleAccounts', [
@@ -429,9 +427,10 @@ async function fetchTopHolders(address, supplyFromMint = null) {
       
       if (ownerInfos?.value) {
         ownerInfos.value.forEach((info, index) => {
+          const owner = uniqueOwners[index];
+          ownerAccountPrograms.set(owner, info?.owner || null);
           if (info) {
             const solBalance = (info.lamports || 0) / 1e9;
-            const owner = uniqueOwners[index];
             holderDetails
               .filter((holder) => holder.owner === owner)
               .forEach((holder) => {
@@ -445,25 +444,102 @@ async function fetchTopHolders(address, supplyFromMint = null) {
       }
     }
 
-    // Cabal/common-funder real butuh graph transaksi backend. Jangan pakai random agar verdict konsisten.
-    const bundleCount = estimateCommonFunderProxy(top10Pct, uniqueOwners.length, burners);
+    holderDetails.forEach((holder) => {
+      const role = classifyHolderRole(holder, ownerAccountPrograms, dexPairs);
+      if (!role) return;
+      holder.type = role.type;
+      holder.label = role.label;
+      holder.excludedFromTopHolders = true;
+    });
+
+    const lpAccounts = holderDetails.filter((holder) => holder.excludedFromTopHolders);
+    const holderAccounts = holderDetails
+      .filter((holder) => !holder.excludedFromTopHolders)
+      .slice(0, 10)
+      .map((holder, index) => ({ ...holder, rank: index + 1 }));
+    const holderOwners = [...new Set(holderAccounts.map((holder) => holder.owner).filter(Boolean))];
+    const top10Amount = holderAccounts.reduce((sum, holder) => sum + Number(holder.amount || 0), 0);
+    const top10Pct = totalSupply > 0 ? (top10Amount / totalSupply) * 100 : null;
+
+    whales = countWalletRole(holderAccounts, (holder) => Number(holder.solBalance || 0) >= 250);
+    algorithmicSmartWallets = countWalletRole(holderAccounts, (holder) => Number(holder.solBalance || 0) >= 75);
+    burners = countWalletRole(holderAccounts, (holder) => Number(holder.solBalance || 0) <= 0.05);
+
+    const bundleCount = estimateCommonFunderProxy(top10Pct, holderOwners.length, burners);
 
     return {
       top10Pct,
       commonFunderWallets: bundleCount,
       smartMoneyCount: smartMoneyCount + algorithmicSmartWallets,
-      accounts: topAccounts,
-      holderDetails,
-      uniqueOwnerCount: uniqueOwners.length,
+      accounts: holderAccounts,
+      holderDetails: holderAccounts,
+      excludedHolderDetails: lpAccounts,
+      uniqueOwnerCount: holderOwners.length,
       kol: kolDetected,
       whales,
       burners,
       smartWalletRegistrySize: smartWalletLabels.size,
-      smartWalletSource: smartWalletLabels.source
+      smartWalletSource: smartWalletLabels.source,
+      provider: 'RPC top holders'
     };
   } catch (error) {
     return null;
   }
+}
+
+function mergeHolderIntel(results = []) {
+  if (!results.length) return null;
+
+  return results
+    .sort((a, b) => holderIntelScore(b) - holderIntelScore(a))
+    .reduce((merged, item) => ({
+      ...item,
+      ...merged,
+      top10Pct: merged.top10Pct ?? item.top10Pct,
+      commonFunderWallets: merged.commonFunderWallets ?? item.commonFunderWallets,
+      smartMoneyCount: merged.smartMoneyCount ?? item.smartMoneyCount,
+      accounts: merged.accounts?.length ? merged.accounts : item.accounts,
+      holderDetails: merged.holderDetails?.length ? merged.holderDetails : item.holderDetails,
+      excludedHolderDetails: merged.excludedHolderDetails?.length ? merged.excludedHolderDetails : item.excludedHolderDetails,
+      walletIntel: merged.walletIntel?.length ? merged.walletIntel : item.walletIntel,
+      insightSummary: merged.insightSummary?.length ? merged.insightSummary : item.insightSummary,
+      uniqueOwnerCount: merged.uniqueOwnerCount ?? item.uniqueOwnerCount,
+      kol: merged.kol ?? item.kol,
+      whales: merged.whales ?? item.whales,
+      burners: merged.burners ?? item.burners,
+      madeOnSolIntel: merged.madeOnSolIntel ?? item.madeOnSolIntel,
+      smartWalletRegistrySize: Math.max(Number(merged.smartWalletRegistrySize || 0), Number(item.smartWalletRegistrySize || 0)),
+      smartWalletSource: [merged.smartWalletSource, item.smartWalletSource].filter(Boolean).join(' + '),
+      provider: [merged.provider, item.provider].filter(Boolean).join(' + ')
+    }));
+}
+
+function holderIntelScore(item = {}) {
+  let score = 0;
+  if (item.provider === 'backend token-intel') score += 12;
+  if (item.top10Pct != null) score += 18;
+  if (item.uniqueOwnerCount != null) score += 12;
+  if (item.excludedHolderDetails?.length) score += 30;
+  score += Math.min(Number(item.holderDetails?.length || 0) * 4, 40);
+  score += Math.min(Number(item.walletIntel?.length || 0) * 3, 18);
+  score += Math.min(Number(item.insightSummary?.length || 0) * 2, 10);
+  return score;
+}
+
+function classifyHolderRole(holder, ownerAccountPrograms, dexPairs = []) {
+  const ownerProgram = holder.owner ? ownerAccountPrograms.get(holder.owner) : null;
+  const pairAddresses = new Set(dexPairs.map((pair) => pair?.pairAddress).filter(Boolean));
+  if (pairAddresses.has(holder.tokenAccount) || pairAddresses.has(holder.owner)) {
+    return { type: 'Liquidity Pool', label: 'LP / pair account' };
+  }
+  if (ownerProgram && ownerProgram !== SYSTEM_PROGRAM_ID) {
+    return { type: 'Liquidity Pool', label: 'Pool/program vault' };
+  }
+  return null;
+}
+
+function countWalletRole(holders, predicate) {
+  return holders.filter((holder) => holder.owner && predicate(holder)).length;
 }
 
 async function fetchBackendTokenIntel(address) {
@@ -1029,8 +1105,10 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       mint,
       pump,
       dexOrders,
+      liquidityPool: buildLiquidityPoolIntel(dexPair, dexPairs, holders?.excludedHolderDetails || []),
       madeOnSol: holders?.madeOnSolIntel || null,
       holders: holders?.holderDetails || null,
+      excludedHolders: holders?.excludedHolderDetails || null,
       walletIntel: holders?.walletIntel || null,
       insightSummary: holders?.insightSummary || null,
       holderMeta: holders ? {
@@ -1041,6 +1119,24 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       providerErrors
     },
     providerConfidence: dexPair && mint ? 'high' : dexPair || mint ? 'medium' : 'low'
+  };
+}
+
+function buildLiquidityPoolIntel(dexPair, dexPairs = [], excludedHolders = []) {
+  if (!dexPair && !dexPairs.length && !excludedHolders.length) return null;
+  const pair = dexPair || pickBestPair(dexPairs);
+  const liquidityUsd = Number(pair?.liquidity?.usd || 0);
+
+  return {
+    dex: pair?.dexId || null,
+    pairAddress: pair?.pairAddress || null,
+    pairUrl: pair?.url || null,
+    usd: liquidityUsd,
+    base: Number(pair?.liquidity?.base || 0),
+    quote: Number(pair?.liquidity?.quote || 0),
+    status: pair ? inferLpStatus(pair, liquidityUsd) : 'LP vault terdeteksi dari top accounts',
+    pairCount: dexPairs.length,
+    excludedTopAccounts: excludedHolders
   };
 }
 
