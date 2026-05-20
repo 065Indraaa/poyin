@@ -61,11 +61,11 @@ export async function buildSmartWalletRegistry() {
       const madeOnSol = await fetchMadeOnSolWalletLabels(apiKey);
       Object.assign(labels, madeOnSol.labels);
       warnings.push(...madeOnSol.warnings);
-      if (Object.keys(madeOnSol.labels).length) sources.push('MadeOnSol API');
-      else sources.push('MadeOnSol key terdeteksi');
+      if (Object.keys(madeOnSol.labels).length) sources.push('indeks wallet eksternal');
+      else sources.push('key indeks wallet terdeteksi');
     } catch (error) {
       warnings.push(error.message);
-      sources.push('MadeOnSol key terdeteksi, data belum tersedia');
+      sources.push('key indeks wallet terdeteksi, data belum tersedia');
     }
   }
 
@@ -81,24 +81,19 @@ export async function buildSmartWalletRegistry() {
 
 async function fetchMadeOnSolWalletLabels(apiKey) {
   const requests = [
-    { path: '/kol/leaderboard?period=7d&limit=50&sort=pnl', type: 'KOL' },
-    { path: '/kol/leaderboard?period=30d&limit=50&sort=winrate', type: 'KOL' },
-    { path: '/kol/feed?limit=50&exclude_sells=true', type: 'KOL Aktif' },
-    { path: '/alpha/leaderboard?period=all&limit=50&sort=win_rate&min_tokens=3&exclude_bots=true', type: 'Alpha Wallet' },
-    { path: '/alpha/leaderboard?period=30d&limit=50&sort=pnl&min_tokens=3&exclude_bots=true', type: 'Alpha Wallet' }
+    { path: '/kol/feed?limit=10', type: 'KOL Aktif', required: true },
+    ...getPaidMadeOnSolRequests()
   ];
 
   const results = await Promise.allSettled(
     requests.map((request) => fetchMadeOnSolJson(request.path, apiKey))
   );
 
-  if (results.every((result) => result.status === 'rejected')) {
-    const reasons = results
-      .map((result, index) => `${requests[index].path}: ${result.reason?.message || 'gagal'}`)
-      .join(' | ');
+  const feedResult = results[0];
+  if (feedResult.status === 'rejected') {
     return {
       labels: {},
-      warnings: [`MadeOnSol API tidak mengembalikan data leaderboard/feed. ${reasons}`]
+      warnings: [summarizeMadeOnSolFailures(results)]
     };
   }
 
@@ -106,7 +101,7 @@ async function fetchMadeOnSolWalletLabels(apiKey) {
   const warnings = [];
   results.forEach((result, index) => {
     if (result.status !== 'fulfilled') {
-      warnings.push(`${requests[index].path}: ${result.reason?.message || 'gagal'}`);
+      if (requests[index].required) warnings.push(summarizeMadeOnSolFailures([result]));
       return;
     }
 
@@ -115,7 +110,7 @@ async function fetchMadeOnSolWalletLabels(apiKey) {
         name: item.name,
         type: item.type,
         x: item.x,
-        source: 'MadeOnSol',
+        source: 'indeks wallet eksternal',
         winRate: item.winRate,
         pnl: item.pnl,
         roi: item.roi,
@@ -125,6 +120,40 @@ async function fetchMadeOnSolWalletLabels(apiKey) {
   });
 
   return { labels, warnings };
+}
+
+function summarizeMadeOnSolFailures(results) {
+  const statuses = results.map((result) => parseHttpStatus(result.reason?.message)).filter(Boolean);
+  if (statuses.every((status) => status === 403)) {
+    return 'Key indeks wallet terbaca, tetapi akses leaderboard/feed ditolak. Cek izin API key, plan, atau isi SMART_WALLETS sebagai fallback.';
+  }
+
+  if (statuses.every((status) => status === 401)) {
+    return 'Key indeks wallet terbaca, tetapi autentikasi ditolak. Cek ulang nilai API key di env Vercel.';
+  }
+
+  if (statuses.length) {
+    return `Indeks wallet belum mengembalikan data. Status terakhir: ${[...new Set(statuses)].join(', ')}.`;
+  }
+
+  return 'Indeks wallet belum mengembalikan data leaderboard/feed.';
+}
+
+function getPaidMadeOnSolRequests() {
+  const includePaid = ['1', 'true', 'yes'].includes(String(process.env.MADEONSOL_INCLUDE_PAID_ENDPOINTS || '').toLowerCase());
+  if (!includePaid) return [];
+
+  return [
+    { path: '/kol/leaderboard?period=7d&limit=50&sort=pnl', type: 'KOL' },
+    { path: '/kol/leaderboard?period=30d&limit=50&sort=winrate', type: 'KOL' },
+    { path: '/alpha/leaderboard?period=all&limit=50&sort=win_rate&min_tokens=3&exclude_bots=true', type: 'Alpha Wallet' },
+    { path: '/alpha/leaderboard?period=30d&limit=50&sort=pnl&min_tokens=3&exclude_bots=true', type: 'Alpha Wallet' }
+  ];
+}
+
+function parseHttpStatus(message = '') {
+  const match = String(message).match(/\b(4\d\d|5\d\d)\b/);
+  return match ? Number(match[1]) : null;
 }
 
 async function fetchMadeOnSolJson(path, apiKey) {
@@ -154,14 +183,14 @@ function normalizeWalletRows(value, fallbackType) {
   const rows = normalizeList(value?.leaderboard || value?.trades || value?.wallets || value?.data || value?.results || value);
   return rows
     .map((row) => {
-      const address = row.wallet || row.wallet_address || row.address || row.owner || row.publicKey || row.trader || row.kol || row.kol_wallet;
+      const address = pickWalletAddress(row);
       if (!isSolanaAddress(address)) return null;
 
       return {
         address,
-        name: row.name || row.kol_name || row.label || row.twitter || shortAddress(address),
-        type: row.type || row.category || row.strategy || row.kol_strategy_tag || fallbackType,
-        x: row.twitter_url || row.kol_twitter || row.twitter || null,
+        name: pickFirstText(row.name, row.kol_name, row.kolName, row.kol?.name, row.label, row.twitter, row.username, row.kol?.twitter, shortAddress(address)),
+        type: pickFirstText(row.type, row.category, row.strategy, row.kol_strategy_tag, fallbackType),
+        x: pickFirstText(row.twitter_url, row.kol_twitter, row.twitter, row.twitterUsername, row.username, row.kol?.twitter, row.kol?.username, null),
         winRate: normalizeRate(row.win_rate || row.winrate || row.winRate),
         pnl: Number(row.pnl || row.realized_pnl || row.profit || row.net_pnl || row.net_pnl_sol || 0) || null,
         roi: Number(row.roi || row.roi_pct || row.return_pct || 0) || null,
@@ -169,6 +198,39 @@ function normalizeWalletRows(value, fallbackType) {
       };
     })
     .filter(Boolean);
+}
+
+function pickWalletAddress(row = {}) {
+  const candidates = [
+    row.wallet,
+    row.wallet_address,
+    row.walletAddress,
+    row.address,
+    row.owner,
+    row.publicKey,
+    row.trader,
+    row.trader_address,
+    row.traderAddress,
+    row.kol,
+    row.kol_wallet,
+    row.kolWallet,
+    row.kolAddress,
+    row.kol_address,
+    row.kol?.wallet,
+    row.kol?.wallet_address,
+    row.kol?.address,
+    row.kol?.publicKey,
+    row.trader?.wallet,
+    row.trader?.address,
+    row.user?.wallet,
+    row.user?.address
+  ];
+
+  return candidates.find(isSolanaAddress) || null;
+}
+
+function pickFirstText(...values) {
+  return values.find((value) => typeof value === 'string' && value.trim()) || null;
 }
 
 function parseWalletLabels(value) {

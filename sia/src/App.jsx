@@ -25,10 +25,10 @@ import { ponyinPrinciples } from './data/knowledgeBase';
 import { fetchDiscoveryFeed, fetchProviderHealth, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
 
 const scanSteps = [
-  'Menarik data pair token dari DexScreener...',
+  'Menarik data pair dan likuiditas live...',
   'Mengecek mint authority dan freeze authority Solana...',
-  'Memuat registry Smart Money dari cache MadeOnSol...',
-  'Membaca trade stream PumpPortal...',
+  'Memuat registry wallet pintar dan kualitas holder...',
+  'Membaca stream transaksi terbaru...',
   'Menilai token memakai ilmu Ponyin dan data live...',
   'Menyusun verdict entry dan catatan risiko...'
 ];
@@ -160,7 +160,7 @@ export default function App() {
         ...current,
         loading: false,
         ok: false,
-        error: translateProviderError(error.message) || 'Health endpoint belum tersambung'
+        error: translateProviderError(error.message) || 'Status data belum tersambung'
       }));
     }
   }
@@ -247,9 +247,9 @@ export default function App() {
     } catch (error) {
       const failedToken = {
         ...optimisticToken,
-        source: 'Provider live tidak tersedia',
+        source: 'Sumber data live tidak tersedia',
         providerConfidence: 'low',
-        feedInsight: translateProviderError(error.message) || 'Tidak ada provider live yang mengembalikan data.'
+        feedInsight: translateProviderError(error.message) || 'Tidak ada sumber data live yang mengembalikan data.'
       };
       setSelectedToken(failedToken);
       setReport(analyzeToken(failedToken));
@@ -302,8 +302,8 @@ export default function App() {
           </div>
           <h1>Should I Ape?</h1>
           <p className="hero-lead">
-            Scanner live untuk trader Solana memecoin. Data ditarik dari DexScreener, Solana RPC,
-            dan PumpPortal stream, lalu dinilai dengan ilmu Ponyin, Space X, dan sinyal pasar tambahan.
+            Scanner live untuk trader Solana memecoin. Data ditarik dari on-chain, pair market,
+            dan stream transaksi, lalu dinilai dengan ilmu Ponyin, Space X, dan sinyal pasar tambahan.
           </p>
 
           <form className="search-card" onSubmit={onSubmit}>
@@ -323,7 +323,7 @@ export default function App() {
           <div className="quick-actions">
             <button type="button" onClick={refreshFeed} disabled={feedStatus.loading}>
               <RefreshCw size={15} />
-              {feedStatus.loading ? 'Memuat ulang' : 'Muat ulang live feed'}
+              {feedStatus.loading ? 'Memuat ulang' : 'Muat ulang daftar live'}
             </button>
             {feedTokens.slice(0, 2).map((token) => (
               <button type="button" key={token.id} onClick={() => runAnalysis(token)}>
@@ -349,24 +349,24 @@ export default function App() {
           </div>
           <div className="intel-grid">
             <Stat label="Token live" value={stats.tokens} />
-            <Stat label="Provider" value={stats.provider} />
+            <Stat label="Sumber data" value={stats.provider} />
             <Stat label="Keyakinan data" value={`${report.confidence}%`} />
             <Stat label="Update" value={stats.updated} />
           </div>
           <div className="intel-log">
             {report.knowledgeHits.slice(0, 3).map((hit) => (
-              <LogLine key={hit.id} tone={hit.id === 'globalFees' ? 'warn' : 'good'} text={`${hit.title}: ${hit.source}`} />
+              <LogLine key={hit.id} tone={hit.id === 'globalFees' ? 'warn' : 'good'} text={`${cleanPublicCopy(hit.title)}: ${cleanPublicCopy(hit.source)}`} />
             ))}
-            {feedStatus.error && <LogLine tone="danger" text={`Error feed: ${feedStatus.error}`} />}
+            {feedStatus.error && <LogLine tone="danger" text={`Gangguan data: ${feedStatus.error}`} />}
           </div>
         </div>
       </section>
 
       <section className="feed-section" id="feed">
         <SectionHeader
-          kicker="Feed Entry"
-          title="Feed live untuk kandidat entry valid."
-          text="Feed memprioritaskan token dengan peluang entry lebih sehat: likuiditas cukup, transaksi aktif, buy pressure wajar, volume tidak janggal, dan drawdown belum rusak."
+          kicker="Daftar Entry"
+          title="Daftar live untuk kandidat entry valid."
+          text="Daftar ini memprioritaskan token dengan peluang entry lebih sehat: likuiditas cukup, transaksi aktif, buy pressure wajar, volume tidak janggal, dan drawdown belum rusak."
         />
 
         <ProviderStrip
@@ -387,7 +387,7 @@ export default function App() {
                 <th>Fase</th>
                 <th>Umur</th>
                 <th>MCap</th>
-                <th>Liquidity</th>
+                <th>Likuiditas</th>
                 <th>Vol 5m</th>
                 <th>Txns 5m</th>
                 <th>B/S</th>
@@ -398,7 +398,7 @@ export default function App() {
             <tbody>
               {feedStatus.loading && feedTokens.length === 0 && (
                 <tr>
-                  <td colSpan="10" className="empty-row">Memuat live feed...</td>
+                  <td colSpan="10" className="empty-row">Memuat daftar live...</td>
                 </tr>
               )}
               {!feedStatus.loading && feedTokens.length === 0 && (
@@ -476,7 +476,7 @@ export default function App() {
           <div className="tldr-card">
             <div className="token-title-row">
               <div>
-                <span className="eyebrow compact">{selectedToken.source}</span>
+                <span className="eyebrow compact">{cleanPublicCopy(selectedToken.source)}</span>
                 <h2>{selectedToken.name} <small>{selectedToken.ticker ? `$${selectedToken.ticker}` : ''}</small></h2>
                 <p>{selectedToken.ca || 'Belum ada contract yang dipilih'}</p>
               </div>
@@ -488,11 +488,11 @@ export default function App() {
 
             <div className="ai-box">
               <span>Ringkasan AI</span>
-              <p>{report.summary}</p>
+              <p>{cleanPublicCopy(report.summary)}</p>
             </div>
 
             <div className="source-grid">
-              <SourcePill icon={DatabaseZap} label="Sumber data" value={selectedToken.source} />
+              <SourcePill icon={DatabaseZap} label="Sumber data" value={cleanPublicCopy(selectedToken.source)} />
               <SourcePill icon={Signal} label="Keyakinan data" value={`${report.confidence}%`} />
               <SourcePill icon={ShieldAlert} label="Risiko utama" value={report.primaryRisk} />
             </div>
@@ -502,7 +502,7 @@ export default function App() {
                 Trojan
               </a>
               <a href={selectedToken.url || (selectedToken.ca ? `https://dexscreener.com/solana/${selectedToken.ca}` : '#home')} target="_blank" rel="noreferrer">
-                DexScreener
+                Chart
               </a>
             </div>
           </div>
@@ -549,11 +549,11 @@ export default function App() {
         <SectionHeader
           kicker="Cakupan Data"
           title="Live sekarang, indexer forensik berikutnya."
-          text="Public API cukup untuk discovery, pair, liquidity, mint/freeze, dan timing marketing. Bukti penuh common funder, top holder, dev sell, dan fee exact tetap butuh backend/indexer seperti Helius atau Bitquery."
+          text="Data publik cukup untuk discovery, pair, liquidity, mint/freeze, dan timing marketing. Bukti penuh common funder, top holder, dev sell, dan fee exact tetap butuh indexer on-chain yang lebih dalam."
         />
         <div className="roadmap-grid">
-          <RoadmapCard title="Sudah live" text="Profile, boost, dan pair DexScreener, mint authority dari RPC Solana, serta token stream PumpPortal saat scan." />
-          <RoadmapCard title="Butuh backend" text="Normalisasi top holder, graph common funder, retensi holder menit pertama, dan realized PnL wallet dev." />
+          <RoadmapCard title="Sudah live" text="Profile, boost, data pair, mint authority on-chain, serta stream transaksi saat scan." />
+          <RoadmapCard title="Butuh indexer" text="Normalisasi top holder, graph common funder, retensi holder menit pertama, dan realized PnL wallet dev." />
           <RoadmapCard title="Siap dikembangkan" text="Alert Telegram /ape, watchlist wallet ping, dan scoring personal sesuai style scalping atau swing." />
         </div>
       </section>
@@ -577,7 +577,7 @@ function Navigation() {
         </div>
       </a>
       <div className="nav-links">
-        <a href="#feed">Feed</a>
+        <a href="#feed">Daftar Live</a>
         <a href="#result">Meter Ape</a>
         <a href="#engine">Engine</a>
         <a href="#roadmap">Cakupan</a>
@@ -604,18 +604,18 @@ function ProviderStrip({ status, health, count, onRefresh }) {
       <div>
         {status.error ? <ServerCrash size={20} /> : <DatabaseZap size={20} />}
         <div>
-          <strong>{status.error ? 'Provider terganggu' : status.provider}</strong>
+          <strong>{status.error ? 'Sumber data terganggu' : 'Sumber data live aktif'}</strong>
           <span>
             {status.error
               ? status.error
-            : `${count} token Solana aktif${status.fetchedAt ? `, Dex refresh ${formatTime(status.fetchedAt)}` : ''}, ${formatStreamStatus(status)}`}
+            : `${count} token Solana aktif${status.fetchedAt ? `, refresh ${formatTime(status.fetchedAt)}` : ''}, ${formatStreamStatus(status)}`}
           </span>
           <ProviderHealthChips health={health} />
         </div>
       </div>
       <button type="button" onClick={onRefresh} disabled={status.loading}>
         <RefreshCw size={16} />
-        {status.loading ? 'Memuat' : 'Refresh'}
+        {status.loading ? 'Memuat' : 'Muat ulang'}
       </button>
     </div>
   );
@@ -625,15 +625,15 @@ function ProviderHealthChips({ health }) {
   const smartSize = Number(health?.smartWallets?.size || 0);
   const chips = [
     {
-      label: health?.env?.madeOnSolKey ? 'MadeOnSol key aktif' : 'MadeOnSol key kosong',
+      label: health?.env?.madeOnSolKey ? 'indeks wallet aktif' : 'indeks wallet kosong',
       ok: Boolean(health?.env?.madeOnSolKey)
     },
     {
-      label: health?.env?.heliusKey || health?.env?.solanaRpcUrl ? 'RPC privat aktif' : 'RPC publik',
+      label: health?.env?.heliusKey || health?.env?.solanaRpcUrl ? 'jalur on-chain stabil' : 'jalur on-chain publik',
       ok: Boolean(health?.env?.heliusKey || health?.env?.solanaRpcUrl)
     },
     {
-      label: smartSize > 0 ? `${smartSize} smart wallet` : 'registry kosong',
+      label: smartSize > 0 ? `${smartSize} wallet pintar` : 'registry wallet kosong',
       ok: smartSize > 0
     }
   ];
@@ -641,7 +641,7 @@ function ProviderHealthChips({ health }) {
   return (
     <div className="provider-health-chips">
       {health?.error ? (
-        <span className="warn">Health API: {health.error}</span>
+        <span className="warn">{health.error}</span>
       ) : chips.map((chip) => (
         <span className={chip.ok ? 'ok' : 'warn'} key={chip.label}>{chip.label}</span>
       ))}
@@ -714,7 +714,7 @@ function ForensicPanel({ token, report, status, now }) {
         </div>
         <span className={`live-chip ${status.streamConnected ? 'on' : 'off'}`}>
           <span />
-          {status.streamConnected ? 'PumpPortal live' : 'Stream menyambung ulang'}
+          {status.streamConnected ? 'Stream live' : 'Stream menyambung ulang'}
         </span>
       </div>
 
@@ -740,7 +740,7 @@ function ForensicPanel({ token, report, status, now }) {
           {insightSummary.length > 0 && (
             <div className="intel-summary">
               {insightSummary.slice(0, 4).map((item) => (
-                <span key={item}>{item}</span>
+                <span key={item}>{cleanPublicCopy(item)}</span>
               ))}
             </div>
           )}
@@ -753,7 +753,7 @@ function ForensicPanel({ token, report, status, now }) {
                 <small>{holder.label || holder.type || formatSol(holder.solBalance)}</small>
               </div>
             )) : (
-              <p className="muted-copy">Top holder belum tersedia. Gunakan Helius key valid agar RPC holder lebih stabil.</p>
+              <p className="muted-copy">Top holder belum tersedia. Gunakan jalur RPC privat agar pembacaan holder lebih stabil.</p>
             )}
           </div>
         </div>
@@ -765,13 +765,13 @@ function ForensicPanel({ token, report, status, now }) {
               <div className="wallet-score-row" key={`${wallet.rank}-${wallet.owner || wallet.label}`}>
                 <div>
                   <strong>#{wallet.rank} {wallet.label || shortAddress(wallet.owner)}</strong>
-                  <span>{wallet.type || 'holder'} · {wallet.pct == null ? 'supply unknown' : `${wallet.pct.toFixed(2)}% supply`}</span>
+                  <span>{wallet.type || 'holder'} - {wallet.pct == null ? 'supply belum diketahui' : `${wallet.pct.toFixed(2)}% supply`}</span>
                 </div>
                 <em>{wallet.score}</em>
                 <small>{wallet.tags?.length ? wallet.tags.join(', ') : formatSol(wallet.solBalance)}</small>
               </div>
             )) : (
-              <p className="muted-copy">Skor wallet belum tersedia. Endpoint token-intel akan mengisi bagian ini saat backend aktif.</p>
+              <p className="muted-copy">Skor wallet belum tersedia. Data ini akan terisi saat analisis holder on-chain aktif.</p>
             )}
           </div>
         </div>
@@ -781,9 +781,9 @@ function ForensicPanel({ token, report, status, now }) {
           <div className="rule-match-list">
             {report.knowledgeHits.map((hit) => (
               <div className="rule-match" key={hit.id}>
-                <strong>{hit.title}</strong>
-                <span>{hit.source}</span>
-                <p>{hit.rule}</p>
+                <strong>{cleanPublicCopy(hit.title)}</strong>
+                <span>{cleanPublicCopy(hit.source)}</span>
+                <p>{cleanPublicCopy(hit.rule)}</p>
               </div>
             ))}
           </div>
@@ -803,38 +803,38 @@ function ForensicPanel({ token, report, status, now }) {
         </div>
 
         <div className="forensic-card">
-          <h3>Intelijen MadeOnSol</h3>
+          <h3>Intelijen Indeks Pasar</h3>
           {madeOnSol ? (
-            <div className="madeonsol-grid">
+            <div className="market-index-grid">
               <MetricMini label="Umur indexer" value={madeOnSol.ageSeconds == null ? 'belum diketahui' : formatAgeSeconds(madeOnSol.ageSeconds)} />
-              <MetricMini label="MCap MOS" value={formatUsd(madeOnSol.marketCapUsd)} />
+              <MetricMini label="MCap indeks" value={formatUsd(madeOnSol.marketCapUsd)} />
               <MetricMini label="Volume 24h" value={formatUsd(madeOnSol.volume24hUsd)} />
               <MetricMini label="MEV 5m" value={formatOptionalPct(readWindow(madeOnSol.mevVolumePct, '5m'))} />
               <MetricMini label="KOL flow" value={madeOnSol.kolActivity?.signal || 'belum ada'} />
               <MetricMini label="Deployer" value={madeOnSol.deployer?.tier || 'belum diketahui'} />
             </div>
           ) : (
-            <p className="muted-copy">Token intelligence MadeOnSol belum tersedia. Pastikan key MadeOnSol aktif di env Vercel dan token sudah terindeks provider.</p>
+            <p className="muted-copy">Intelijen indeks pasar belum tersedia. Data ini muncul jika token sudah terbaca oleh sumber indeks tambahan.</p>
           )}
         </div>
 
         <div className="forensic-card">
-          <h3>Integritas Provider</h3>
+          <h3>Kesehatan Data</h3>
           <div className="provider-list">
-            <ProviderLine label="Pair DexScreener" ok={Boolean(token.rawProviders?.dexPair)} detail={token.pairDex || token.source} />
-            <ProviderLine label="Mint RPC Solana" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah revoke' : 'masih terbuka'}`} />
-            <ProviderLine label="Token intel" ok={token.rawProviders?.holderMeta?.tokenIntelProvider === 'backend token-intel'} detail={token.rawProviders?.holderMeta?.tokenIntelProvider || 'fallback browser RPC'} />
-            <ProviderLine label="Intel MadeOnSol" ok={Boolean(madeOnSol)} detail={madeOnSol?.provider || 'belum tersedia'} />
-            <ProviderLine label="Registry Smart Money" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet dari ${token.rawProviders?.holderMeta?.smartWalletSource || flags.smartWalletSource || 'belum dikonfigurasi'}`} />
-            <ProviderLine label="Trade PumpPortal" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaca' : 'belum ada packet trade terbaru'} />
-            <ProviderLine label="Order Dex paid" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost approved`} />
+            <ProviderLine label="Data pair" ok={Boolean(token.rawProviders?.dexPair)} detail={token.pairDex ? `${token.pairDex} aktif` : cleanPublicCopy(token.source)} />
+            <ProviderLine label="Authority on-chain" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah revoke' : 'masih terbuka'}`} />
+            <ProviderLine label="Intel holder" ok={token.rawProviders?.holderMeta?.tokenIntelProvider === 'backend token-intel'} detail={token.rawProviders?.holderMeta?.tokenIntelProvider === 'backend token-intel' ? 'analisis holder aktif' : 'mode pembacaan dasar'} />
+            <ProviderLine label="Indeks pasar" ok={Boolean(madeOnSol)} detail={madeOnSol ? 'data indeks tambahan aktif' : 'belum tersedia'} />
+            <ProviderLine label="Registry wallet" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet pintar terbaca`} />
+            <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'belum ada trade terbaru'} />
+            <ProviderLine label="Order/boost" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost aktif`} />
             <ProviderLine label="Keyakinan data live" ok={report.confidence >= 45} detail={`${report.confidence}% confidence, ${report.primaryRisk}`} />
           </div>
 
           {Object.values(providerErrors).some(Boolean) && (
             <div className="provider-errors">
               {Object.entries(providerErrors).filter(([, value]) => value).map(([key, value]) => (
-                <span key={key}>{key}: {value}</span>
+                <span key={key}>{formatProviderErrorKey(key)}: {cleanPublicCopy(value)}</span>
               ))}
             </div>
           )}
@@ -889,7 +889,7 @@ function CheckCard({ check }) {
       <div>
         <span>{check.status === 'pass' ? 'LOLOS' : check.status === 'fail' ? 'GAGAL' : 'PANTAU'}</span>
         <h3>{check.label}</h3>
-        <p>{check.detail}</p>
+        <p>{cleanPublicCopy(check.detail)}</p>
       </div>
     </article>
   );
@@ -916,20 +916,45 @@ function buildStats(feedTokens, report, feedStatus) {
 
 function translateProviderError(message) {
   if (!message) return message;
-  if (message === 'PumpPortal websocket error') return 'Websocket PumpPortal bermasalah';
-  if (message === 'PumpPortal reconnecting') return 'PumpPortal menyambung ulang';
-  if (message === 'No live tokens returned from DexScreener') return 'Belum ada token live dari DexScreener';
-  return message;
+  if (String(message).includes('Health endpoint')) return 'Status data belum tersedia di pratinjau lokal';
+  if (message === 'PumpPortal websocket error') return 'Stream transaksi bermasalah';
+  if (message === 'PumpPortal reconnecting') return 'Stream transaksi menyambung ulang';
+  if (message === 'No live tokens returned from DexScreener') return 'Belum ada token live dari sumber pair';
+  return cleanPublicCopy(message);
 }
 
 function formatStreamStatus(status) {
-  if (!status.streamConnected) return 'PumpPortal menyambung ulang, fallback DexScreener aktif';
-  if (!status.streamLastTokenAt) return 'PumpPortal terhubung, menunggu token baru';
+  if (!status.streamConnected) return 'stream transaksi menyambung ulang, data pair tetap aktif';
+  if (!status.streamLastTokenAt) return 'stream transaksi terhubung, menunggu token baru';
 
   const seconds = Math.max(0, Math.floor((Date.now() - status.streamLastTokenAt) / 1000));
-  if (seconds < 45) return `PumpPortal live, packet ${seconds}dtk lalu`;
-  if (seconds < 180) return `PumpPortal sepi ${Math.floor(seconds / 60)}m, fallback DexScreener aktif`;
-  return 'PumpPortal belum memberi packet baru, fallback DexScreener aktif';
+  if (seconds < 45) return `stream live, data ${seconds}dtk lalu`;
+  if (seconds < 180) return `stream sepi ${Math.floor(seconds / 60)}m, data pair tetap aktif`;
+  return 'stream belum memberi data baru, data pair tetap aktif';
+}
+
+function cleanPublicCopy(value) {
+  return String(value || 'belum diketahui')
+    .replaceAll('MadeOnSol', 'indeks pasar')
+    .replaceAll('DexScreener', 'sumber pair')
+    .replaceAll('Health endpoint', 'status data')
+    .replaceAll('PumpPortal', 'stream transaksi')
+    .replaceAll('Helius', 'RPC privat')
+    .replaceAll('backend token-intel', 'analisis holder')
+    .replaceAll('fallback browser RPC', 'mode pembacaan dasar')
+    .replaceAll('provider', 'sumber data')
+    .replaceAll('Provider', 'Sumber data')
+    .replaceAll('API live', 'data live');
+}
+
+function formatProviderErrorKey(key) {
+  return {
+    dex: 'data pair',
+    solanaRpc: 'on-chain',
+    pumpPortal: 'stream transaksi',
+    dexOrders: 'order/boost',
+    holders: 'holder'
+  }[key] || key;
 }
 
 function upsertTokens(currentTokens, newTokens) {

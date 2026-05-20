@@ -415,7 +415,8 @@ a {
 }
 
 .provider-strip {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
@@ -436,6 +437,10 @@ a {
   align-items: center;
   min-width: 0;
   gap: 12px;
+}
+
+.provider-strip > div > div {
+  min-width: 0;
 }
 
 .provider-strip svg {
@@ -496,6 +501,7 @@ a {
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .provider-health-chips span.ok {
@@ -1127,7 +1133,6 @@ a {
 }
 
 .forensic-head,
-.forensic-columns,
 .link-row {
   display: flex;
   align-items: center;
@@ -1226,14 +1231,16 @@ a {
 }
 
 .forensic-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
   align-items: stretch;
   gap: 12px;
   margin-top: 12px;
 }
 
 .forensic-card {
-  flex: 1;
   min-width: 0;
+  min-height: 100%;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -1339,7 +1346,7 @@ a {
   font-weight: 900;
 }
 
-.madeonsol-grid {
+.market-index-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
@@ -1422,7 +1429,7 @@ a {
 
 .provider-line {
   display: grid;
-  grid-template-columns: 12px minmax(120px, 0.8fr) minmax(120px, 1fr);
+  grid-template-columns: 12px minmax(108px, 0.7fr) minmax(150px, 1fr);
   align-items: center;
   gap: 9px;
   min-height: 35px;
@@ -1520,7 +1527,7 @@ a {
   }
 
   .forensic-columns {
-    flex-direction: column;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1563,6 +1570,7 @@ a {
   .engine-grid,
   .source-grid,
   .forensic-grid,
+  .forensic-columns,
   .knowledge-grid,
   .roadmap-grid,
   .action-row {
@@ -1570,10 +1578,17 @@ a {
   }
 
   .token-title-row,
-  .provider-strip,
   .site-footer {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .provider-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-strip button {
+    width: 100%;
   }
 
   .copy-btn {
