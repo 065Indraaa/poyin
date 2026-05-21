@@ -1111,14 +1111,27 @@ function upsertTokens(currentTokens, newTokens) {
   const map = new Map(currentTokens.map((t) => [t.ca, t]));
   newTokens.forEach((t) => {
     const previous = map.get(t.ca);
+    // _fetchedAt = first time this token appeared in our feed (keep old)
+    // _lastSeenAt = last time this token was seen from API (always update)
     const fetchedAt = previous?._fetchedAt || t._fetchedAt || Date.now();
-    map.set(t.ca, { ...previous, ...t, _fetchedAt: fetchedAt, _lastSeenAt: Date.now() });
+    const enriched = {
+      ...previous,
+      ...t,
+      _fetchedAt: fetchedAt,
+      _lastSeenAt: Date.now(),
+    };
+    // Untuk token DexScreener, selalu pertahankan pairCreatedAt yang paling awal
+    if (previous?.pairCreatedAt && !t.pairCreatedAt) {
+      enriched.pairCreatedAt = previous.pairCreatedAt;
+    }
+    map.set(t.ca, enriched);
   });
   return Array.from(map.values()).sort((a, b) => {
     const rankA = feedRank(a);
     const rankB = feedRank(b);
     if (rankA !== rankB) return rankB - rankA;
 
+    // Prioritas: pairCreatedAt (umur token asli) > _lastSeenAt > _fetchedAt
     const ageA = a.pairCreatedAt || a._lastSeenAt || a._fetchedAt || Date.now();
     const ageB = b.pairCreatedAt || b._lastSeenAt || b._fetchedAt || Date.now();
     return ageB - ageA;
@@ -1127,7 +1140,9 @@ function upsertTokens(currentTokens, newTokens) {
 
 function pruneTokens(tokens) {
   const now = Date.now();
-  return tokens.filter((t) => {
+  const maxTokens = 150; // Batasi feed supaya tetap performa
+
+  const filtered = tokens.filter((t) => {
     if (!t?.ca) return false;
 
     const report = analyzeToken(t);
@@ -1136,36 +1151,47 @@ function pruneTokens(tokens) {
     const entryScore = computeEntryScore(t, report);
     const isStrong = entryScore >= 74 || report.score >= 68 || t.liquidityUsd >= 30000 || t.flags?.reportedVolume >= 50000;
     
-    // Feed ini bukan firehose token baru. Token harus ada bukti entry: market aktif, gak dump keras, dan gak wash ekstrem.
-    if (entryScore < 52) return false;
-    if (report.score <= 34 && entryScore < 70) return false;
-    if (isPumpBondingCurve && entryScore < 70) return false;
-    if (!isPumpBondingCurve && t.liquidityUsd < 6500) return false;
-    if (!isPumpBondingCurve && t.flags?.volumeLiquidityRatio > 9) return false;
-    if (!isPumpBondingCurve && t.flags?.sells5m > (t.flags?.buys5m * 2.6) + 8) return false;
+    // Filter yang terlalu lemah — tapi kasih kelonggaran buat token baru
+    if (entryScore < 38) return false;
+    if (report.score <= 28 && entryScore < 60) return false;
+    if (isPumpBondingCurve && entryScore < 55) return false;
+    if (!isPumpBondingCurve && t.liquidityUsd < 5000) return false;
+    if (!isPumpBondingCurve && t.flags?.volumeLiquidityRatio > 12) return false;
+    if (!isPumpBondingCurve && t.flags?.sells5m > (t.flags?.buys5m * 3.5) + 10) return false;
     
-    // Filter token mati, dump signifikan, atau belum cukup aktif buat disebut kandidat entry.
-    if (!isPumpBondingCurve && t.priceChange?.m5 < -12) return false;
-    if (!isPumpBondingCurve && t.priceChange?.h1 < -24) return false;
-    if (!isPumpBondingCurve && t.flags?.txns5m < 8 && t.liquidityUsd < 18000) return false;
-    if (!isPumpBondingCurve && lastSeenAgeMins > 30 && !isStrong) return false; // Gak muncul lagi dari refresh aktif.
+    // Filter token mati — tapi jangan terlalu agresif buang token yang masih aktif
+    if (!isPumpBondingCurve && t.priceChange?.m5 < -18) return false;
+    if (!isPumpBondingCurve && t.priceChange?.h1 < -35) return false;
+    if (!isPumpBondingCurve && t.flags?.txns5m < 4 && t.liquidityUsd < 12000) return false;
+    // Token yang gak muncul di refresh tetap dipertahankan lebih lama (4 jam), asal pernah strong
+    if (!isPumpBondingCurve && lastSeenAgeMins > 240 && !isStrong) return false;
 
-    // Evaluasi umur token
+    // Evaluasi umur token — new pair (< 4 jam) selalu dipertahankan
     if (isPumpBondingCurve) {
       const feedAgeMins = t._fetchedAt ? (now - t._fetchedAt) / 60000 : 0;
       if (feedAgeMins > LIVE_FEED_MAX_AGE_MINUTES) return false;
-      if (lastSeenAgeMins > 60 && !isStrong) return false;
+      if (lastSeenAgeMins > 120 && !isStrong) return false;
     } else if (t.pairCreatedAt) {
       const ageMins = (now - t.pairCreatedAt) / 60000;
       if (ageMins > LIVE_FEED_MAX_AGE_MINUTES) return false;
-      if (ageMins > 180 && !isStrong) return false;
+      // Token baru (< 4 jam) tetap dipertahankan meski gak strong
+      if (ageMins > 360 && !isStrong) return false;
     } else if (t.ageMinutes !== null) {
       if (t.ageMinutes > LIVE_FEED_MAX_AGE_MINUTES) return false;
-      if (t.ageMinutes > 180 && !isStrong) return false;
+      if (t.ageMinutes > 360 && !isStrong) return false;
     }
     
     return true;
   });
+
+  // Kalau masih kebanyakan, keep top 150 berdasarkan rank
+  if (filtered.length > maxTokens) {
+    return filtered
+      .sort((a, b) => feedRank(b) - feedRank(a))
+      .slice(0, maxTokens);
+  }
+
+  return filtered;
 }
 
 function feedRank(token) {
@@ -1245,6 +1271,8 @@ function shortAddress(address) {
 function formatLiveAge(token, currentTime = Date.now()) {
   if (!token?.ca) return '-';
 
+  // Umur token = dari saat pair dibuat (DexScreener) atau saat pertama kali terlihat (PumpPortal/bonding)
+  // Prioritas: pairCreatedAt (paling akurat) > _fetchedAt (first seen di feed) > _lastSeenAt (last update)
   const startTime = token.pairCreatedAt || token._fetchedAt || token._lastSeenAt;
   if (!startTime) return token.age || 'belum diketahui';
 

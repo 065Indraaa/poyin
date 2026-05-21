@@ -27,20 +27,21 @@ const DEX_SEARCH_TERMS = ['pumpfun', 'pump.fun', 'pumpswap', 'raydium', 'moonsho
 const DEFAULT_DEX_FEE_RATE = 0.0025;
 
 export async function fetchDiscoveryFeed() {
-  const [dexFeed, dexSearchFeed, pumpFeed] = await Promise.all([
+  const [dexFeed, dexSearchFeed, dexAllPairs, pumpFeed] = await Promise.all([
     fetchDexDiscoveryFeed().catch(() => []),
     fetchDexSearchDiscoveryFeed().catch(() => []),
-    collectPumpPortalNewTokens({ limit: 6, timeoutMs: 3500 }).catch(() => [])
+    fetchDexAllPairsFeed().catch(() => []),
+    collectPumpPortalNewTokens({ limit: 8, timeoutMs: 4000 }).catch(() => [])
   ]);
 
-  const tokens = uniqueTokens([...pumpFeed, ...dexSearchFeed, ...dexFeed]);
+  const tokens = uniqueTokens([...pumpFeed, ...dexSearchFeed, ...dexFeed, ...dexAllPairs]);
 
   if (!tokens.length) {
     throw new Error('Gak ada token live yang balik dari DexScreener');
   }
 
   const pumpOk = pumpFeed.length > 0;
-  const dexOk = dexFeed.length > 0 || dexSearchFeed.length > 0;
+  const dexOk = dexFeed.length > 0 || dexSearchFeed.length > 0 || dexAllPairs.length > 0;
 
   return {
     tokens,
@@ -140,6 +141,24 @@ async function fetchDexSearchDiscoveryFeed() {
   return uniquePairs(pairs)
     .map((pair) => normalizeDexPair(pair, { searchDiscovery: true }))
     .filter(Boolean);
+}
+
+async function fetchDexAllPairsFeed() {
+  // Ambil semua pair Solana terbaru — lebih luas daripada profiles/boosts
+  try {
+    const data = await fetchJson(`${DEX_API}/latest/dex/pairs/solana`);
+    const pairs = normalizeList(data)
+      .filter((pair) => pair?.chainId === 'solana' && pair?.baseToken?.address)
+      .filter(isLiveDiscoveryPair)
+      .sort(sortDiscoveryPairs)
+      .slice(0, 40);
+
+    return uniquePairs(pairs)
+      .map((pair) => normalizeDexPair(pair, {}))
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
 }
 
 export async function collectPumpPortalNewTokens({ limit = 6, timeoutMs = 2600 } = {}) {
