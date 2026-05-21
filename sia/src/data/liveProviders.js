@@ -24,6 +24,7 @@ const WS_TIMEOUT_MS = 4800;
 const HTTP_TIMEOUT_MS = 9500;
 const DEX_DISCOVERY_MAX_AGE_MINUTES = 3 * 24 * 60;
 const DEX_SEARCH_TERMS = ['pumpfun', 'pump.fun', 'pumpswap', 'raydium', 'moonshot'];
+const DEFAULT_DEX_FEE_RATE = 0.0025;
 
 export async function fetchDiscoveryFeed() {
   const [dexFeed, dexSearchFeed, pumpFeed] = await Promise.all([
@@ -35,7 +36,7 @@ export async function fetchDiscoveryFeed() {
   const tokens = uniqueTokens([...pumpFeed, ...dexSearchFeed, ...dexFeed]);
 
   if (!tokens.length) {
-    throw new Error('No live tokens returned from DexScreener');
+    throw new Error('Gak ada token live yang balik dari DexScreener');
   }
 
   return {
@@ -115,7 +116,7 @@ async function fetchDexDiscoveryFeed() {
     .filter(Boolean);
 
   if (!tokens.length) {
-    throw new Error('DexScreener returned no Solana pairs');
+    throw new Error('DexScreener gak ngasih pair Solana');
   }
 
   return tokens;
@@ -174,7 +175,7 @@ export async function collectPumpPortalNewTokens({ limit = 6, timeoutMs = 2600 }
           resolve(tokens);
         }
       } catch {
-        // Ignore malformed stream packets and keep the feed alive until timeout.
+        // Abaikan packet stream yang rusak, biar feed tetap hidup sampe timeout.
       }
     });
 
@@ -210,7 +211,7 @@ export async function fetchTokenSnapshot(address) {
   );
 
   if (!bestPair && !mint && !pump) {
-    throw new Error('No live provider returned token data');
+    throw new Error('Gak ada live provider yang ngasih data token');
   }
 
   return normalizeTokenSnapshot({
@@ -238,7 +239,7 @@ export async function fetchPumpPortalSnapshot(address) {
 
   return new Promise((resolve, reject) => {
     if (typeof WebSocket === 'undefined') {
-      reject(new Error('WebSocket unavailable'));
+      reject(new Error('WebSocket gak tersedia'));
       return;
     }
 
@@ -280,7 +281,7 @@ export async function fetchPumpPortalSnapshot(address) {
       } catch {
         if (!settled) {
           cleanup();
-          reject(new Error('PumpPortal payload parse failed'));
+          reject(new Error('PumpPortal gagal parse payload'));
         }
       }
     });
@@ -394,7 +395,7 @@ async function fetchTopHolders(address, supplyFromMint = null, dexPairs = []) {
 
     const smartWalletLabels = await getSmartWalletLabels();
 
-    // 3. Cocokkan owner dengan registry Smart Money/KOL yang tersedia.
+    // 3. Cocokin owner sama registry Smart Money/KOL yang tersedia.
     const owners = [];
     if (accountInfos?.value) {
       accountInfos.value.forEach((info, index) => {
@@ -508,6 +509,7 @@ function mergeHolderIntel(results = []) {
       whales: merged.whales ?? item.whales,
       burners: merged.burners ?? item.burners,
       madeOnSolIntel: merged.madeOnSolIntel ?? item.madeOnSolIntel,
+      globalFees: mergeGlobalFees(merged.globalFees, item.globalFees),
       smartWalletRegistrySize: Math.max(Number(merged.smartWalletRegistrySize || 0), Number(item.smartWalletRegistrySize || 0)),
       smartWalletSource: [merged.smartWalletSource, item.smartWalletSource].filter(Boolean).join(' + '),
       provider: [merged.provider, item.provider].filter(Boolean).join(' + ')
@@ -566,6 +568,7 @@ async function fetchBackendTokenIntel(address) {
     whales: payload.whales,
     burners: payload.burners,
     madeOnSolIntel: payload.madeOnSolIntel || null,
+    globalFees: payload.globalFees || payload.madeOnSolIntel?.globalFees || null,
     insightSummary: payload.insightSummary || [],
     smartWalletRegistrySize: payload.smartWalletRegistrySize,
     smartWalletSource: payload.smartWalletSource,
@@ -578,7 +581,7 @@ async function getSmartWalletLabels() {
     smartWalletLabelsPromise = buildSmartWalletLabels().catch(() => ({
       labels: WALLET_LABELS,
       size: Object.keys(WALLET_LABELS).length,
-      source: Object.keys(WALLET_LABELS).length ? 'VITE_SMART_WALLETS' : 'belum dikonfigurasi'
+      source: Object.keys(WALLET_LABELS).length ? 'VITE_SMART_WALLETS' : 'belum diatur'
     }));
   }
 
@@ -599,7 +602,7 @@ async function buildSmartWalletLabels() {
   return {
     labels,
     size: Object.keys(labels).length,
-    source: sources.length ? sources.join(' + ') : 'belum dikonfigurasi'
+    source: sources.length ? sources.join(' + ') : 'belum diatur'
   };
 }
 
@@ -636,7 +639,7 @@ async function rpc(method, params) {
 
   const payload = await response.json();
   if (payload.error) {
-    throw new Error(payload.error.message || `RPC ${method} failed`);
+    throw new Error(payload.error.message || `RPC ${method} gagal`);
   }
   return payload.result;
 }
@@ -788,7 +791,7 @@ function normalizePumpPortalToken(payload) {
     sniperWallets: null,
     lpStatus: 'Bonding curve',
     marketCap: marketCapSol ? `${marketCapSol.toFixed(marketCapSol >= 10 ? 1 : 2)} SOL` : 'bonding',
-    volume5m: 'new token',
+    volume5m: 'token baru',
     priceUsd: 0,
     liquidityUsd: 0,
     priceChange: { m5: 0, h1: 0, h6: 0, h24: 0 },
@@ -804,6 +807,7 @@ function normalizePumpPortalToken(payload) {
       cabalSync: initialBuy > 5 ? 58 : 34,
       reportedVolume: 0,
       feeCollected: null,
+      globalFees: null,
       dexPaidTiming: 'none',
       activeBoosts: 0,
       pumpFromLowPct: 0,
@@ -816,7 +820,7 @@ function normalizePumpPortalToken(payload) {
     },
     provider: 'PumpPortal live websocket',
     providerConfidence: 'low',
-    feedInsight: 'Token baru dari stream Pump.fun. Scan CA untuk cek authority, Dex pair, dan risiko bundle sebelum entry.'
+    feedInsight: 'Token baru dari stream Pump.fun. Scan CA dulu buat cek authority, Dex pair, sama risiko bundle sebelum entry.'
   };
 }
 
@@ -903,6 +907,7 @@ function normalizeDexPair(pair, extras = {}) {
       cabalSync: inferCabalSync({ txns5m, buys5m, sells5m, volume5m, liquidityUsd, priceChange }),
       reportedVolume: volume5m,
       feeCollected: null,
+      globalFees: buildDexGlobalFeeEstimate({ volume5m, volumeH1, volumeH24 }),
       dexPaidTiming: extras.boosted?.active ? inferDexPaidTiming(ageMinutes, priceChange) : 'none',
       activeBoosts: extras.boosted?.amount || 0,
       pumpFromLowPct: inferPumpFromLow(priceChange),
@@ -1060,6 +1065,7 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
           cabalSync: null,
           reportedVolume: 0,
           feeCollected: null,
+          globalFees: null,
           dexPaidTiming: 'none',
           activeBoosts: 0,
           pumpFromLowPct: 0,
@@ -1070,11 +1076,15 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
           sells5m: 0
         },
         provider: 'Solana RPC',
-        providerConfidence: 'low',
-        feedInsight: 'Dex pair belum ditemukan. Analisis hanya memakai data akun mint yang tersedia.'
+    providerConfidence: 'low',
+    feedInsight: 'Dex pair belum ketemu. Analisis cuma pake data akun mint yang tersedia.'
       };
 
   const orderTiming = inferOrderTiming(base, dexOrders);
+  const globalFees = mergeGlobalFees(
+    holders?.globalFees || holders?.madeOnSolIntel?.globalFees || null,
+    base.flags.globalFees || null
+  );
 
   return {
     ...base,
@@ -1090,6 +1100,8 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       smartMoneyCount: holders ? holders.smartMoneyCount : base.flags.smartMoneyCount,
       whales: holders ? holders.whales : base.flags.whales,
       burners: holders ? holders.burners : base.flags.burners,
+      feeCollected: globalFees?.exact && globalFees?.windows?.m5 != null ? globalFees.windows.m5 : base.flags.feeCollected,
+      globalFees,
       tokenIntelProvider: holders ? holders.provider : base.flags.tokenIntelProvider,
       smartWalletRegistrySize: holders ? holders.smartWalletRegistrySize : base.flags.smartWalletRegistrySize,
       smartWalletSource: holders ? holders.smartWalletSource : base.flags.smartWalletSource,
@@ -1105,6 +1117,7 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       mint,
       pump,
       dexOrders,
+      globalFees,
       liquidityPool: buildLiquidityPoolIntel(dexPair, dexPairs, holders?.excludedHolderDetails || []),
       madeOnSol: holders?.madeOnSolIntel || null,
       holders: holders?.holderDetails || null,
@@ -1134,7 +1147,7 @@ function buildLiquidityPoolIntel(dexPair, dexPairs = [], excludedHolders = []) {
     usd: liquidityUsd,
     base: Number(pair?.liquidity?.base || 0),
     quote: Number(pair?.liquidity?.quote || 0),
-    status: pair ? inferLpStatus(pair, liquidityUsd) : 'LP vault terdeteksi dari top accounts',
+    status: pair ? inferLpStatus(pair, liquidityUsd) : 'LP vault ketemu dari top accounts',
     pairCount: dexPairs.length,
     excludedTopAccounts: excludedHolders
   };
@@ -1238,18 +1251,18 @@ function buildFeedInsight({ txns5m, buys5m, sells5m, volume5m, liquidityUsd, pri
     return `Dex boost aktif setelah move besar (+${inferPumpFromLow(priceChange)}%). Baca sebagai potensi exit timing.`;
   }
   if (liquidityUsd > 0 && volume5m > liquidityUsd * 3) {
-    return 'Volume 5m jauh lebih besar dari liquidity. Perlu curiga wash atau churn bot.';
+    return 'Volume 5m jauh lebih gede dari liquidity. Perlu curiga wash atau churn bot.';
   }
   if (txns5m > 80 && buys5m > sells5m * 3 && priceChange.m5 < 10) {
-    return 'Banyak buy tetapi harga tidak ikut naik. Ada indikasi supply ditahan/dilepas.';
+    return 'Banyak buy tapi harga gak ikut naik. Ada indikasi supply ditahan/dilepas.';
   }
   if (priceChange.m5 < -15) {
     return 'Candle 5m merah kuat. Tunggu konfirmasi, jangan tangkap pisau jatuh.';
   }
   if (buys5m > sells5m && priceChange.m5 > 0) {
-    return 'Buy pressure 5m positif. Tetap cek authority dan distribusi holder.';
+    return 'Buy pressure 5m positif. Tetep cek authority sama distribusi holder.';
   }
-  return 'Data live terbaca. Lanjutkan cek holder, authority, dan timing entry.';
+  return 'Data live udah kebaca. Lanjut cek holder, authority, sama timing entry.';
 }
 
 function sumTxns(txnWindow = {}) {

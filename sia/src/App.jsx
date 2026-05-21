@@ -25,32 +25,32 @@ import { ponyinPrinciples } from './data/knowledgeBase';
 import { fetchDiscoveryFeed, fetchProviderHealth, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
 
 const scanSteps = [
-  'Menarik data pair dan likuiditas live...',
-  'Mengecek mint authority dan freeze authority Solana...',
-  'Memuat registry wallet pintar dan kualitas holder...',
-  'Membaca stream transaksi terbaru...',
-  'Menilai token memakai ilmu Ponyin dan data live...',
-  'Menyusun verdict entry dan catatan risiko...'
+  'Lagi ambil data pair sama likuiditas live...',
+  'Cek dulu mint authority sama freeze authority Solana-nya...',
+  'Muat registry wallet pintar sama cek kualitas holder...',
+  'Baca stream transaksi yang paling baru...',
+  'Nilai token pake ilmu Ponyin sama data live...',
+  'Rangkum verdict entry sama catetan risiko...'
 ];
 
 const phases = [
   {
     key: 'fresh',
     title: 'Launch Baru',
-    subtitle: 'Launch baru / pair baru',
-    focus: 'Bundle dev, fake volume, transaksi dev awal',
+    subtitle: 'Baru launch / pair baru',
+    focus: 'Bundle dev, fake volume, transaksi awal dev',
     icon: Flame
   },
   {
     key: 'trench',
     title: 'Zona Trench',
     subtitle: 'Live feed low-mid cap',
-    focus: 'Jual kecil top holder, sniper yang siap migrasi',
+    focus: 'Jual kecil top holder, sniper yang mau migrasi',
     icon: Radar
   },
   {
     key: 'raydium',
-    title: 'Sudah Masuk DEX',
+    title: 'Udah Masuk DEX',
     subtitle: 'Raydium / Orca / Meteora',
     focus: 'Kesehatan LP, fee ratio, wash trading',
     icon: Lock
@@ -160,7 +160,7 @@ export default function App() {
         ...current,
         loading: false,
         ok: false,
-        error: translateProviderError(error.message) || 'Status data belum tersambung'
+        error: translateProviderError(error.message) || 'Status data belum nyambung'
       }));
     }
   }
@@ -196,7 +196,7 @@ export default function App() {
         loading: false,
         provider: 'DexScreener live API',
         fetchedAt: null,
-        error: translateProviderError(error.message) || 'Feed tidak tersedia'
+        error: translateProviderError(error.message) || 'Feed lagi gak tersedia'
       }));
     }
   }
@@ -220,7 +220,7 @@ export default function App() {
 
       setFeedTokens((current) => pruneTokens(upsertTokens(current, stampedTokens)));
     } catch {
-      // Market refresh ringan boleh gagal tanpa mengganggu hasil scan forensic terakhir.
+      // Market refresh ringan boleh gagal, gak usah ganggu hasil scan forensic terakhir.
     }
   }
 
@@ -247,9 +247,9 @@ export default function App() {
     } catch (error) {
       const failedToken = {
         ...optimisticToken,
-        source: 'Sumber data live tidak tersedia',
+        source: 'Sumber data live lagi gak tersedia',
         providerConfidence: 'low',
-        feedInsight: translateProviderError(error.message) || 'Tidak ada sumber data live yang mengembalikan data.'
+        feedInsight: translateProviderError(error.message) || 'Gak ada sumber data live yang ngasih data balik.'
       };
       setSelectedToken(failedToken);
       setReport(analyzeToken(failedToken));
@@ -302,8 +302,8 @@ export default function App() {
           </div>
           <h1>Should I Ape?</h1>
           <p className="hero-lead">
-            Scanner live untuk trader Solana memecoin. Data ditarik dari on-chain, pair market,
-            dan stream transaksi, lalu dinilai dengan ilmu Ponyin, Space X, dan sinyal pasar tambahan.
+            Scanner live buat trader Solana memecoin. Data diambil dari on-chain, pair market,
+            sama stream transaksi, terus dinilai pake ilmu Ponyin, Space X, dan sinyal pasar tambahan.
           </p>
 
           <form className="search-card" onSubmit={onSubmit}>
@@ -315,7 +315,7 @@ export default function App() {
               aria-label="Contract address"
             />
             <button type="submit" disabled={isScanning}>
-              {isScanning ? 'Memindai' : 'Analisis'}
+              {isScanning ? 'Lagi Scan' : 'Analisis'}
               <ArrowRight size={18} />
             </button>
           </form>
@@ -323,7 +323,7 @@ export default function App() {
           <div className="quick-actions">
             <button type="button" onClick={refreshFeed} disabled={feedStatus.loading}>
               <RefreshCw size={15} />
-              {feedStatus.loading ? 'Memuat ulang' : 'Muat ulang daftar live'}
+              {feedStatus.loading ? 'Lagi muat ulang' : 'Muat ulang daftar live'}
             </button>
             {feedTokens.slice(0, 2).map((token) => (
               <button type="button" key={token.id} onClick={() => runAnalysis(token)}>
@@ -365,8 +365,8 @@ export default function App() {
       <section className="feed-section" id="feed">
         <SectionHeader
           kicker="Daftar Entry"
-          title="Daftar live untuk kandidat entry valid."
-          text="Daftar ini memprioritaskan token dengan peluang entry lebih sehat: likuiditas cukup, transaksi aktif, buy pressure wajar, volume tidak janggal, dan drawdown belum rusak."
+          title="Daftar live buat kandidat entry yang valid."
+          text="Daftar ini prioritasin token yang peluang entry-nya lebih sehat: likuiditas cukup, transaksi aktif, buy pressure wajar, volume gak aneh, dan drawdown belum rusak."
         />
 
         <ProviderStrip
@@ -403,7 +403,7 @@ export default function App() {
               )}
               {!feedStatus.loading && feedTokens.length === 0 && (
                 <tr>
-                  <td colSpan="10" className="empty-row">Belum ada token live yang memenuhi kriteria entry valid. Token baru tanpa bukti pasar tidak diprioritaskan.</td>
+                  <td colSpan="10" className="empty-row">Belum ada token live yang cocok kriteria entry valid. Token baru tanpa bukti pasar gak diprioritasin.</td>
                 </tr>
               )}
               {feedTokens.map((token) => (
@@ -444,8 +444,8 @@ export default function App() {
             <Radar size={28} />
           </div>
           <div>
-            <strong>{isScanning ? `Menganalisis ${selectedToken.ticker}` : 'Engine siap'}</strong>
-            <p>{isScanning ? scanSteps[scanIndex] : 'Paste CA atau klik token dari feed untuk menjalankan 5 lapis analisis.'}</p>
+            <strong>{isScanning ? `Lagi analisis ${selectedToken.ticker}` : 'Engine siap'}</strong>
+            <p>{isScanning ? scanSteps[scanIndex] : 'Paste CA atau klik token dari feed buat jalanin 5 lapis analisis.'}</p>
           </div>
         </div>
       </section>
@@ -478,7 +478,7 @@ export default function App() {
               <div>
                 <span className="eyebrow compact">{cleanPublicCopy(selectedToken.source)}</span>
                 <h2>{selectedToken.name} <small>{selectedToken.ticker ? `$${selectedToken.ticker}` : ''}</small></h2>
-                <p>{selectedToken.ca || 'Belum ada contract yang dipilih'}</p>
+                <p>{selectedToken.ca || 'Belum ada contract yang dipilih nih'}</p>
               </div>
               <button type="button" className="copy-btn" onClick={copyCa} disabled={!selectedToken.ca}>
                 {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />}
@@ -520,8 +520,8 @@ export default function App() {
       <section className="engine-section" id="engine">
         <SectionHeader
           kicker="Ponyin Engine"
-          title="Dasar analisis berasal dari materi utama."
-          text="Setiap verdict ditambatkan ke materi Bundle Token, Global Fees, Revoke, Dex Paid, konfirmasi candle, membaca holder, instant scalping, Space X, dan sinyal pasar live."
+          title="Dasar analisis dari materi utama."
+          text="Tiap verdict ditambatin ke materi Bundle Token, Global Fees, Revoke, Dex Paid, konfirmasi candle, baca holder, instant scalping, Space X, sama sinyal pasar live."
         />
 
         <div className="engine-grid">
@@ -548,8 +548,8 @@ export default function App() {
       <section className="roadmap-section" id="roadmap">
         <SectionHeader
           kicker="Cakupan Data"
-          title="Live sekarang, indexer forensik berikutnya."
-          text="Data publik cukup untuk discovery, pair, liquidity, mint/freeze, dan timing marketing. Bukti penuh common funder, top holder, dev sell, dan fee exact tetap butuh indexer on-chain yang lebih dalam."
+          title="Live sekarang, indexer forensik selanjutnya."
+          text="Data publik cukup buat discovery, pair, liquidity, mint/freeze, sama timing marketing. Bukti penuh common funder, top holder, dev sell, sama fee exact tetap butuh indexer on-chain yang lebih dalem."
         />
         <div className="roadmap-grid">
           <RoadmapCard title="Sudah live" text="Profile, boost, data pair, mint authority on-chain, serta stream transaksi saat scan." />
@@ -560,7 +560,7 @@ export default function App() {
 
       <footer className="site-footer">
         <strong>Should I Ape?</strong>
-        <span>Aplikasi monitoring live di dalam workspace Ponyin. Feed utama tidak memakai daftar token statis.</span>
+        <span>Aplikasi monitoring live di dalam workspace Ponyin. Feed utama gak pake daftar token statis.</span>
       </footer>
     </main>
   );
@@ -604,7 +604,7 @@ function ProviderStrip({ status, health, count, onRefresh }) {
       <div>
         {status.error ? <ServerCrash size={20} /> : <DatabaseZap size={20} />}
         <div>
-          <strong>{status.error ? 'Sumber data terganggu' : 'Sumber data live aktif'}</strong>
+          <strong>{status.error ? 'Sumber data lagi terganggu' : 'Sumber data live aktif'}</strong>
           <span>
             {status.error
               ? status.error
@@ -958,20 +958,20 @@ function buildStats(feedTokens, report, feedStatus) {
 function translateProviderError(message) {
   if (!message) return message;
   if (String(message).includes('Health endpoint')) return 'Status data belum tersedia di pratinjau lokal';
-  if (message === 'PumpPortal websocket error') return 'Stream transaksi bermasalah';
-  if (message === 'PumpPortal reconnecting') return 'Stream transaksi menyambung ulang';
+  if (message === 'PumpPortal websocket error') return 'Stream transaksi lagi bermasalah';
+  if (message === 'PumpPortal reconnecting') return 'Stream transaksi lagi nyambung ulang';
   if (message === 'No live tokens returned from DexScreener') return 'Belum ada token live dari sumber pair';
   return cleanPublicCopy(message);
 }
 
 function formatStreamStatus(status) {
-  if (!status.streamConnected) return 'stream transaksi menyambung ulang, data pair tetap aktif';
-  if (!status.streamLastTokenAt) return 'stream transaksi terhubung, menunggu token baru';
+  if (!status.streamConnected) return 'stream transaksi lagi nyambung ulang, data pair tetap aktif';
+  if (!status.streamLastTokenAt) return 'stream transaksi udah nyambung, nunggu token baru';
 
   const seconds = Math.max(0, Math.floor((Date.now() - status.streamLastTokenAt) / 1000));
   if (seconds < 45) return `stream live, data ${seconds}dtk lalu`;
   if (seconds < 180) return `stream sepi ${Math.floor(seconds / 60)}m, data pair tetap aktif`;
-  return 'stream belum memberi data baru, data pair tetap aktif';
+  return 'stream belum ngasih data baru, data pair tetap aktif';
 }
 
 function cleanPublicCopy(value) {
@@ -1027,7 +1027,7 @@ function pruneTokens(tokens) {
     const entryScore = computeEntryScore(t, report);
     const isStrong = entryScore >= 74 || report.score >= 68 || t.liquidityUsd >= 30000 || t.flags?.reportedVolume >= 50000;
     
-    // Feed ini bukan firehose token baru. Token harus punya bukti entry: market aktif, tidak dump keras, dan tidak wash ekstrem.
+    // Feed ini bukan firehose token baru. Token harus ada bukti entry: market aktif, gak dump keras, dan gak wash ekstrem.
     if (entryScore < 52) return false;
     if (report.score <= 34 && entryScore < 70) return false;
     if (isPumpBondingCurve && entryScore < 70) return false;
@@ -1035,11 +1035,11 @@ function pruneTokens(tokens) {
     if (!isPumpBondingCurve && t.flags?.volumeLiquidityRatio > 9) return false;
     if (!isPumpBondingCurve && t.flags?.sells5m > (t.flags?.buys5m * 2.6) + 8) return false;
     
-    // Filter token mati, dump signifikan, atau belum cukup aktif untuk disebut kandidat entry.
+    // Filter token mati, dump signifikan, atau belum cukup aktif buat disebut kandidat entry.
     if (!isPumpBondingCurve && t.priceChange?.m5 < -12) return false;
     if (!isPumpBondingCurve && t.priceChange?.h1 < -24) return false;
     if (!isPumpBondingCurve && t.flags?.txns5m < 8 && t.liquidityUsd < 18000) return false;
-    if (!isPumpBondingCurve && lastSeenAgeMins > 30 && !isStrong) return false; // Tidak muncul lagi dari refresh aktif.
+    if (!isPumpBondingCurve && lastSeenAgeMins > 30 && !isStrong) return false; // Gak muncul lagi dari refresh aktif.
 
     // Evaluasi umur token
     if (isPumpBondingCurve) {

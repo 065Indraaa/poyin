@@ -6,14 +6,14 @@ export const emptyToken = {
   name: 'Paste Contract Address',
   ticker: 'SCAN',
   ca: '',
-  source: 'Menunggu API live',
+  source: 'Nunggu API live',
   age: '-',
   ageMinutes: null,
   curve: 0,
   buySell: '-',
   devTx: null,
   sniperWallets: null,
-  lpStatus: 'Belum discan',
+  lpStatus: 'Belum di-scan',
   marketCap: '-',
   volume5m: '-',
   liquidityUsd: 0,
@@ -42,7 +42,7 @@ export const emptyToken = {
     whales: 0,
     burners: 0
   },
-  feedInsight: 'Masukkan contract address untuk mengambil data DexScreener, Solana RPC, dan PumpPortal stream.'
+  feedInsight: 'Masukin contract address buat ambil data DexScreener, Solana RPC, sama PumpPortal stream.'
 };
 
 export function analyzeToken(token = emptyToken) {
@@ -88,7 +88,7 @@ export function analyzeToken(token = emptyToken) {
 
 export function getVerdictBand(score, confidence = 100) {
   if (confidence < 28) return { label: 'Data Belum Cukup', instruction: 'Jangan ape dulu', tone: 'warning' };
-  if (score <= 25) return { label: 'Zona Bahaya', instruction: 'Hindari', tone: 'danger' };
+  if (score <= 25) return { label: 'Zona Bahaya', instruction: 'Hindari aja', tone: 'danger' };
   if (score <= 50) return { label: 'PvP Trench', instruction: 'Khusus scalper pro', tone: 'warning' };
   if (score <= 75) return { label: 'Mulai Matang', instruction: 'Masuk bertahap', tone: 'watch' };
   return { label: 'Kandidat Kuat', instruction: 'Layak dipantau serius', tone: 'good' };
@@ -251,13 +251,13 @@ function computeConfidence(token, flags) {
 }
 
 function getPrimaryRisk(token, flags, volumeIntegrity, confidence) {
-  if (!token.ca) return 'contract belum dimasukkan';
+  if (!token.ca) return 'contract belum dimasukin';
   if (confidence < 28) return 'bukti live belum cukup';
   if (flags.freezeActive === true) return 'freeze authority aktif';
-  if (flags.mintRevoked === false) return 'mint authority masih terbuka';
+  if (flags.mintRevoked === false) return 'mint authority masih kebuka';
   if (flags.burners >= 5) return 'banyak burner wallet di top holder';
   if (flags.commonFunderWallets >= 7) return 'monopoli bundle';
-  if (flags.uniqueOwnerCount != null && flags.uniqueOwnerCount <= 3 && flags.burners > 0) return 'cluster owner dengan burner wallet';
+  if (flags.uniqueOwnerCount != null && flags.uniqueOwnerCount <= 3 && flags.burners > 0) return 'cluster owner sama burner wallet';
   if (flags.uniqueOwnerCount != null && flags.uniqueOwnerCount <= 2) return 'cluster owner top holder';
   if (volumeIntegrity < 25) return 'risiko wash trading / aktivitas palsu';
   if (flags.dexPaidTiming === 'late' && flags.pumpFromLowPct > 300) return 'timing exit liquidity';
@@ -269,7 +269,7 @@ function getPrimaryRisk(token, flags, volumeIntegrity, confidence) {
 
 function buildSummary(token, verdict, primaryRisk, volumeIntegrity, confidence) {
   if (!token.ca) {
-    return 'Menunggu input. Paste contract address untuk menjalankan live audit. Engine akan mengecek anomali DexScreener, authority di Solana RPC, dan stream PumpPortal untuk membaca footprint dev & cabal.';
+    return 'Nunggu input nih. Paste contract address buat jalanin live audit. Engine bakal cek anomali DexScreener, authority di Solana RPC, sama stream PumpPortal buat baca footprint dev & cabal.';
   }
 
   const dataLine = `[Keyakinan data live: ${confidence}% | Integritas volume: ${volumeIntegrity}%]`;
@@ -280,18 +280,18 @@ function buildSummary(token, verdict, primaryRisk, volumeIntegrity, confidence) 
   const extraAlerts = `${kolAlert}${smartAlert}${whaleAlert}${burnerAlert}`;
 
   if (verdict.tone === 'danger') {
-    return `${token.ticker} terdeteksi berada di zona ${verdict.label}. Risiko utama: ${primaryRisk}. ${dataLine}. Kesimpulan: ini kemungkinan besar rug pull atau trap. Jaga modal dan hindari menjadi exit liquidity untuk dev/cabal. Skip.${extraAlerts}`;
+    return `${token.ticker} kedeteksi ada di zona ${verdict.label}. Risiko utama: ${primaryRisk}. ${dataLine}. Kesimpulan: ini kemungkinan gede rug pull atau trap. Jaga modal dan hindari jadi exit liquidity buat dev/cabal. Skip aja.${extraAlerts}`;
   }
 
   if (verdict.tone === 'warning') {
-    return `${token.ticker} memiliki profil PvP keras. Risiko utama: ${primaryRisk}. ${dataLine}. Ada footprint wash trading atau holder terkonsentrasi. Kalau maksa masuk, pakai sizing sekecil mungkin dan siap cut loss cepat untuk scalp kilat. Jangan overstay.${extraAlerts}`;
+    return `${token.ticker} punya profil PvP keras. Risiko utama: ${primaryRisk}. ${dataLine}. Ada footprint wash trading atau holder terkonsentrasi. Kalo maksa masuk, pake sizing sekecil mungkin dan siap cut loss cepet buat scalp kilat. Jangan overstay.${extraAlerts}`;
   }
 
   if (verdict.tone === 'watch') {
-    return `${token.ticker} sedang mulai matang dan narasi mulai terbentuk, tapi belum 100% aman. Risiko utama: ${primaryRisk}. ${dataLine}. Setup masuk akal jika kamu mau DCA masuk bertahap. Pastikan punya titik invalidation yang jelas kalau support jebol.${extraAlerts}`;
+    return `${token.ticker} lagi mulai matang dan narasi mulai kebentuk, tapi belum 100% aman. Risiko utama: ${primaryRisk}. ${dataLine}. Setup masuk akal kalo kamu mau DCA masuk bertahap. Pastiin punya titik invalidation yang jelas kalo support jebol.${extraAlerts}`;
   }
 
-  return `${token.ticker} masuk kriteria Chad Ape. Setup chart dan struktur authority/holder sejauh ini menunjukkan probabilitas tren sehat menurut metrik Ponyin. ${dataLine}. Peluang bagus untuk entry, tapi tetap disiplin take profit di jalan dan jangan greedy. Memecoin bisa berubah arah dalam hitungan menit.${extraAlerts}`;
+  return `${token.ticker} masuk kriteria Chad Ape. Setup chart sama struktur authority/holder sejauh ini nunjukin probabilitas tren sehat menurut metrik Ponyin. ${dataLine}. Peluang bagus buat entry, tapi tetep disiplin take profit di jalan dan jangan greedy. Memecoin bisa berubah arah dalam hitungan menit.${extraAlerts}`;
 }
 
 function buildChecks(token, flags, volumeIntegrity) {
@@ -301,32 +301,32 @@ function buildChecks(token, flags, volumeIntegrity) {
       status: statusFromBool(flags.mintRevoked, true),
       detail:
         flags.mintRevoked == null
-          ? 'Belum terbaca dari Helius RPC.'
+          ? 'Belum kebaca dari Helius RPC.'
           : flags.mintRevoked
-            ? 'Mint authority sudah tidak aktif.'
-            : 'Mint authority masih terbuka.'
+            ? 'Mint authority udah gak aktif.'
+            : 'Mint authority masih kebuka.'
     },
     {
       label: 'Freeze Authority',
       status: statusFromBool(flags.freezeActive, false),
       detail:
         flags.freezeActive == null
-          ? 'Belum terbaca dari Helius RPC.'
+          ? 'Belum kebaca dari Helius RPC.'
           : flags.freezeActive
             ? 'Freeze authority aktif, potensi honeypot/lock retail.'
-            : 'Freeze authority tidak aktif.'
+            : 'Freeze authority gak aktif.'
     },
     {
       label: 'Likuiditas / LP',
       status: token.phase === 'raydium' && Number(token.liquidityUsd || 0) < 5000 ? 'fail' : Number(token.liquidityUsd || 0) > 25000 ? 'pass' : 'watch',
-      detail: `${token.lpStatus || 'Status LP belum diketahui'}; likuiditas live sekitar ${formatUsd(Number(token.liquidityUsd || 0))}.`
+      detail: `${token.lpStatus || 'Status LP belum ketahu'}; likuiditas live sekitar ${formatUsd(Number(token.liquidityUsd || 0))}.`
     },
     {
       label: 'Risiko Bundle',
       status: flags.commonFunderWallets == null ? (flags.cabalSync > 70 ? 'warn' : 'watch') : flags.commonFunderWallets >= 7 ? 'fail' : flags.commonFunderWallets >= 4 ? 'warn' : 'pass',
       detail:
         flags.commonFunderWallets == null
-          ? `Gagal menarik data dompet dari Helius. Cabal proxy saat ini ${safePct(flags.cabalSync)}.`
+          ? `Gagal narik data dompet dari Helius. Cabal proxy saat ini ${safePct(flags.cabalSync)}.`
           : `${flags.commonFunderWallets} top wallet terindikasi bagian dari bundle dev.`
     },
     {
@@ -335,7 +335,7 @@ function buildChecks(token, flags, volumeIntegrity) {
       detail:
         flags.top10Pct == null
           ? 'Data Top Holders gagal ditarik dari Helius RPC.'
-          : `Top 10 memegang ${flags.top10Pct.toFixed(1)}% supply.`
+          : `Top 10 megang ${flags.top10Pct.toFixed(1)}% supply.`
     },
     {
       label: 'Keragaman Owner',
@@ -343,15 +343,15 @@ function buildChecks(token, flags, volumeIntegrity) {
       detail:
         flags.uniqueOwnerCount == null
           ? 'Owner top holder belum bisa dinormalisasi dari RPC.'
-          : `${flags.uniqueOwnerCount} owner unik terdeteksi dari top 10 token account. Makin sedikit owner, makin tinggi risiko cluster.`
+          : `${flags.uniqueOwnerCount} owner unik kedeteksi dari top 10 token account. Makin dikit owner, makin tinggi risiko cluster.`
     },
     {
       label: 'Smart Money / KOL',
       status: flags.burners >= 3 ? 'warn' : (flags.kolDetected || flags.smartMoneyCount > 0 || flags.whales > 0) ? 'pass' : 'watch',
       detail: flags.kolDetected
-        ? `KOL terdeteksi: ${flags.kolDetected.name} (${flags.kolDetected.x}). ${flags.whales > 0 ? `Ada ${flags.whales} whale di Top 10.` : ''} Sinyal ini positif selama tidak ada burner/cluster berat.`
+        ? `KOL kedeteksi: ${flags.kolDetected.name} (${flags.kolDetected.x}). ${flags.whales > 0 ? `Ada ${flags.whales} whale di Top 10.` : ''} Sinyal ini positif selama gak ada burner/cluster berat.`
         : flags.smartMoneyCount > 0 || flags.whales > 0
-          ? `${flags.smartMoneyCount || 0} smart/large wallet dan ${flags.whales || 0} whale terdeteksi. Makin banyak dompet berkualitas makin baik, tetapi tetap cek distribusi supply.`
+          ? `${flags.smartMoneyCount || 0} smart/large wallet dan ${flags.whales || 0} whale kedeteksi. Makin banyak dompet berkualitas makin baik, tapi tetep cek distribusi supply.`
           : 'Belum ada dompet Smart Money atau whale di top 10.'
     },
     {
@@ -359,15 +359,15 @@ function buildChecks(token, flags, volumeIntegrity) {
       status: flags.burners == null ? 'watch' : flags.burners >= 5 ? 'fail' : flags.burners >= 2 ? 'warn' : 'pass',
       detail:
         flags.burners == null
-          ? 'Belum bisa membaca balance owner top holder.'
-          : `${flags.burners} burner wallet terdeteksi di top holder. Burner tinggi lebih buruk jika owner unik sedikit atau top10 supply besar.`
+          ? 'Belum bisa baca balance owner top holder.'
+          : `${flags.burners} burner wallet kedeteksi di top holder. Burner tinggi lebih parah kalo owner unik dikit atau top10 supply gede.`
     },
     {
       label: 'Integritas Volume',
       status: volumeIntegrity < 25 ? 'fail' : volumeIntegrity < 55 ? 'warn' : 'pass',
       detail:
         flags.feeCollected != null
-          ? `Kesehatan global fee ${volumeIntegrity}% dibanding volume yang dilaporkan.`
+          ? `Kesehatan global fee ${volumeIntegrity}% dibanding volume yang dilaporin.`
           : `Proxy dari Dex volume/liquidity/txn: ${volumeIntegrity}%. Fee real butuh provider indexer.`
     },
     {
@@ -375,7 +375,7 @@ function buildChecks(token, flags, volumeIntegrity) {
       status: flags.dexPaidTiming === 'late' && flags.pumpFromLowPct > 300 ? 'fail' : flags.dexPaidTiming === 'none' ? 'watch' : 'pass',
       detail:
         flags.dexPaidTiming === 'early'
-          ? 'Boost/order terbaca relatif awal.'
+          ? 'Boost/order kebaca relatif awal.'
           : flags.dexPaidTiming === 'late'
             ? `Marketing muncul setelah move sekitar +${flags.pumpFromLowPct}%.`
             : 'Belum ada sinyal paid/boost dari data publik.'
@@ -383,7 +383,7 @@ function buildChecks(token, flags, volumeIntegrity) {
     {
       label: 'Konfirmasi 3 Candle',
       status: flags.candleConfirmation > 70 ? 'pass' : flags.candleConfirmation > 45 ? 'warn' : 'fail',
-      detail: `Keyakinan support ${safePct(flags.candleConfirmation)} dari tekanan buy/sell dan perubahan harga live.`
+      detail: `Keyakinan support ${safePct(flags.candleConfirmation)} dari tekanan buy/sell sama perubahan harga live.`
     }
   ];
 }
@@ -411,7 +411,7 @@ function buildMarketSignals(token, flags, volumeIntegrity, confidence) {
     signals.push({
       tone: 'warn',
       title: 'Cakupan provider rendah',
-      detail: 'Data live belum cukup lengkap untuk entry besar. Perlakukan sebagai watchlist, bukan auto-buy.'
+      detail: 'Data live belum cukup lengkap buat entry gede. Anggep aja watchlist, bukan auto-buy.'
     });
   }
 
@@ -420,10 +420,10 @@ function buildMarketSignals(token, flags, volumeIntegrity, confidence) {
       tone: liquidity < 5000 ? 'danger' : liquidity < 25000 ? 'warn' : 'good',
       title: 'Kedalaman likuiditas',
       detail: liquidity < 5000
-        ? 'Liquidity tipis. Slippage dan dump kecil bisa menghancurkan chart.'
+        ? 'Liquidity tipis. Slippage sama dump kecil bisa hancurin chart.'
         : liquidity < 25000
-          ? 'Liquidity tradable tapi belum nyaman untuk size besar.'
-          : 'Liquidity relatif lebih sehat untuk monitoring aktif.'
+          ? 'Liquidity tradable tapi belum nyaman buat size gede.'
+          : 'Liquidity relatif lebih sehat buat monitoring aktif.'
     });
   }
 
@@ -431,7 +431,7 @@ function buildMarketSignals(token, flags, volumeIntegrity, confidence) {
     signals.push({
       tone: sells5m > buys5m * 2 ? 'danger' : buys5m > sells5m ? 'good' : 'warn',
       title: 'Tekanan order 5m',
-      detail: `${buys5m}/${sells5m} buy/sell dalam 5 menit. Imbalance ekstrem harus dibaca bersama candle dan liquidity.`
+      detail: `${buys5m}/${sells5m} buy/sell dalam 5 menit. Imbalance ekstrem harus dibaca bareng candle sama liquidity.`
     });
   }
 
@@ -450,7 +450,7 @@ function buildMarketSignals(token, flags, volumeIntegrity, confidence) {
     signals.push({
       tone: burners >= 3 && burners > whales + smartWallets ? 'warn' : smartWallets + whales > 0 ? 'good' : 'warn',
       title: 'Proxy kualitas wallet',
-      detail: `${whales} whale, ${smartWallets} smart/large wallet, ${burners} burner di top holders. Smart wallet menambah kualitas sinyal, burner menambah risiko bundle.`
+      detail: `${whales} whale, ${smartWallets} smart/large wallet, ${burners} burner di top holders. Smart wallet nambah kualitas sinyal, burner nambah risiko bundle.`
     });
   }
 
@@ -458,14 +458,14 @@ function buildMarketSignals(token, flags, volumeIntegrity, confidence) {
     tone: socialCount > 0 ? 'good' : 'warn',
     title: 'Jejak sosial/sumber',
     detail: socialCount > 0
-      ? `${socialCount} link sosial/website terbaca dari provider. Tetap validasi manual sebelum percaya narasi.`
+      ? `${socialCount} link sosial/website kebaca dari provider. Tetep validasi manual sebelum percaya narasi.`
       : 'Belum ada link sosial/website dari provider. Risiko impersonation atau stealth deploy lebih tinggi.'
   });
 
   signals.push({
     tone: volumeIntegrity < 40 ? 'danger' : volumeIntegrity < 60 ? 'warn' : 'good',
     title: 'Proxy integritas volume',
-    detail: `Skor integritas volume ${volumeIntegrity}%. Ini memakai proxy public API; fee exact butuh indexer/backend.`
+    detail: `Skor integritas volume ${volumeIntegrity}%. Ini pake proxy public API; fee exact butuh indexer/backend.`
   });
 
   return signals.slice(0, 7);

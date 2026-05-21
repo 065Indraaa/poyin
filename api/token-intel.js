@@ -75,6 +75,7 @@ async function buildTokenIntel(ca) {
       holderDetails: [],
       walletIntel: [],
       madeOnSolIntel,
+      globalFees: madeOnSolIntel?.globalFees || null,
       smartWalletRegistrySize: smartRegistry.size || 0,
       smartWalletSource: smartRegistry.source || 'belum dikonfigurasi',
       insightSummary: ['Top holder belum tersedia dari RPC.']
@@ -178,6 +179,7 @@ async function buildTokenIntel(ca) {
     burners,
     mint,
     madeOnSolIntel,
+    globalFees: madeOnSolIntel?.globalFees || null,
     smartWalletRegistrySize: smartRegistry.size || 0,
     smartWalletSource: smartRegistry.source || 'belum dikonfigurasi',
     insightSummary: buildInsightSummary({ top10Pct, uniqueOwnerCount: uniqueOwners.length, commonFunderWallets, smartMoneyCount, whales, burners, madeOnSolIntel })
@@ -264,9 +266,75 @@ async function fetchMadeOnSolTokenIntel(ca) {
     mcChangePct: token.mc_change_pct || token.mcChangePct || null,
     volumeUsd: token.volume_usd || token.volumeUsd || null,
     mevVolumePct: token.mev_volume_pct || token.mevVolumePct || null,
+    globalFees: normalizeGlobalFees(token),
     deployer: token.deployer || null,
     kolActivity: token.kol_activity || token.kolActivity || null
   };
+}
+
+function normalizeGlobalFees(token = {}) {
+  const feeSource = token.global_fees || token.globalFees || token.fees || token.fee || {};
+  const windows = {
+    m5: firstNumber(
+      feeSource.m5,
+      feeSource['5m'],
+      feeSource.fiveMinute,
+      token.fees_5m_usd,
+      token.fee_5m_usd,
+      token.global_fee_5m_usd
+    ),
+    h1: firstNumber(
+      feeSource.h1,
+      feeSource['1h'],
+      feeSource.hour,
+      token.fees_1h_usd,
+      token.fee_1h_usd,
+      token.global_fee_1h_usd
+    ),
+    h24: firstNumber(
+      feeSource.h24,
+      feeSource['24h'],
+      feeSource.day,
+      token.fees_24h_usd,
+      token.fee_24h_usd,
+      token.global_fee_24h_usd,
+      token.total_fees_24h_usd
+    )
+  };
+
+  const currentUsd = firstNumber(
+    feeSource.currentUsd,
+    feeSource.current_usd,
+    feeSource.usd,
+    token.global_fees_usd,
+    token.global_fee_usd,
+    token.fees_usd,
+    token.fee_usd,
+    token.trading_fee_usd,
+    token.protocol_fee_usd,
+    windows.m5,
+    windows.h1,
+    windows.h24
+  );
+
+  if (currentUsd == null && windows.m5 == null && windows.h1 == null && windows.h24 == null) return null;
+
+  return {
+    provider: 'MadeOnSol token intelligence',
+    exact: true,
+    currentUsd,
+    windows,
+    rateBps: firstNumber(feeSource.rateBps, feeSource.rate_bps, token.fee_rate_bps),
+    updatedAt: token.updated_at || token.updatedAt || new Date().toISOString()
+  };
+}
+
+function firstNumber(...values) {
+  for (const value of values) {
+    const num = numberOrNull(value);
+    if (num != null) return num;
+  }
+  return null;
 }
 
 function buildHolderTags(holder) {
