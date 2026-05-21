@@ -23,6 +23,9 @@ import {
 import { analyzeToken, emptyToken } from './data/apeEngine';
 import { ponyinPrinciples } from './data/knowledgeBase';
 import { fetchDiscoveryFeed, fetchProviderHealth, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
+import { connectIndexerSocket, fetchScanDeep, fetchEnrichedFeed } from './services/indexerSocket';
+import RedFlagPanel from './components/RedFlagPanel';
+import BundleGraph from './components/BundleGraph';
 
 const scanSteps = [
   'Lagi ambil data pair sama likuiditas live...',
@@ -35,23 +38,30 @@ const scanSteps = [
 
 const phases = [
   {
-    key: 'fresh',
-    title: 'Launch Baru',
-    subtitle: 'Baru launch / pair baru',
-    focus: 'Bundle dev, fake volume, transaksi awal dev',
+    key: 'new',
+    title: 'New Launch',
+    subtitle: '0-30 menit / bonding curve',
+    focus: 'Bundle dev awal, fake volume, authority check',
     icon: Flame
   },
   {
-    key: 'trench',
-    title: 'Zona Trench',
-    subtitle: 'Live feed low-mid cap',
-    focus: 'Jual kecil top holder, sniper yang mau migrasi',
+    key: 'early',
+    title: 'Early Trench',
+    subtitle: '30 menit - 6 jam',
+    focus: 'Holder retention, dev sell signal, kabal sync',
     icon: Radar
   },
   {
-    key: 'raydium',
-    title: 'Udah Masuk DEX',
-    subtitle: 'Raydium / Orca / Meteora',
+    key: 'soon',
+    title: 'Soon Migrate',
+    subtitle: '6-24 jam / bonding mendekati DEX',
+    focus: 'Migrate readiness, LP depth, volume sustain',
+    icon: AlertTriangle
+  },
+  {
+    key: 'migrated',
+    title: 'Migrated',
+    subtitle: 'Udah Raydium / Orca / Meteora',
     focus: 'Kesehatan LP, fee ratio, wash trading',
     icon: Lock
   }
@@ -87,6 +97,11 @@ export default function App() {
   const refreshRequestRef = useRef(0);
   const selectedTokenRef = useRef(emptyToken);
   const feedTokensRef = useRef([]);
+
+  // Deep scan / indexer state
+  const [deepScan, setDeepScan] = useState(null);
+  const [activePipeline, setActivePipeline] = useState('all');
+  const [pipelineCounts, setPipelineCounts] = useState({ new: 0, early: 0, soon: 0, migrated: 0, dead: 0 });
 
   useEffect(() => {
     selectedTokenRef.current = selectedToken;
@@ -135,6 +150,27 @@ export default function App() {
       setFeedTokens((current) => pruneTokens(current));
     }, 3000);
 
+    // Connect to backend indexer for real-time alerts
+    const unsubscribeIndexer = connectIndexerSocket((payload) => {
+      if (payload.type === 'alert') {
+        setFeedTokens((current) =>
+          current.map((t) =>
+            t.ca === payload.ca
+              ? { ...t, _indexerAlert: { severity: payload.severity, text: payload.alerts?.[0] } }
+              : t
+          )
+        );
+      }
+      if (payload.type === 'scan_complete' && payload.ca === selectedTokenRef.current?.ca) {
+        setDeepScan((prev) => ({
+          ...prev,
+          verdict: payload.result.verdict,
+          redFlags: payload.result.redFlags,
+          stages: payload.result.stages,
+        }));
+      }
+    });
+
     return () => {
       clearInterval(refreshInterval);
       clearInterval(healthInterval);
@@ -142,6 +178,7 @@ export default function App() {
       clearInterval(clockInterval);
       clearInterval(pruneInterval);
       unsubscribePumpPortal();
+      unsubscribeIndexer();
     };
   }, []);
 
@@ -167,7 +204,7 @@ export default function App() {
 
   const groupedTokens = useMemo(() => {
     return feedTokens.reduce((acc, token) => {
-      const key = phases.some((phase) => phase.key === token.phase) ? token.phase : 'raydium';
+      const key = phases.some((phase) => phase.key === token.phase) ? token.phase : 'migrated';
       acc[key] = [...(acc[key] || []), token];
       return acc;
     }, {});
@@ -240,6 +277,22 @@ export default function App() {
     scanSteps.forEach((_, index) => {
       window.setTimeout(() => setScanIndex(index), index * 360);
     });
+
+    // Start deep scan in background (progressive enrichment)
+    setDeepScan(null);
+    const deepPromise = fetchScanDeep(address)
+      .then((deep) => {
+        setDeepScan(deep);
+        // Merge deep scan verdict as overlay if critical
+        if (deep?.verdict?.isRug) {
+          setReport((prev) => ({
+            ...prev,
+            verdict: { label: 'Zona Bahaya', instruction: 'Hindari aja', tone: 'danger' },
+            summary: `⚠️ Indexer backend detect red flags: ${deep.redFlags.map((r) => r.text).join('; ')}. ${prev.summary}`,
+          }));
+        }
+      })
+      .catch(() => { /* fallback ke data live biasa */ });
 
     try {
       const liveToken = await fetchTokenSnapshot(address);
@@ -379,6 +432,26 @@ export default function App() {
           }}
         />
 
+        <div className="pipeline-tabs">
+          {[
+            { key: 'all', label: 'Semua' },
+            { key: 'new', label: 'New' },
+            { key: 'early', label: 'Early' },
+            { key: 'soon', label: 'Soon' },
+            { key: 'migrated', label: 'Migrated' },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              className={activePipeline === tab.key ? 'active' : ''}
+              onClick={() => setActivePipeline(tab.key)}
+            >
+              {tab.label}
+              <span className="count">{tab.key === 'all' ? feedTokens.length : feedTokens.filter((t) => t.phase === tab.key).length}</span>
+            </button>
+          ))}
+        </div>
+
         <div className="table-container">
           <table className="feed-table">
             <thead>
@@ -406,33 +479,35 @@ export default function App() {
                   <td colSpan="10" className="empty-row">Belum ada token live yang cocok kriteria entry valid. Token baru tanpa bukti pasar gak diprioritasin.</td>
                 </tr>
               )}
-              {feedTokens.map((token) => (
-                <tr key={token.id} onClick={() => runAnalysis(token)}>
-                  <td>
-                    <div className="token-cell">
-                      <strong>${token.ticker}</strong>
-                      <span className="token-name">{token.name}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`phase-badge ${token.phase}`}>
-                      {token.phase === 'raydium' ? 'Raydium' : token.phase === 'trench' ? 'Trench' : 'Pump.fun'}
-                    </span>
-                  </td>
-                  <td>{formatLiveAge(token, now)}</td>
-                  <td>{formatLiveMarketCap(token)}</td>
-                  <td>{formatUsd(token.liquidityUsd)}</td>
-                  <td>{token.volume5m}</td>
-                  <td>{token.flags?.txns5m ?? '-'}</td>
-                  <td>{token.buySell}</td>
-                  <td><FeedHealth token={token} /></td>
-                  <td>
-                    <button type="button" className="scan-btn">
-                      Scan
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {feedTokens
+                .filter((token) => activePipeline === 'all' || token.phase === activePipeline)
+                .map((token) => (
+                  <tr key={token.id} onClick={() => runAnalysis(token)}>
+                    <td>
+                      <div className="token-cell">
+                        <strong>${token.ticker}</strong>
+                        <span className="token-name">{token.name}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`phase-badge ${token.phase}`}>
+                        {token.phase === 'migrated' ? 'Migrated' : token.phase === 'soon' ? 'Soon' : token.phase === 'early' ? 'Early' : token.phase === 'new' ? 'New' : token.phase}
+                      </span>
+                    </td>
+                    <td>{formatLiveAge(token, now)}</td>
+                    <td>{formatLiveMarketCap(token)}</td>
+                    <td>{formatUsd(token.liquidityUsd)}</td>
+                    <td>{token.volume5m}</td>
+                    <td>{token.flags?.txns5m ?? '-'}</td>
+                    <td>{token.buySell}</td>
+                    <td><FeedHealth token={token} /></td>
+                    <td>
+                      <button type="button" className="scan-btn">
+                        Scan
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -507,6 +582,10 @@ export default function App() {
             </div>
           </div>
         </div>
+
+        {/* Progressive deep-scan enrichment panels */}
+        <RedFlagPanel redFlags={deepScan?.redFlags || []} />
+        <BundleGraph bundle={deepScan?.stages?.holder?.bundle || deepScan?.stages?.bundle || null} />
 
         <div className="check-grid">
           {report.checks.map((check) => (
@@ -725,7 +804,7 @@ function ForensicPanel({ token, report, status, now }) {
         <MetricBox label="Umur live" value={formatLiveAge(token, now)} />
         <MetricBox label="MCap / FDV" value={formatLiveMarketCap(token)} />
         <MetricBox label="Likuiditas" value={formatUsd(token.liquidityUsd)} />
-        <MetricBox label="Status LP" value={liquidityPool?.status || token.lpStatus || 'belum diketahui'} tone={token.liquidityUsd < 5000 && token.phase === 'raydium' ? 'danger' : token.liquidityUsd < 25000 ? 'warn' : 'good'} />
+        <MetricBox label="Status LP" value={liquidityPool?.status || token.lpStatus || 'belum diketahui'} tone={token.liquidityUsd < 5000 && token.phase === 'migrated' ? 'danger' : token.liquidityUsd < 25000 ? 'warn' : 'good'} />
         <MetricBox label="Vol 5m / 1h" value={`${formatUsd(metrics.volume?.m5)} / ${formatUsd(metrics.volume?.h1)}`} />
         <MetricBox label="Txns 5m / 1h" value={`${metrics.txns?.m5 ?? flags.txns5m ?? '-'} / ${metrics.txns?.h1 ?? '-'}`} />
         <MetricBox label="Buy/Sell 5m" value={`${metrics.buys?.m5 ?? flags.buys5m ?? 0}/${metrics.sells?.m5 ?? flags.sells5m ?? 0}`} />

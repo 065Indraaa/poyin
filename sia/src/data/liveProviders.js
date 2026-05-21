@@ -777,7 +777,7 @@ function normalizePumpPortalToken(payload) {
 
   return {
     id: payload.signature || mint,
-    phase: 'fresh',
+    phase: 'new',
     name,
     ticker: symbol,
     ca: mint,
@@ -1190,11 +1190,12 @@ function mergeSources(source, mint, pump) {
 
 function inferPhase(ageMinutes, fdv, dexId = '') {
   const dex = dexId.toLowerCase();
-  if (ageMinutes != null && ageMinutes <= 10) return 'fresh';
-  if (dex.includes('raydium') || dex.includes('orca') || dex.includes('meteora')) return 'raydium';
-  if (fdv > 45000 && fdv < 120000) return 'trench';
-  if (ageMinutes != null && ageMinutes <= 45) return 'trench';
-  return 'raydium';
+  if (ageMinutes != null && ageMinutes <= 30) return 'new';
+  if (dex.includes('raydium') || dex.includes('orca') || dex.includes('meteora')) return 'migrated';
+  if (fdv > 45000 && fdv < 120000) return 'early';
+  if (ageMinutes != null && ageMinutes <= 360) return 'early';
+  if (ageMinutes != null && ageMinutes <= 1440) return 'soon';
+  return 'migrated';
 }
 
 function inferCurve(pair, ageMinutes) {

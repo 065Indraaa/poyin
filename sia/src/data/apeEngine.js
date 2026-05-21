@@ -188,8 +188,8 @@ function scoreCandle(flags) {
 function scoreLiquidity(token, flags) {
   let score = 0;
   const liquidity = Number(token.liquidityUsd || 0);
-  if (token.phase === 'raydium' && liquidity < 5000) score -= 16;
-  if (token.phase === 'raydium' && liquidity >= 35000) score += 7;
+  if (token.phase === 'migrated' && liquidity < 5000) score -= 16;
+  if (token.phase === 'migrated' && liquidity >= 35000) score += 7;
   if (flags.lpBurned === true) score += 7;
   return score;
 }
@@ -318,7 +318,7 @@ function buildChecks(token, flags, volumeIntegrity) {
     },
     {
       label: 'Likuiditas / LP',
-      status: token.phase === 'raydium' && Number(token.liquidityUsd || 0) < 5000 ? 'fail' : Number(token.liquidityUsd || 0) > 25000 ? 'pass' : 'watch',
+      status: token.phase === 'migrated' && Number(token.liquidityUsd || 0) < 5000 ? 'fail' : Number(token.liquidityUsd || 0) > 25000 ? 'pass' : 'watch',
       detail: `${token.lpStatus || 'Status LP belum ketahu'}; likuiditas live sekitar ${formatUsd(Number(token.liquidityUsd || 0))}.`
     },
     {

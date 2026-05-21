@@ -589,17 +589,20 @@ a {
   text-transform: uppercase;
 }
 
-.phase-badge.fresh {
+.phase-badge.fresh,
+.phase-badge.new {
   background: rgba(255, 69, 58, 0.16);
   color: var(--red);
 }
 
-.phase-badge.trench {
+.phase-badge.trench,
+.phase-badge.early {
   background: rgba(255, 176, 32, 0.16);
   color: var(--amber);
 }
 
-.phase-badge.raydium {
+.phase-badge.raydium,
+.phase-badge.migrated {
   background: rgba(45, 212, 191, 0.16);
   color: var(--cyan);
 }
@@ -1655,4 +1658,214 @@ a {
   .wallet-score-row {
     grid-template-columns: 1fr;
   }
+}
+
+/* ─── Red Flag Panel ──────────────────────────────────────────────────────── */
+.redflag-panel {
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(45, 12, 12, 0.95), rgba(25, 8, 8, 0.95));
+  box-shadow: 0 16px 42px rgba(255, 69, 58, 0.1);
+  overflow: hidden;
+}
+
+.redflag-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 69, 58, 0.25);
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.redflag-head span {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--red-soft);
+  font-size: 11px;
+}
+
+.redflag-list {
+  display: grid;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.redflag-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 69, 58, 0.18);
+  border-radius: var(--radius);
+  background: rgba(255, 69, 58, 0.06);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.redflag-row.critical {
+  border-color: rgba(255, 69, 58, 0.5);
+  background: rgba(255, 69, 58, 0.14);
+  color: #ffd7d4;
+}
+
+.redflag-row.high {
+  border-color: rgba(255, 176, 32, 0.4);
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.redflag-row.medium {
+  border-color: rgba(88, 166, 255, 0.25);
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+/* ─── Bundle Panel ────────────────────────────────────────────────────────── */
+.bundle-panel {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 176, 32, 0.3);
+  border-radius: var(--radius);
+  background: rgba(30, 20, 8, 0.92);
+}
+
+.bundle-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--amber);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bundle-score {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  font-size: 11px;
+}
+
+.bundle-list {
+  display: grid;
+  gap: 10px;
+}
+
+.bundle-cluster {
+  padding: 10px;
+  border: 1px solid rgba(255, 176, 32, 0.15);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.cluster-funder {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.cluster-funder span {
+  color: var(--muted);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.cluster-funder strong {
+  color: var(--amber);
+  font-size: 13px;
+}
+
+.cluster-holders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.holder-pill {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 176, 32, 0.1);
+  color: var(--soft);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.bundle-note {
+  margin: 10px 0 0;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ─── Phase badges (new system) ───────────────────────────────────────────── */
+.phase-badge.new {
+  background: rgba(255, 69, 58, 0.16);
+  color: var(--red);
+}
+
+.phase-badge.early {
+  background: rgba(255, 176, 32, 0.16);
+  color: var(--amber);
+}
+
+.phase-badge.soon {
+  background: rgba(88, 166, 255, 0.16);
+  color: var(--blue);
+}
+
+.phase-badge.migrated {
+  background: rgba(48, 209, 88, 0.16);
+  color: var(--green);
+}
+
+.phase-badge.dead {
+  background: rgba(120, 120, 130, 0.2);
+  color: #9ca3af;
+}
+
+/* ─── Pipeline tabs ───────────────────────────────────────────────────────── */
+.pipeline-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pipeline-tabs button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pipeline-tabs button.active {
+  border-color: var(--cyan);
+  background: rgba(45, 212, 191, 0.1);
+  color: var(--cyan);
+}
+
+.pipeline-tabs button .count {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--panel-3);
+  font-size: 10px;
+  color: var(--muted);
 }
