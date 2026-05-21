@@ -1,15 +1,46 @@
+// ─── Smart connection: WebSocket first, auto-fallback to polling ─────────────
+// Vercel is serverless → does NOT support persistent WebSocket.
+// Set VITE_INDEXER_WS_URL in your Vercel env dashboard pointing to an external
+// backend host (Railway, Render, Fly.io, VPS). If empty or unreachable,
+// the frontend automatically falls back to short-polling.
+
+const WS_URL = import.meta.env.VITE_INDEXER_WS_URL || '';
+const POLL_INTERVAL_MS = 8000;
+
 let ws = null;
 let reconnectTimer = null;
-let messageHandlers = [];
+let pollTimer = null;
+let isFallback = false;
+let lastPollAt = 0;
+
+function getWsUrl() {
+  if (WS_URL) return WS_URL;
+  // Derive from current host (works on local dev where server.js runs together)
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${proto}//${window.location.host}/indexer-ws`;
+}
 
 export function connectIndexerSocket(onMessage) {
-  if (ws?.readyState === 1) return () => {};
+  // If explicit WS URL is empty and we are on Vercel (https), skip WS entirely
+  // because Vercel serverless cannot hold a persistent WS connection.
+  if (!WS_URL && window.location.protocol === 'https:') {
+    startFallbackPolling(onMessage);
+    return () => stopFallbackPolling();
+  }
 
-  const url = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/indexer-ws`;
-  ws = new WebSocket(url);
+  const url = getWsUrl();
+
+  try {
+    ws = new WebSocket(url);
+  } catch {
+    startFallbackPolling(onMessage);
+    return () => stopFallbackPolling();
+  }
 
   ws.onopen = () => {
-    console.log('[IndexerWS] Connected');
+    isFallback = false;
+    stopFallbackPolling();
+    console.log('[Indexer] WS connected');
   };
 
   ws.onmessage = (event) => {
@@ -20,7 +51,10 @@ export function connectIndexerSocket(onMessage) {
   };
 
   ws.onclose = () => {
-    reconnectTimer = setTimeout(() => connectIndexerSocket(onMessage), 3000);
+    if (!isFallback) {
+      console.warn('[Indexer] WS closed, switching to poll fallback');
+      startFallbackPolling(onMessage);
+    }
   };
 
   ws.onerror = () => {
@@ -29,15 +63,68 @@ export function connectIndexerSocket(onMessage) {
 
   return () => {
     clearTimeout(reconnectTimer);
+    stopFallbackPolling();
     ws?.close();
     ws = null;
   };
 }
 
+// ─── Fallback polling ────────────────────────────────────────────────────────
+function startFallbackPolling(onMessage) {
+  if (isFallback) return;
+  isFallback = true;
+  console.log('[Indexer] Using poll fallback (Vercel-safe)');
+
+  // Immediate first poll
+  doPoll(onMessage);
+
+  pollTimer = setInterval(() => {
+    doPoll(onMessage);
+  }, POLL_INTERVAL_MS);
+}
+
+function stopFallbackPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+}
+
+async function doPoll(onMessage) {
+  try {
+    const res = await fetch(`/api/feed-enriched?phase=all&limit=50`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Emit a synthetic discovery message so the UI can update counts
+    onMessage({ type: 'poll_discovery', tokens: data.tokens, counts: data.counts });
+
+    // If any token has critical alerts, emit them
+    const alerted = (data.tokens || []).filter((t) => t.redFlagCount > 0 || t.latestAlert);
+    for (const t of alerted) {
+      onMessage({
+        type: 'alert',
+        ca: t.ca,
+        severity: t.latestAlert?.severity || 'warn',
+        alerts: [t.latestAlert?.text || 'Red flag detected'],
+      });
+    }
+  } catch {
+    // Silently ignore poll failures
+  }
+}
+
+// ─── HTTP API wrappers ───────────────────────────────────────────────────────
 export async function fetchScanDeep(ca) {
-  const res = await fetch(`/api/scan-deep?ca=${encodeURIComponent(ca)}`);
-  if (!res.ok) throw new Error('Scan deep gagal');
-  return res.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(`/api/scan-deep?ca=${encodeURIComponent(ca)}`, { signal: controller.signal });
+    if (!res.ok) throw new Error('Scan deep gagal');
+    return res.json();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function fetchEnrichedFeed(phase = 'all', limit = 50) {

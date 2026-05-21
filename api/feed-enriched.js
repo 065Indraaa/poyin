@@ -1,4 +1,5 @@
 import { tokenDb } from '../services/indexer/db.js';
+import { pollDexDiscovery } from '../services/indexer/ingestors.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -10,11 +11,29 @@ export default async function handler(req, res) {
 
   let tokens = tokenDb.listRecent(300);
 
+  // Fallback: kalau indexer DB kosong (misal di Vercel tanpa backend indexer),
+  // fetch langsung dari DexScreener discovery supaya UI tetap hidup.
+  if (!tokens.length) {
+    try {
+      const live = await pollDexDiscovery();
+      tokens = live.map((t) => ({
+        ca: t.ca,
+        snapshots: [t],
+        alerts: [],
+        updatedAt: Date.now(),
+      }));
+    } catch {
+      tokens = [];
+    }
+  }
+
   // Enrich with pipeline phases
   tokens = tokens.map((t) => {
     const latest = t.snapshots?.[t.snapshots.length - 1] || {};
     const alerts = t.alerts || [];
-    const isDead = alerts.some((a) => a.severity === 'critical' || a.text?.includes('dead') || a.text?.includes('LP pull'));
+    const isDead = alerts.some(
+      (a) => a.severity === 'critical' || a.text?.includes('dead') || a.text?.includes('LP pull')
+    );
 
     return {
       ca: t.ca,
@@ -58,6 +77,7 @@ export default async function handler(req, res) {
       migrated: tokens.filter((t) => t.phase === 'migrated').length,
       dead: tokens.filter((t) => t.phase === 'dead').length,
     },
+    fallback: !tokenDb.listRecent(1).length,
     fetchedAt: new Date().toISOString(),
   });
 }

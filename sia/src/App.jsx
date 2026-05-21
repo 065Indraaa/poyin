@@ -150,7 +150,7 @@ export default function App() {
       setFeedTokens((current) => pruneTokens(current));
     }, 3000);
 
-    // Connect to backend indexer for real-time alerts
+    // Connect to backend indexer for real-time alerts (WS or polling fallback)
     const unsubscribeIndexer = connectIndexerSocket((payload) => {
       if (payload.type === 'alert') {
         setFeedTokens((current) =>
@@ -168,6 +168,34 @@ export default function App() {
           redFlags: payload.result.redFlags,
           stages: payload.result.stages,
         }));
+      }
+      if (payload.type === 'poll_discovery') {
+        const incoming = (payload.tokens || []).map((t) => ({
+          id: t.ca,
+          ca: t.ca,
+          name: t.name,
+          ticker: t.ticker,
+          phase: t.phase,
+          ageMinutes: t.ageMinutes,
+          liquidityUsd: t.liquidityUsd,
+          marketCap: t.marketCap,
+          volume5m: t.volume5m,
+          priceChange: t.priceChange,
+          buySell: `${t.buys5m}/${t.sells5m}`,
+          txns5m: t.txns5m,
+          buys5m: t.buys5m,
+          sells5m: t.sells5m,
+          flags: {
+            txns5m: t.txns5m,
+            buys5m: t.buys5m,
+            sells5m: t.sells5m,
+            reportedVolume: t.volume5m,
+          },
+          _indexerAlert: t.latestAlert
+            ? { severity: t.latestAlert.severity, text: t.latestAlert.text }
+            : undefined,
+        }));
+        setFeedTokens((current) => pruneTokens(upsertTokens(current, incoming)));
       }
     });
 
