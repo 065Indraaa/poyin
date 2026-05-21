@@ -81,7 +81,8 @@ export default function App() {
     fetchedAt: null,
     error: null,
     streamConnected: false,
-    streamLastTokenAt: null
+    streamLastTokenAt: null,
+    pumpPortalRetry: 0,
   });
   const [providerHealth, setProviderHealth] = useState({
     loading: true,
@@ -125,6 +126,7 @@ export default function App() {
           provider: stream.connected ? 'PumpPortal realtime + pair aktif DexScreener' : current.provider,
           streamConnected: Boolean(stream.connected),
           streamLastTokenAt: stream.lastTokenAt || current.streamLastTokenAt,
+          pumpPortalRetry: stream.connecting ? (current.pumpPortalRetry || 0) + 1 : 0,
           error: stream.connected ? null : stream.error === 'PumpPortal reconnecting' ? current.error : translateProviderError(stream.error) || current.error
         }));
       }
@@ -974,7 +976,7 @@ function ForensicPanel({ token, report, status, now }) {
             <ProviderLine label="Intel holder" ok={Boolean(token.rawProviders?.holderMeta)} detail={token.rawProviders?.holderMeta?.tokenIntelProvider ? cleanPublicCopy(token.rawProviders.holderMeta.tokenIntelProvider) : 'Helius key belum diatur — holder gak bisa dibaca'} />
             <ProviderLine label="Indeks pasar" ok={Boolean(madeOnSol)} detail={madeOnSol ? 'data indeks tambahan aktif' : 'MadeOnSol key belum diatur'} />
             <ProviderLine label="Registry wallet" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet pintar. Tambah SMART_WALLETS di env kalau mau aktif.`} />
-            <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'PumpPortal WS di browser, kadang putus-nyambung'} />
+            <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'PumpPortal WS kadang putus di browser, tapi DexScreener tetap jalan'} />
             <ProviderLine label="Order/boost" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost aktif`} />
             <ProviderLine label="Keyakinan data live" ok={report.confidence >= 45} detail={`${report.confidence}% confidence — ${report.confidence < 45 ? 'tambahin HELIUS_API_KEY di env Vercel buat naikin' : report.primaryRisk}`} />
           </div>

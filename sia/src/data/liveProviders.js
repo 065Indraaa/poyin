@@ -30,7 +30,7 @@ export async function fetchDiscoveryFeed() {
   const [dexFeed, dexSearchFeed, pumpFeed] = await Promise.all([
     fetchDexDiscoveryFeed().catch(() => []),
     fetchDexSearchDiscoveryFeed().catch(() => []),
-    collectPumpPortalNewTokens({ limit: 4, timeoutMs: 1800 }).catch(() => [])
+    collectPumpPortalNewTokens({ limit: 6, timeoutMs: 3500 }).catch(() => [])
   ]);
 
   const tokens = uniqueTokens([...pumpFeed, ...dexSearchFeed, ...dexFeed]);
@@ -39,15 +39,19 @@ export async function fetchDiscoveryFeed() {
     throw new Error('Gak ada token live yang balik dari DexScreener');
   }
 
+  const pumpOk = pumpFeed.length > 0;
+  const dexOk = dexFeed.length > 0 || dexSearchFeed.length > 0;
+
   return {
     tokens,
-    provider: pumpFeed.length
+    provider: pumpOk
       ? 'PumpPortal stream + DexScreener discovery'
-      : dexSearchFeed.length
+      : dexOk
         ? 'DexScreener search + latest profiles'
         : 'DexScreener live API (Boosts & Latest)',
     fetchedAt: new Date().toISOString(),
-    degraded: false
+    degraded: !pumpOk && dexOk,
+    pumpPortalOk: pumpOk
   };
 }
 
@@ -1312,15 +1316,33 @@ export function subscribeToPumpPortalStream(onToken, onStatus = () => {}) {
   let ws;
   let active = true;
   let reconnectTimer;
+  let retryCount = 0;
+  const MAX_RETRIES = 5;
+  const RETRY_DELAYS = [2000, 4000, 8000, 15000, 30000];
 
   function connect() {
     if (!active) return;
+    if (retryCount >= MAX_RETRIES) {
+      onStatus({ connected: false, connecting: false, error: 'PumpPortal reconnecting' });
+      return;
+    }
     onStatus({ connected: false, connecting: true, error: null });
-    ws = new WebSocket(PUMP_PORTAL_WS);
-    
+    try {
+      ws = new WebSocket(PUMP_PORTAL_WS);
+    } catch {
+      onStatus({ connected: false, connecting: false, error: 'PumpPortal reconnecting' });
+      scheduleRetry();
+      return;
+    }
+
     ws.addEventListener('open', () => {
-      ws.send(JSON.stringify({ method: 'subscribeNewToken' }));
-      onStatus({ connected: true, connecting: false, error: null });
+      retryCount = 0;
+      try {
+        ws.send(JSON.stringify({ method: 'subscribeNewToken' }));
+        onStatus({ connected: true, connecting: false, error: null });
+      } catch {
+        onStatus({ connected: false, connecting: false, error: 'PumpPortal reconnecting' });
+      }
     });
 
     ws.addEventListener('message', (event) => {
@@ -1336,15 +1358,24 @@ export function subscribeToPumpPortalStream(onToken, onStatus = () => {}) {
     });
 
     ws.addEventListener('error', () => {
-      onStatus({ connected: false, connecting: false, error: 'PumpPortal websocket error' });
+      onStatus({ connected: false, connecting: false, error: 'PumpPortal reconnecting' });
+      if (ws && ws.readyState !== WebSocket.CLOSED) {
+        try { ws.close(); } catch {}
+      }
     });
 
     ws.addEventListener('close', () => {
       if (active) {
-        onStatus({ connected: false, connecting: false, error: 'PumpPortal reconnecting' });
-        reconnectTimer = window.setTimeout(connect, 2500);
+        scheduleRetry();
       }
     });
+  }
+
+  function scheduleRetry() {
+    if (!active) return;
+    retryCount++;
+    const delay = RETRY_DELAYS[Math.min(retryCount - 1, RETRY_DELAYS.length - 1)];
+    reconnectTimer = window.setTimeout(connect, delay);
   }
 
   connect();

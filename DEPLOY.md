@@ -43,11 +43,24 @@ Backend (`api/token-intel.js`, `api/health.js`) memang check BOTH (`HELIUS_API_K
 
 ---
 
-## 2. Pilihan Deploy
+## 2. Vercel Only vs Vercel + Backend Terpisah
 
-### Pilihan A: Vercel Only (Paling Gampang, Gratis)
+### Kenapa Backend Terpisah Lebih Baik (Tapi Opsional)?
 
-Cocok buat yang mau jalan langsung tanpa ribet.
+Kamu bener — **Vercel udah ada backend** (API serverless). Tapi backend Vercel punya keterbatasan:
+
+| Aspek | Vercel Serverless Only | Backend Terpisah (Railway/Render) |
+|-------|----------------------|-----------------------------------|
+| **WebSocket** | ❌ Gak support | ✅ Support real-time push |
+| **Background indexer** | ❌ Gak bisa jalan 24/7 | ✅ Poll DexScreener setiap 10 detik tanpa henti |
+| **PumpPortal WS** | ❌ Browser WS kadang gagal (error yang kamu lihat) | ✅ Backend connect PumpPortal WS, terus kirim ke frontend |
+| **Cache data** | ❌ Tiap request mulai dari nol | ✅ Cache 75 detik, history token disimpan |
+| **Time-series** | ❌ Gak ada history | ✅ Bisa lihat trend token 1 jam lalu |
+| **Biaya** | ✅ Gratis | 💰 Bayar backend host (~$5-20/bulan) |
+
+**Kesimpulan**: Kalau mau **cukup jalan** → Vercel only sudah cukup. Kalau mau **push alert instan, data lebih kaya, history token, dan bundle graph forensik** → butuh backend terpisah.
+
+### Pilihan A: Vercel Only (Cukup Buat Jalan)
 
 **Env yang diset:**
 ```
@@ -58,15 +71,15 @@ VITE_INDEXER_WS_URL=     (kosong)
 ```
 
 **Apa yang terjadi:**
-- Frontend polling `/api/feed-enriched` tiap 8 detik
-- Scan deep lewat `/api/scan-deep` tiap kali user klik
-- WebSocket auto-disable (Vercel gak support WS)
-- Semua Helius call lewat backend API (aman, key gak expose ke browser)
+- Feed discovery lewat DexScreener API tiap 10 detik
+- PumpPortal WS dicoba dari browser — kalau gagal, auto-retry dengan backoff
+- Semua Helius call lewat `/api/token-intel` (backend API Vercel)
+- WebSocket ke backend gak aktif (Vercel gak support WS persistent)
 
 **Keterbatasan:**
-- Feed update tiap 8 detik (bukan real-time)
-- Background indexer gak jalan 24/7
-- Scan deep langsung hit Helius tiap kali user klik (rate limit ~50 RPM)
+- Feed update tiap 10 detik (bukan real-time)
+- PumpPortal WS dari browser kadang gagal (tergantung jaringan user)
+- Gak ada history token / time-series
 
 ### Pilihan B: Vercel + Backend Terpisah (Real-Time)
 
@@ -99,10 +112,30 @@ Cek urutan ini:
 3. Cek `/api/health` — kalau `rpc.ok = false`, key salah atau expired
 4. Cek DevTools → Console — kalau ada `[Indexer] Using poll fallback`, itu normal untuk mode Vercel
 
-### WebSocket error (wss:// failed)
+### WebSocket error (wss://pumpportal.fun failed)
 
-Ini normal kalau `VITE_INDEXER_WS_URL` kosong dan kamu pakai HTTPS (Vercel). Frontend otomatis switch ke polling. Gak perlu fix apa-apa.
+Ini **normal** di mode Vercel. Browser kadang gak bisa connect ke `wss://pumpportal.fun/api/data` karena:
+- Network user block WS
+- HTTPS → WS upgrade gagal
+- Timeout
 
-### MarketCap gak sesuai
+Sekarang sudah ada auto-retry dengan backoff. Kalau tetap gagal, data token tetap ke-load dari **DexScreener API** (fallback otomatis). Jadi feed tetap jalan, cuma tanpa token baru langsung dari PumpPortal.
 
-Sudah di-fix di `formatLiveMarketCap`. Kalau masih aneh, cek apakah token masih bonding curve (value akan muncul sebagai "bonding").
+> **Solusi**: Refresh halaman. Kalau masih gagal, itu artinya PumpPortal WS sedang maintenance atau network user block WS. DexScreener tetap jalan.
+
+### `feature_collector.js:23 using deprecated parameters`
+
+Ini **bukan dari code kita**. Ini dari **browser extension** yang kamu install (kemungkinan extension crypto tools). Gak perlu di-fix.
+
+### `favicon.ico 404`
+
+Saya sudah tambahkan `favicon.svg` dan `apple-touch-icon`. Kalau masih 404, **redeploy** Vercel supaya file static baru ke-upload.
+
+---
+
+## 4. Cepat Cek Lewat Browser
+
+Buka DevTools → Console:
+- Kalau muncul `[Indexer] WS connected` → backend nyambung
+- Kalau muncul `[Indexer] Using poll fallback (Vercel-safe)` → mode Vercel-only aktif, normal
+- Kalau muncul `PumpPortal reconnecting` → WS gagal, tapi DexScreener fallback jalan
