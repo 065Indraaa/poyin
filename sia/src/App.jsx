@@ -971,12 +971,12 @@ function ForensicPanel({ token, report, status, now }) {
           <div className="provider-list">
             <ProviderLine label="Data pair" ok={Boolean(token.rawProviders?.dexPair)} detail={token.pairDex ? `${token.pairDex} aktif` : cleanPublicCopy(token.source)} />
             <ProviderLine label="Authority on-chain" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah revoke' : 'masih terbuka'}`} />
-            <ProviderLine label="Intel holder" ok={Boolean(token.rawProviders?.holderMeta)} detail={token.rawProviders?.holderMeta?.tokenIntelProvider ? cleanPublicCopy(token.rawProviders.holderMeta.tokenIntelProvider) : 'mode pembacaan dasar'} />
-            <ProviderLine label="Indeks pasar" ok={Boolean(madeOnSol)} detail={madeOnSol ? 'data indeks tambahan aktif' : 'belum tersedia'} />
-            <ProviderLine label="Registry wallet" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet pintar terbaca`} />
-            <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'belum ada trade terbaru'} />
+            <ProviderLine label="Intel holder" ok={Boolean(token.rawProviders?.holderMeta)} detail={token.rawProviders?.holderMeta?.tokenIntelProvider ? cleanPublicCopy(token.rawProviders.holderMeta.tokenIntelProvider) : 'Helius key belum diatur — holder gak bisa dibaca'} />
+            <ProviderLine label="Indeks pasar" ok={Boolean(madeOnSol)} detail={madeOnSol ? 'data indeks tambahan aktif' : 'MadeOnSol key belum diatur'} />
+            <ProviderLine label="Registry wallet" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet pintar. Tambah SMART_WALLETS di env kalau mau aktif.`} />
+            <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'PumpPortal WS di browser, kadang putus-nyambung'} />
             <ProviderLine label="Order/boost" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost aktif`} />
-            <ProviderLine label="Keyakinan data live" ok={report.confidence >= 45} detail={`${report.confidence}% confidence, ${report.primaryRisk}`} />
+            <ProviderLine label="Keyakinan data live" ok={report.confidence >= 45} detail={`${report.confidence}% confidence — ${report.confidence < 45 ? 'tambahin HELIUS_API_KEY di env Vercel buat naikin' : report.primaryRisk}`} />
           </div>
 
           {Object.values(providerErrors).some(Boolean) && (
@@ -1260,10 +1260,18 @@ function formatLiveAge(token, currentTime = Date.now()) {
 
 function formatLiveMarketCap(token) {
   if (!token?.ca) return '-';
-  if (token.provider === 'PumpPortal live websocket' && token.lpStatus === 'Bonding curve') {
-    return token.marketCap && token.marketCap !== 'bonding' ? `${token.marketCap} (bonding)` : 'bonding';
+  // bonding curve token
+  if (token.lpStatus === 'Bonding curve' || token.phase === 'new') {
+    const mc = token.marketCap;
+    if (typeof mc === 'number') return `${formatUsd(mc)} (bonding)`;
+    if (mc && mc !== 'bonding' && mc !== '-') return `${mc} (bonding)`;
+    return 'bonding';
   }
-  return token.marketCap || 'belum diketahui';
+  const mc = token.marketCap;
+  if (typeof mc === 'number') return formatUsd(mc);
+  if (typeof mc === 'string' && mc.startsWith('$')) return mc; // already formatted
+  if (mc) return String(mc);
+  return 'belum diketahui';
 }
 
 function formatPct(value) {

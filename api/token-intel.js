@@ -6,7 +6,8 @@ const TOKEN_PROGRAM_IDS = new Set([
   'TokenzQdBNbLqP5VEi98vJb2t1B4jWsXg41dRT5sPp'
 ]);
 
-const HTTP_TIMEOUT_MS = 12000;
+// Vercel serverless timeout ~10s. Keep total under 8s to be safe.
+const HTTP_TIMEOUT_MS = 6500;
 const INTEL_CACHE_TTL_MS = 75 * 1000;
 const cache = new Map();
 
@@ -17,7 +18,7 @@ export default async function handler(req, res) {
 
   const ca = String(req.query?.ca || req.query?.address || '').trim();
   if (!isSolanaAddress(ca)) {
-    return res.status(400).json({ error: 'Contract address tidak valid' });
+    return res.status(400).json({ error: 'Contract address gak valid' });
   }
 
   const cacheKey = ca;
@@ -28,44 +29,55 @@ export default async function handler(req, res) {
   }
 
   try {
-    const payload = await buildTokenIntel(ca);
-    cache.set(cacheKey, {
-      payload,
-      expiresAt: Date.now() + INTEL_CACHE_TTL_MS
-    });
+    const payload = await buildTokenIntelFast(ca);
+    cache.set(cacheKey, { payload, expiresAt: Date.now() + INTEL_CACHE_TTL_MS });
     setCacheHeaders(res, INTEL_CACHE_TTL_MS / 1000);
     return res.status(200).json({ ...payload, cached: false });
   } catch (error) {
     if (cached?.payload) {
       setCacheHeaders(res, 30);
-      return res.status(200).json({
-        ...cached.payload,
-        cached: true,
-        stale: true,
-        warning: 'Token intel cache lama dipakai karena provider gagal.'
-      });
+      return res.status(200).json({ ...cached.payload, cached: true, stale: true, warning: 'Token intel cache lama dipakai karena provider gagal.' });
     }
 
-    return res.status(500).json({
-      error: 'Gagal memuat token intelligence',
-      message: error.message
-    });
+    // Last resort: return minimal data so UI doesn't break
+    const minimal = {
+      ca,
+      top10Pct: null,
+      uniqueOwnerCount: 0,
+      commonFunderWallets: null,
+      smartMoneyCount: 0,
+      whales: 0,
+      burners: 0,
+      holderDetails: [],
+      walletIntel: [],
+      madeOnSolIntel: null,
+      globalFees: null,
+      smartWalletRegistrySize: 0,
+      smartWalletSource: 'gagal load semua provider',
+      insightSummary: ['Semua provider gagal. Cek HELIUS_API_KEY di env Vercel.'],
+      _error: error.message,
+    };
+    return res.status(200).json(minimal);
   }
 }
 
-async function buildTokenIntel(ca) {
+async function buildTokenIntelFast(ca) {
+  // Parallelize everything aggressively
   const [mint, tokenSupply, largestAccounts, smartRegistry, madeOnSolIntel] = await Promise.all([
     fetchMintInfo(ca).catch(() => null),
     rpc('getTokenSupply', [ca, { commitment: 'confirmed' }]).catch(() => null),
-    rpc('getTokenLargestAccounts', [ca, { commitment: 'confirmed' }]),
+    rpc('getTokenLargestAccounts', [ca, { commitment: 'confirmed' }]).catch(() => null),
     buildSmartWalletRegistry().catch(() => ({ labels: {}, size: 0, source: 'registry gagal dimuat' })),
     fetchMadeOnSolTokenIntel(ca).catch(() => null)
   ]);
 
   const accounts = largestAccounts?.value || [];
+  const totalSupply = Number(tokenSupply?.value?.amount || mint?.supply || 0);
+
   if (!accounts.length) {
     return {
       ca,
+      mint,
       top10Pct: null,
       uniqueOwnerCount: 0,
       commonFunderWallets: null,
@@ -78,18 +90,26 @@ async function buildTokenIntel(ca) {
       globalFees: madeOnSolIntel?.globalFees || null,
       smartWalletRegistrySize: smartRegistry.size || 0,
       smartWalletSource: smartRegistry.source || 'belum dikonfigurasi',
-      insightSummary: ['Top holder belum tersedia dari RPC.']
+      insightSummary: madeOnSolIntel
+        ? ['Top holder belum tersedia dari RPC.']
+        : ['Top holder belum tersedia dari RPC. MadeOnSol key juga kosong.'],
     };
   }
 
-  const totalSupply = Number(tokenSupply?.value?.amount || mint?.supply || 0);
   const topAccounts = accounts.slice(0, 10);
   const top10Amount = topAccounts.reduce((sum, account) => sum + Number(account.amount || 0), 0);
   const top10Pct = totalSupply > 0 ? (top10Amount / totalSupply) * 100 : null;
-  const tokenAccountInfos = await rpc('getMultipleAccounts', [
-    topAccounts.map((account) => account.address),
-    { encoding: 'jsonParsed', commitment: 'confirmed' }
-  ]);
+
+  // Fetch token account owners
+  let tokenAccountInfos = null;
+  try {
+    tokenAccountInfos = await rpc('getMultipleAccounts', [
+      topAccounts.map((account) => account.address),
+      { encoding: 'jsonParsed', commitment: 'confirmed' }
+    ]);
+  } catch {
+    // If we can't get owners, still return what we have
+  }
 
   const holderDetails = topAccounts.map((account, index) => {
     const owner = tokenAccountInfos?.value?.[index]?.data?.parsed?.info?.owner || null;
@@ -117,20 +137,25 @@ async function buildTokenIntel(ca) {
   });
 
   const uniqueOwners = [...new Set(holderDetails.map((holder) => holder.owner).filter(Boolean))];
-  const ownerInfos = uniqueOwners.length
-    ? await rpc('getMultipleAccounts', [uniqueOwners, { encoding: 'jsonParsed', commitment: 'confirmed' }]).catch(() => null)
-    : null;
 
-  const ownerBalances = new Map();
-  ownerInfos?.value?.forEach((info, index) => {
-    if (!info) return;
-    ownerBalances.set(uniqueOwners[index], Number(info.lamports || 0) / 1e9);
-  });
+  // Fetch SOL balances (skip if no owners or RPC struggling)
+  let ownerBalances = new Map();
+  if (uniqueOwners.length) {
+    try {
+      const ownerInfos = await rpc('getMultipleAccounts', [
+        uniqueOwners,
+        { encoding: 'jsonParsed', commitment: 'confirmed' }
+      ]);
+      ownerInfos?.value?.forEach((info, index) => {
+        if (info) ownerBalances.set(uniqueOwners[index], Number(info.lamports || 0) / 1e9);
+      });
+    } catch {
+      // Proceed without balances
+    }
+  }
 
-  const activityRows = await Promise.all(
-    uniqueOwners.slice(0, 10).map((owner) => fetchOwnerActivity(owner).catch(() => ({ owner, txSample: 0 })))
-  );
-  const activityMap = new Map(activityRows.map((row) => [row.owner, row]));
+  // Activity is expensive (many RPC calls). Skip in Vercel-only mode if timeout risk.
+  const activityMap = new Map();
 
   let whales = 0;
   let burners = 0;
@@ -139,11 +164,7 @@ async function buildTokenIntel(ca) {
 
   holderDetails.forEach((holder) => {
     const solBalance = ownerBalances.get(holder.owner);
-    const activity = activityMap.get(holder.owner);
     holder.solBalance = Number.isFinite(solBalance) ? solBalance : null;
-    holder.txSample = activity?.txSample ?? null;
-    holder.lastActivityAt = activity?.lastActivityAt || null;
-    holder.sampleOldestActivityAt = activity?.sampleOldestActivityAt || null;
     holder.tags = buildHolderTags(holder);
 
     if (holder.type === 'KOL') kol = { address: holder.owner, name: holder.label, type: holder.type, source: holder.source };
@@ -167,6 +188,7 @@ async function buildTokenIntel(ca) {
 
   return {
     ca,
+    mint,
     top10Pct,
     uniqueOwnerCount: uniqueOwners.length,
     commonFunderWallets,
@@ -177,7 +199,6 @@ async function buildTokenIntel(ca) {
     kol,
     whales,
     burners,
-    mint,
     madeOnSolIntel,
     globalFees: madeOnSolIntel?.globalFees || null,
     smartWalletRegistrySize: smartRegistry.size || 0,
@@ -187,43 +208,24 @@ async function buildTokenIntel(ca) {
 }
 
 async function fetchMintInfo(ca) {
-  const data = await rpc('getAccountInfo', [
-    ca,
-    {
-      encoding: 'jsonParsed',
-      commitment: 'confirmed'
-    }
-  ]);
-
-  const value = data?.value;
-  if (!value) return null;
-  const parsed = value.data?.parsed?.info;
-
-  return {
-    provider: 'Solana RPC getAccountInfo',
-    exists: true,
-    tokenProgram: TOKEN_PROGRAM_IDS.has(value.owner),
-    owner: value.owner,
-    decimals: parsed?.decimals ?? null,
-    supply: Number(parsed?.supply || 0),
-    mintAuthority: parsed?.mintAuthority || null,
-    freezeAuthority: parsed?.freezeAuthority || null
-  };
-}
-
-async function fetchOwnerActivity(owner) {
-  const signatures = await rpc('getSignaturesForAddress', [
-    owner,
-    { limit: 20, commitment: 'confirmed' }
-  ]);
-
-  const rows = Array.isArray(signatures) ? signatures : [];
-  return {
-    owner,
-    txSample: rows.length,
-    lastActivityAt: rows[0]?.blockTime ? new Date(rows[0].blockTime * 1000).toISOString() : null,
-    sampleOldestActivityAt: rows[rows.length - 1]?.blockTime ? new Date(rows[rows.length - 1].blockTime * 1000).toISOString() : null
-  };
+  try {
+    const data = await rpc('getAccountInfo', [ca, { encoding: 'jsonParsed', commitment: 'confirmed' }]);
+    const val = data?.value;
+    if (!val) return null;
+    const parsed = val.data?.parsed?.info;
+    return {
+      provider: 'Solana RPC getAccountInfo',
+      exists: true,
+      tokenProgram: TOKEN_PROGRAM_IDS.has(val.owner),
+      owner: val.owner,
+      decimals: parsed?.decimals ?? null,
+      supply: Number(parsed?.supply || 0),
+      mintAuthority: parsed?.mintAuthority || null,
+      freezeAuthority: parsed?.freezeAuthority || null
+    };
+  } catch {
+    return null;
+  }
 }
 
 async function fetchMadeOnSolTokenIntel(ca) {
@@ -238,83 +240,50 @@ async function fetchMadeOnSolTokenIntel(ca) {
 
   if (!apiKey) return null;
 
-  const response = await fetchWithTimeout(`${MADEONSOL_API}/token/${ca}`, {
-    headers: {
-      accept: 'application/json',
-      authorization: `Bearer ${apiKey}`
-    }
-  });
+  try {
+    const response = await fetchWithTimeout(`${MADEONSOL_API}/token/${ca}`, {
+      headers: { accept: 'application/json', authorization: `Bearer ${apiKey}` }
+    });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    const token = payload?.token || payload?.data || payload;
+    if (!token || typeof token !== 'object') return null;
 
-  if (!response.ok) {
-    throw new Error(`MadeOnSol token intel ${response.status}`);
+    return {
+      provider: 'MadeOnSol token intelligence',
+      priceUsd: numberOrNull(token.price_usd || token.priceUsd),
+      marketCapUsd: numberOrNull(token.market_cap || token.marketCap || token.fdv),
+      volume24hUsd: numberOrNull(token.volume_24h_usd || token.volume24hUsd),
+      trades24h: numberOrNull(token.trades_24h || token.trades24h),
+      firstSeenAt: token.first_seen_at || token.firstSeenAt || null,
+      ageSeconds: numberOrNull(token.age_seconds || token.ageSeconds),
+      blacklisted: Boolean(token.is_blacklisted || token.blacklisted),
+      blacklistCategory: token.blacklist_category || null,
+      mcChangePct: token.mc_change_pct || token.mcChangePct || null,
+      volumeUsd: token.volume_usd || token.volumeUsd || null,
+      mevVolumePct: token.mev_volume_pct || token.mevVolumePct || null,
+      globalFees: normalizeGlobalFees(token),
+      deployer: token.deployer || null,
+      kolActivity: token.kol_activity || token.kolActivity || null
+    };
+  } catch {
+    return null;
   }
-
-  const payload = await response.json();
-  const token = payload?.token || payload?.data || payload;
-  if (!token || typeof token !== 'object') return null;
-
-  return {
-    provider: 'MadeOnSol token intelligence',
-    priceUsd: numberOrNull(token.price_usd || token.priceUsd),
-    marketCapUsd: numberOrNull(token.market_cap || token.marketCap || token.fdv),
-    volume24hUsd: numberOrNull(token.volume_24h_usd || token.volume24hUsd),
-    trades24h: numberOrNull(token.trades_24h || token.trades24h),
-    firstSeenAt: token.first_seen_at || token.firstSeenAt || null,
-    ageSeconds: numberOrNull(token.age_seconds || token.ageSeconds),
-    blacklisted: Boolean(token.is_blacklisted || token.blacklisted),
-    blacklistCategory: token.blacklist_category || null,
-    mcChangePct: token.mc_change_pct || token.mcChangePct || null,
-    volumeUsd: token.volume_usd || token.volumeUsd || null,
-    mevVolumePct: token.mev_volume_pct || token.mevVolumePct || null,
-    globalFees: normalizeGlobalFees(token),
-    deployer: token.deployer || null,
-    kolActivity: token.kol_activity || token.kolActivity || null
-  };
 }
 
 function normalizeGlobalFees(token = {}) {
   const feeSource = token.global_fees || token.globalFees || token.fees || token.fee || {};
   const windows = {
-    m5: firstNumber(
-      feeSource.m5,
-      feeSource['5m'],
-      feeSource.fiveMinute,
-      token.fees_5m_usd,
-      token.fee_5m_usd,
-      token.global_fee_5m_usd
-    ),
-    h1: firstNumber(
-      feeSource.h1,
-      feeSource['1h'],
-      feeSource.hour,
-      token.fees_1h_usd,
-      token.fee_1h_usd,
-      token.global_fee_1h_usd
-    ),
-    h24: firstNumber(
-      feeSource.h24,
-      feeSource['24h'],
-      feeSource.day,
-      token.fees_24h_usd,
-      token.fee_24h_usd,
-      token.global_fee_24h_usd,
-      token.total_fees_24h_usd
-    )
+    m5: firstNumber(feeSource.m5, feeSource['5m'], feeSource.fiveMinute, token.fees_5m_usd, token.fee_5m_usd, token.global_fee_5m_usd),
+    h1: firstNumber(feeSource.h1, feeSource['1h'], feeSource.hour, token.fees_1h_usd, token.fee_1h_usd, token.global_fee_1h_usd),
+    h24: firstNumber(feeSource.h24, feeSource['24h'], feeSource.day, token.fees_24h_usd, token.fee_24h_usd, token.global_fee_24h_usd, token.total_fees_24h_usd)
   };
 
   const currentUsd = firstNumber(
-    feeSource.currentUsd,
-    feeSource.current_usd,
-    feeSource.usd,
-    token.global_fees_usd,
-    token.global_fee_usd,
-    token.fees_usd,
-    token.fee_usd,
-    token.trading_fee_usd,
-    token.protocol_fee_usd,
-    windows.m5,
-    windows.h1,
-    windows.h24
+    feeSource.currentUsd, feeSource.current_usd, feeSource.usd,
+    token.global_fees_usd, token.global_fee_usd, token.fees_usd, token.fee_usd,
+    token.trading_fee_usd, token.protocol_fee_usd,
+    windows.m5, windows.h1, windows.h24
   );
 
   if (currentUsd == null && windows.m5 == null && windows.h1 == null && windows.h24 == null) return null;
@@ -373,7 +342,6 @@ function scoreHolder(holder) {
 
 function estimateClusterRisk(top10Pct, uniqueOwnerCount, burners, holders) {
   if (top10Pct == null) return null;
-
   let score = 0;
   if (top10Pct >= 70) score += 4;
   else if (top10Pct >= 55) score += 3;
@@ -388,7 +356,6 @@ function estimateClusterRisk(top10Pct, uniqueOwnerCount, burners, holders) {
 
 function buildInsightSummary({ top10Pct, uniqueOwnerCount, commonFunderWallets, smartMoneyCount, whales, burners, madeOnSolIntel }) {
   const summary = [];
-
   if (top10Pct != null) summary.push(`Top 10 memegang ${top10Pct.toFixed(1)}% supply.`);
   summary.push(`${uniqueOwnerCount} owner unik terbaca dari top holder.`);
   if (madeOnSolIntel?.ageSeconds != null) summary.push(`Umur indexer MadeOnSol sekitar ${formatAgeSeconds(madeOnSolIntel.ageSeconds)}.`);
@@ -400,7 +367,6 @@ function buildInsightSummary({ top10Pct, uniqueOwnerCount, commonFunderWallets, 
   if (commonFunderWallets >= 5) summary.push('Risiko cluster/bundle tinggi dari konsentrasi holder dan burner.');
   else if (commonFunderWallets >= 3) summary.push('Ada indikasi cluster yang perlu dipantau.');
   else summary.push('Belum ada indikasi cluster berat dari proxy holder.');
-
   return summary;
 }
 
@@ -408,18 +374,10 @@ async function rpc(method, params) {
   const response = await fetchWithTimeout(resolveRpcUrl(), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: 'sia-token-intel',
-      method,
-      params
-    })
+    body: JSON.stringify({ jsonrpc: '2.0', id: 'sia-token-intel', method, params })
   });
-
   const payload = await response.json();
-  if (payload.error) {
-    throw new Error(payload.error.message || `RPC ${method} failed`);
-  }
+  if (payload.error) throw new Error(payload.error.message || `RPC ${method} failed`);
   return payload.result;
 }
 
