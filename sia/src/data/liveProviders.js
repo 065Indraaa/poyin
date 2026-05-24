@@ -20,40 +20,53 @@ const TOKEN_PROGRAM_IDS = new Set([
 const SYSTEM_PROGRAM_ID = '11111111111111111111111111111111';
 
 const PUMP_PROGRAM_ID = '6EF8rrecthR5Dk4r49j5b3m1TQBTciV4Xed2sW6qx6';
-const WS_TIMEOUT_MS = 4800;
+const WS_TIMEOUT_MS = 2200;
 const HTTP_TIMEOUT_MS = 9500;
 const DEX_DISCOVERY_MAX_AGE_MINUTES = 3 * 24 * 60;
 const DEX_SEARCH_TERMS = ['pumpfun', 'pump.fun', 'pumpswap', 'raydium', 'moonshot'];
+const DEX_BROAD_QUERIES = ['solana', 'pump migrated', 'raydium fresh', 'meteora pool', 'pumpfun new'];
 const DEFAULT_DEX_FEE_RATE = 0.0025;
 
+import { fetchPumpFunDiscovery, pumpFunToFeedToken, fetchBirdeyeOverview, fetchJupiterPrice, crossValidatePrice, isJupiterRegistered } from './providers';
+
 export async function fetchDiscoveryFeed() {
-  const [dexFeed, dexSearchFeed, dexAllPairs, pumpFeed] = await Promise.all([
+  const [dexFeed, dexSearchFeed, dexBroadFeed, pumpFeed, pumpFunFeed] = await Promise.all([
     fetchDexDiscoveryFeed().catch(() => []),
     fetchDexSearchDiscoveryFeed().catch(() => []),
-    fetchDexAllPairsFeed().catch(() => []),
-    collectPumpPortalNewTokens({ limit: 8, timeoutMs: 4000 }).catch(() => [])
+    fetchDexBroadSearchFeed().catch(() => []),
+    collectPumpPortalNewTokens({ limit: 8, timeoutMs: 4000 }).catch(() => []),
+    fetchPumpFunFeedTokens({ limit: 30 }).catch(() => [])
   ]);
 
-  const tokens = uniqueTokens([...pumpFeed, ...dexSearchFeed, ...dexFeed, ...dexAllPairs]);
+  const tokens = uniqueTokens([...pumpFeed, ...pumpFunFeed, ...dexSearchFeed, ...dexFeed, ...dexBroadFeed]);
 
   if (!tokens.length) {
-    throw new Error('Gak ada token live yang balik dari DexScreener');
+    throw new Error('Belum ada token live yang balik dari semua sumber');
   }
 
   const pumpOk = pumpFeed.length > 0;
-  const dexOk = dexFeed.length > 0 || dexSearchFeed.length > 0 || dexAllPairs.length > 0;
+  const pumpFunOk = pumpFunFeed.length > 0;
+  const dexOk = dexFeed.length > 0 || dexSearchFeed.length > 0 || dexBroadFeed.length > 0;
+
+  const providerLabel = [
+    pumpOk ? 'PumpPortal stream' : null,
+    pumpFunOk ? 'Pump.fun frontend' : null,
+    dexOk ? 'DexScreener discovery' : null
+  ].filter(Boolean).join(' + ') || 'DexScreener live API';
 
   return {
     tokens,
-    provider: pumpOk
-      ? 'PumpPortal stream + DexScreener discovery'
-      : dexOk
-        ? 'DexScreener search + latest profiles'
-        : 'DexScreener live API (Boosts & Latest)',
+    provider: providerLabel,
     fetchedAt: new Date().toISOString(),
-    degraded: !pumpOk && dexOk,
-    pumpPortalOk: pumpOk
+    degraded: !pumpOk && !pumpFunOk,
+    pumpPortalOk: pumpOk,
+    pumpFunOk
   };
+}
+
+async function fetchPumpFunFeedTokens({ limit = 30 } = {}) {
+  const coins = await fetchPumpFunDiscovery({ limit });
+  return coins.map(pumpFunToFeedToken).filter(Boolean);
 }
 
 export async function fetchTokenMarketSnapshots(addresses = []) {
@@ -143,22 +156,23 @@ async function fetchDexSearchDiscoveryFeed() {
     .filter(Boolean);
 }
 
-async function fetchDexAllPairsFeed() {
-  // Ambil semua pair Solana terbaru — lebih luas daripada profiles/boosts
-  try {
-    const data = await fetchJson(`${DEX_API}/latest/dex/pairs/solana`);
-    const pairs = normalizeList(data)
-      .filter((pair) => pair?.chainId === 'solana' && pair?.baseToken?.address)
-      .filter(isLiveDiscoveryPair)
-      .sort(sortDiscoveryPairs)
-      .slice(0, 40);
+async function fetchDexBroadSearchFeed() {
+  // /latest/dex/pairs/solana bukan endpoint valid DexScreener (404).
+  // Ganti pakai paralel /latest/dex/search dengan query berbeda buat coverage lebih luas.
+  const searches = await Promise.allSettled(
+    DEX_BROAD_QUERIES.map((query) => fetchJson(`${DEX_API}/latest/dex/search?q=${encodeURIComponent(query)}`))
+  );
 
-    return uniquePairs(pairs)
-      .map((pair) => normalizeDexPair(pair, {}))
-      .filter(Boolean);
-  } catch {
-    return [];
-  }
+  const pairs = searches
+    .flatMap((response) => (response.status === 'fulfilled' ? normalizeList(response.value) : []))
+    .filter((pair) => pair?.chainId === 'solana' && pair?.baseToken?.address)
+    .filter(isLiveDiscoveryPair)
+    .sort(sortDiscoveryPairs)
+    .slice(0, 60);
+
+  return uniquePairs(pairs)
+    .map((pair) => normalizeDexPair(pair, {}))
+    .filter(Boolean);
 }
 
 export async function collectPumpPortalNewTokens({ limit = 6, timeoutMs = 2600 } = {}) {
@@ -211,11 +225,14 @@ export async function collectPumpPortalNewTokens({ limit = 6, timeoutMs = 2600 }
 
 export async function fetchTokenSnapshot(address) {
   const normalizedAddress = address.trim();
-  const [dexResult, mintResult, pumpResult, ordersResult] = await Promise.allSettled([
+  const [dexResult, mintResult, pumpResult, ordersResult, birdeyeResult, jupiterResult, jupiterRegisteredResult] = await Promise.allSettled([
     fetchDexPairs(normalizedAddress),
     fetchMintAuthority(normalizedAddress),
     fetchPumpPortalSnapshot(normalizedAddress),
-    fetchDexOrders(normalizedAddress)
+    fetchDexOrders(normalizedAddress),
+    fetchBirdeyeOverview(normalizedAddress),
+    fetchJupiterPrice([normalizedAddress]),
+    isJupiterRegistered(normalizedAddress)
   ]);
 
   const dexPairs = dexResult.status === 'fulfilled' ? dexResult.value : [];
@@ -223,6 +240,10 @@ export async function fetchTokenSnapshot(address) {
   const mint = mintResult.status === 'fulfilled' ? mintResult.value : null;
   const pump = pumpResult.status === 'fulfilled' ? pumpResult.value : null;
   const dexOrders = ordersResult.status === 'fulfilled' ? ordersResult.value : [];
+  const birdeye = birdeyeResult.status === 'fulfilled' ? birdeyeResult.value : null;
+  const jupiterPrices = jupiterResult.status === 'fulfilled' ? jupiterResult.value : {};
+  const jupiterRegistered = jupiterRegisteredResult.status === 'fulfilled' ? jupiterRegisteredResult.value : false;
+
   const holdersResult = await Promise.allSettled([
     fetchBackendTokenIntel(normalizedAddress),
     fetchTopHolders(normalizedAddress, mint?.supply ?? null, dexPairs)
@@ -233,9 +254,15 @@ export async function fetchTokenSnapshot(address) {
       .map((result) => result.value)
   );
 
-  if (!bestPair && !mint && !pump) {
+  if (!bestPair && !mint && !pump && !birdeye) {
     throw new Error('Gak ada live provider yang ngasih data token');
   }
+
+  const priceDiscrepancy = crossValidatePrice({
+    dexscreener: Number(bestPair?.priceUsd || 0),
+    birdeye: birdeye?.priceUsd ?? 0,
+    jupiter: jupiterPrices[normalizedAddress]?.priceUsd ?? 0
+  });
 
   return normalizeTokenSnapshot({
     address: normalizedAddress,
@@ -245,11 +272,17 @@ export async function fetchTokenSnapshot(address) {
     dexOrders,
     holders,
     dexPairs,
+    birdeye,
+    jupiterPrice: jupiterPrices[normalizedAddress] || null,
+    jupiterRegistered,
+    priceDiscrepancy,
     providerErrors: {
       dex: dexResult.status === 'rejected' ? dexResult.reason?.message : null,
       solanaRpc: mintResult.status === 'rejected' ? mintResult.reason?.message : null,
       pumpPortal: pumpResult.status === 'rejected' ? pumpResult.reason?.message : null,
       dexOrders: ordersResult.status === 'rejected' ? ordersResult.reason?.message : null,
+      birdeye: birdeyeResult.status === 'rejected' ? birdeyeResult.reason?.message : null,
+      jupiter: jupiterResult.status === 'rejected' ? jupiterResult.reason?.message : null,
       holders: holdersResult.every((result) => result.status === 'rejected')
         ? holdersResult.map((result) => result.reason?.message).filter(Boolean).join(' | ')
         : null
@@ -260,20 +293,28 @@ export async function fetchTokenSnapshot(address) {
 export async function fetchPumpPortalSnapshot(address) {
   const target = address.toLowerCase();
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (typeof WebSocket === 'undefined') {
-      reject(new Error('WebSocket gak tersedia'));
+      resolve(null);
       return;
     }
 
     let settled = false;
-    const ws = new WebSocket(PUMP_PORTAL_WS);
+    let ws;
+    try {
+      ws = new WebSocket(PUMP_PORTAL_WS);
+    } catch {
+      resolve(null);
+      return;
+    }
+
     const timer = window.setTimeout(() => {
       cleanup();
-      reject(new Error('PumpPortal stream timeout'));
+      resolve(null);
     }, WS_TIMEOUT_MS);
 
     function cleanup() {
+      if (settled) return;
       settled = true;
       window.clearTimeout(timer);
       try {
@@ -284,10 +325,16 @@ export async function fetchPumpPortalSnapshot(address) {
     }
 
     ws.addEventListener('open', () => {
-      ws.send(JSON.stringify({ method: 'subscribeTokenTrade', keys: [address] }));
+      try {
+        ws.send(JSON.stringify({ method: 'subscribeTokenTrade', keys: [address] }));
+      } catch {
+        cleanup();
+        resolve(null);
+      }
     });
 
     ws.addEventListener('message', (event) => {
+      if (settled) return;
       try {
         const payload = JSON.parse(event.data);
         const mint = String(payload.mint || payload.tokenAddress || '').toLowerCase();
@@ -302,18 +349,18 @@ export async function fetchPumpPortalSnapshot(address) {
           traderPublicKey: payload.traderPublicKey || null
         });
       } catch {
-        if (!settled) {
-          cleanup();
-          reject(new Error('PumpPortal gagal parse payload'));
-        }
+        // packet rusak — biarkan timer yang resolve null
       }
     });
 
     ws.addEventListener('error', () => {
-      if (!settled) {
-        cleanup();
-        reject(new Error('PumpPortal websocket error'));
-      }
+      cleanup();
+      resolve(null);
+    });
+
+    ws.addEventListener('close', () => {
+      cleanup();
+      resolve(null);
     });
   });
 }
@@ -949,14 +996,18 @@ function normalizeDexPair(pair, extras = {}) {
 function isLiveDiscoveryPair(pair) {
   if (!pair?.baseToken?.address) return false;
 
-  const createdAtMs = Number(pair.pairCreatedAt || 0);
-  if (!createdAtMs) return false;
+  const dexId = String(pair.dexId || '').toLowerCase();
+  const isPumpBondingCurve = dexId.includes('pump') && !pair.pairAddress;
 
-  const ageMinutes = Math.max(0, (Date.now() - createdAtMs) / 60000);
-  if (ageMinutes > DEX_DISCOVERY_MAX_AGE_MINUTES) return false;
+  const createdAtMs = Number(pair.pairCreatedAt || 0);
+  const ageMinutes = createdAtMs
+    ? Math.max(0, (Date.now() - createdAtMs) / 60000)
+    : (isPumpBondingCurve ? 0 : null);
+  if (ageMinutes != null && ageMinutes > DEX_DISCOVERY_MAX_AGE_MINUTES) return false;
 
   const liquidityUsd = Number(pair.liquidity?.usd || 0);
   const volume5m = Number(pair.volume?.m5 || 0);
+  const volumeH1 = Number(pair.volume?.h1 || 0);
   const txns5m = sumTxns(pair.txns?.m5);
   const buys5m = Number(pair.txns?.m5?.buys || 0);
   const sells5m = Number(pair.txns?.m5?.sells || 0);
@@ -964,6 +1015,14 @@ function isLiveDiscoveryPair(pair) {
   const priceH1 = Number(pair.priceChange?.h1 || 0);
   const fdv = Number(pair.fdv || pair.marketCap || 0);
 
+  // Bonding curve / Pump.fun: pakai filter terpisah karena LP biasanya 0 dan vol dihitung beda.
+  if (isPumpBondingCurve) {
+    if (priceM5 <= -25 || priceH1 <= -45) return false;
+    if (sells5m > buys5m * 3 + 6) return false;
+    return txns5m >= 4 || volumeH1 > 0 || fdv > 4000;
+  }
+
+  if (!createdAtMs) return false;
   if (liquidityUsd < 6500) return false;
   if (fdv > 0 && fdv < 8000) return false;
   if (priceM5 <= -12 || priceH1 <= -24) return false;
@@ -1052,7 +1111,7 @@ function pairEntryScore(pair) {
   return clamp(Math.round(score), 0, 100);
 }
 
-function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holders, dexPairs, providerErrors }) {
+function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holders, dexPairs, birdeye, jupiterPrice, jupiterRegistered, priceDiscrepancy, providerErrors }) {
   const base = dexPair
     ? normalizeDexPair(dexPair, {})
     : {
@@ -1103,6 +1162,17 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
     feedInsight: 'Dex pair belum ketemu. Analisis cuma pake data akun mint yang tersedia.'
       };
 
+  // Kalau DexScreener pair gak ada tapi Birdeye punya data, isi dari Birdeye supaya UI gak kosong.
+  if (!dexPair && birdeye) {
+    base.priceUsd = birdeye.priceUsd || base.priceUsd;
+    base.liquidityUsd = birdeye.liquidityUsd || base.liquidityUsd;
+    base.marketCap = birdeye.marketCapUsd ? formatUsd(birdeye.marketCapUsd) : base.marketCap;
+    base.source = 'Birdeye token overview';
+    if (birdeye.priceChange24h != null) {
+      base.priceChange = { ...base.priceChange, h24: birdeye.priceChange24h };
+    }
+  }
+
   const orderTiming = inferOrderTiming(base, dexOrders);
   const globalFees = mergeGlobalFees(
     holders?.globalFees || holders?.madeOnSolIntel?.globalFees || null,
@@ -1111,12 +1181,12 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
 
   return {
     ...base,
-    source: mergeSources(base.source, mint, pump),
+    source: mergeSources(base.source, mint, pump, birdeye),
     flags: {
       ...base.flags,
       mintRevoked: mint?.tokenProgram ? !mint.mintAuthority : base.flags.mintRevoked,
       freezeActive: mint?.tokenProgram ? Boolean(mint.freezeAuthority) : base.flags.freezeActive,
-      top10Pct: holders ? holders.top10Pct : base.flags.top10Pct,
+      top10Pct: holders ? holders.top10Pct : (birdeye?.security?.top10HolderPercent ?? base.flags.top10Pct),
       commonFunderWallets: holders ? holders.commonFunderWallets : base.flags.commonFunderWallets,
       uniqueOwnerCount: holders ? holders.uniqueOwnerCount : base.flags.uniqueOwnerCount,
       kolDetected: holders ? holders.kol : base.flags.kolDetected,
@@ -1133,7 +1203,14 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       pumpPortalTradeSeen: Boolean(pump),
       dexPaidTiming: orderTiming.timing || base.flags.dexPaidTiming,
       activeBoosts: orderTiming.count || base.flags.activeBoosts,
-      dexPairCount: dexPairs.length
+      dexPairCount: dexPairs.length,
+      birdeyeHolderCount: birdeye?.holderCount ?? null,
+      birdeyeUniqueWallet24h: birdeye?.uniqueWallet24h ?? null,
+      birdeyeLpLocked: birdeye?.security?.lpLocked ?? null,
+      birdeyeCreatorPct: birdeye?.security?.creatorPercentage ?? null,
+      jupiterRegistered: Boolean(jupiterRegistered),
+      priceDiscrepancyPct: priceDiscrepancy?.discrepancyPct ?? 0,
+      priceDiscrepancySuspicious: Boolean(priceDiscrepancy?.suspicious)
     },
     rawProviders: {
       dexPair,
@@ -1147,6 +1224,10 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       excludedHolders: holders?.excludedHolderDetails || null,
       walletIntel: holders?.walletIntel || null,
       insightSummary: holders?.insightSummary || null,
+      birdeye,
+      jupiterPrice,
+      jupiterRegistered,
+      priceDiscrepancy,
       holderMeta: holders ? {
         smartWalletRegistrySize: holders.smartWalletRegistrySize,
         smartWalletSource: holders.smartWalletSource,
@@ -1154,7 +1235,7 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       } : null,
       providerErrors
     },
-    providerConfidence: dexPair && mint ? 'high' : dexPair || mint ? 'medium' : 'low'
+    providerConfidence: dexPair && mint ? 'high' : (dexPair || mint || birdeye) ? 'medium' : 'low'
   };
 }
 
@@ -1204,11 +1285,46 @@ function inferOrderTiming(token, orders = []) {
   };
 }
 
-function mergeSources(source, mint, pump) {
+function mergeSources(source, mint, pump, birdeye) {
   const sources = [source];
   if (mint) sources.push('Solana RPC');
   if (pump) sources.push('PumpPortal stream');
-  return [...new Set(sources)].join(' + ');
+  if (birdeye) sources.push('Birdeye overview');
+  return [...new Set(sources.filter(Boolean))].join(' + ');
+}
+
+function mergeGlobalFees(primary, fallback) {
+  if (!primary && !fallback) return null;
+  if (!primary) return fallback;
+  if (!fallback) return primary;
+
+  return {
+    provider: primary.provider || fallback.provider,
+    exact: primary.exact || fallback.exact || false,
+    currentUsd: primary.currentUsd ?? fallback.currentUsd ?? null,
+    windows: {
+      m5: primary.windows?.m5 ?? fallback.windows?.m5 ?? null,
+      h1: primary.windows?.h1 ?? fallback.windows?.h1 ?? null,
+      h24: primary.windows?.h24 ?? fallback.windows?.h24 ?? null
+    },
+    rateBps: primary.rateBps ?? fallback.rateBps ?? null,
+    updatedAt: primary.updatedAt || fallback.updatedAt || new Date().toISOString()
+  };
+}
+
+function buildDexGlobalFeeEstimate({ volume5m = 0, volumeH1 = 0, volumeH24 = 0 }) {
+  const m5 = Number(volume5m) > 0 ? Number(volume5m) * DEFAULT_DEX_FEE_RATE : null;
+  const h1 = Number(volumeH1) > 0 ? Number(volumeH1) * DEFAULT_DEX_FEE_RATE : null;
+  const h24 = Number(volumeH24) > 0 ? Number(volumeH24) * DEFAULT_DEX_FEE_RATE : null;
+  if (m5 == null && h1 == null && h24 == null) return null;
+  return {
+    provider: 'estimasi proxy (volume * 0.25%)',
+    exact: false,
+    currentUsd: m5 ?? h1 ?? h24 ?? null,
+    windows: { m5, h1, h24 },
+    rateBps: 25,
+    updatedAt: new Date().toISOString()
+  };
 }
 
 function inferPhase(ageMinutes, fdv, dexId = '') {
@@ -1336,15 +1452,13 @@ export function subscribeToPumpPortalStream(onToken, onStatus = () => {}) {
   let active = true;
   let reconnectTimer;
   let retryCount = 0;
-  const MAX_RETRIES = 5;
-  const RETRY_DELAYS = [2000, 4000, 8000, 15000, 30000];
+  let lastOpenAt = 0;
+  let stableResetTimer;
+  const MAX_DELAY_MS = 60000;
+  const BASE_DELAYS = [1500, 3000, 6000, 12000, 24000, 45000];
 
   function connect() {
     if (!active) return;
-    if (retryCount >= MAX_RETRIES) {
-      onStatus({ connected: false, connecting: false, error: 'PumpPortal reconnecting' });
-      return;
-    }
     onStatus({ connected: false, connecting: true, error: null });
     try {
       ws = new WebSocket(PUMP_PORTAL_WS);
@@ -1355,7 +1469,13 @@ export function subscribeToPumpPortalStream(onToken, onStatus = () => {}) {
     }
 
     ws.addEventListener('open', () => {
-      retryCount = 0;
+      lastOpenAt = Date.now();
+      // Setelah stable 5 menit, reset retry counter biar backoff balik ke awal.
+      window.clearTimeout(stableResetTimer);
+      stableResetTimer = window.setTimeout(() => {
+        retryCount = 0;
+      }, 5 * 60 * 1000);
+
       try {
         ws.send(JSON.stringify({ method: 'subscribeNewToken' }));
         onStatus({ connected: true, connecting: false, error: null });
@@ -1384,7 +1504,12 @@ export function subscribeToPumpPortalStream(onToken, onStatus = () => {}) {
     });
 
     ws.addEventListener('close', () => {
+      window.clearTimeout(stableResetTimer);
       if (active) {
+        // Kalau stream hidup >2 menit baru putus, anggap reset penalty.
+        if (Date.now() - lastOpenAt > 120000) {
+          retryCount = Math.max(0, retryCount - 2);
+        }
         scheduleRetry();
       }
     });
@@ -1392,8 +1517,11 @@ export function subscribeToPumpPortalStream(onToken, onStatus = () => {}) {
 
   function scheduleRetry() {
     if (!active) return;
-    retryCount++;
-    const delay = RETRY_DELAYS[Math.min(retryCount - 1, RETRY_DELAYS.length - 1)];
+    retryCount += 1;
+    const baseDelay = BASE_DELAYS[Math.min(retryCount - 1, BASE_DELAYS.length - 1)];
+    const jitter = Math.random() * 1000;
+    const delay = Math.min(baseDelay + jitter, MAX_DELAY_MS);
+    onStatus({ connected: false, connecting: true, error: null, nextRetryInMs: delay });
     reconnectTimer = window.setTimeout(connect, delay);
   }
 
@@ -1402,6 +1530,7 @@ export function subscribeToPumpPortalStream(onToken, onStatus = () => {}) {
   return () => {
     active = false;
     window.clearTimeout(reconnectTimer);
+    window.clearTimeout(stableResetTimer);
     if (ws) {
       try { ws.close(); } catch {}
     }

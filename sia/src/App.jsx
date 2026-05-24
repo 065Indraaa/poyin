@@ -12,10 +12,12 @@ import {
   Lock,
   Radar,
   RefreshCw,
+  Rocket,
   Search,
   ServerCrash,
   ShieldAlert,
   Signal,
+  Skull,
   Sparkles,
   Wallet,
   XCircle
@@ -24,6 +26,10 @@ import { analyzeToken, emptyToken } from './data/apeEngine';
 import { ponyinPrinciples } from './data/knowledgeBase';
 import { fetchDiscoveryFeed, fetchProviderHealth, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
 import { connectIndexerSocket, fetchScanDeep, fetchEnrichedFeed } from './services/indexerSocket';
+import { pushSnapshot } from './data/snapshotStore';
+import { analyzeRug } from './data/rugDetector';
+import { analyzeRunner } from './data/runnerDetector';
+import { addToBlacklist, getBlacklistEntry, isBlacklisted, prune as pruneBlacklist } from './data/blacklist';
 import RedFlagPanel from './components/RedFlagPanel';
 import BundleGraph from './components/BundleGraph';
 
@@ -113,6 +119,7 @@ export default function App() {
   }, [feedTokens]);
 
   useEffect(() => {
+    pruneBlacklist();
     refreshFeed();
     refreshProviderHealth();
 
@@ -272,7 +279,7 @@ export default function App() {
     const addresses = feedTokensRef.current
       .map((token) => token.ca)
       .filter(Boolean)
-      .slice(0, 30);
+      .slice(0, 60);
 
     if (!addresses.length) return;
 
@@ -296,6 +303,7 @@ export default function App() {
     if (!address) return;
 
     const optimisticToken = typeof tokenLike === 'string' ? { ...emptyToken, ca: address, ticker: shortAddress(address) } : tokenLike;
+    const priorBlacklist = getBlacklistEntry(address);
 
     setSelectedToken(optimisticToken);
     setReport(analyzeToken(optimisticToken));
@@ -315,6 +323,10 @@ export default function App() {
         setDeepScan(deep);
         // Merge deep scan verdict as overlay if critical
         if (deep?.verdict?.isRug) {
+          addToBlacklist(address, {
+            reason: deep.redFlags?.map((r) => r.text).slice(0, 2).join('; ') || 'deep scan critical',
+            level: 'critical'
+          });
           setReport((prev) => ({
             ...prev,
             verdict: { label: 'Zona Bahaya', instruction: 'Hindari aja', tone: 'danger' },
@@ -327,6 +339,25 @@ export default function App() {
     try {
       const liveToken = await fetchTokenSnapshot(address);
       applyLiveToken(liveToken);
+
+      // Re-analyze setelah data live masuk — kalau confirmed rug, tambah ke blacklist
+      const rug = analyzeRug(liveToken);
+      if (rug.isRugged || rug.level === 'critical') {
+        addToBlacklist(address, {
+          reason: rug.reasons.slice(0, 2).join('; ') || 'rug pattern',
+          level: rug.level
+        });
+        setReport((prev) => ({
+          ...prev,
+          verdict: { label: 'Zona Bahaya', instruction: 'Hindari aja', tone: 'danger' },
+          summary: `⚠️ Pola rug terdeteksi: ${rug.reasons.join('; ')}. ${prev.summary}`,
+        }));
+      } else if (priorBlacklist) {
+        setReport((prev) => ({
+          ...prev,
+          summary: `⚠️ Token ini sebelumnya pernah ditandai (${priorBlacklist.reason}). ${prev.summary}`,
+        }));
+      }
     } catch (error) {
       const failedToken = {
         ...optimisticToken,
@@ -465,19 +496,21 @@ export default function App() {
         <div className="pipeline-tabs">
           {[
             { key: 'all', label: 'Semua' },
+            { key: 'runner', label: 'Runner' },
             { key: 'new', label: 'New' },
             { key: 'early', label: 'Early' },
             { key: 'soon', label: 'Soon' },
             { key: 'migrated', label: 'Migrated' },
+            { key: 'dead', label: 'Dead' },
           ].map((tab) => (
             <button
               key={tab.key}
               type="button"
-              className={activePipeline === tab.key ? 'active' : ''}
+              className={`${activePipeline === tab.key ? 'active' : ''} ${tab.key === 'dead' ? 'dead' : ''} ${tab.key === 'runner' ? 'runner' : ''}`}
               onClick={() => setActivePipeline(tab.key)}
             >
               {tab.label}
-              <span className="count">{tab.key === 'all' ? feedTokens.length : feedTokens.filter((t) => t.phase === tab.key).length}</span>
+              <span className="count">{pipelineCount(feedTokens, tab.key)}</span>
             </button>
           ))}
         </div>
@@ -510,12 +543,17 @@ export default function App() {
                 </tr>
               )}
               {feedTokens
-                .filter((token) => activePipeline === 'all' || token.phase === activePipeline)
+                .filter((token) => filterByPipeline(token, activePipeline))
                 .map((token) => (
-                  <tr key={token.id} onClick={() => runAnalysis(token)}>
+                  <tr key={token.id} className={`${token._isRunner ? 'runner-row' : ''} ${token._isDead ? 'dead-row' : ''}`.trim()} onClick={() => runAnalysis(token)}>
                     <td>
                       <div className="token-cell">
-                        <strong>${token.ticker}</strong>
+                        <div className="token-cell-line">
+                          {token._isRunner && <span className="token-runner-badge"><Rocket size={11} /> RUNNER</span>}
+                          {token._isRugged && <span className="token-rugged-badge"><Skull size={11} /> RUGGED</span>}
+                          {!token._isRugged && token._isDead && <span className="token-dead-badge">DEAD</span>}
+                          <strong>${token.ticker}</strong>
+                        </div>
                         <span className="token-name">{token.name}</span>
                       </div>
                     </td>
@@ -594,6 +632,16 @@ export default function App() {
             <div className="ai-box">
               <span>Ringkasan AI</span>
               <p>{cleanPublicCopy(report.summary)}</p>
+              {Number(selectedToken.flags?.priceDiscrepancyPct || 0) > 10 && (
+                <div className="price-discrepancy-warning">
+                  ⚠ Harga beda {Number(selectedToken.flags.priceDiscrepancyPct).toFixed(1)}% antar sumber (DexScreener / Birdeye / Jupiter). Validasi manual sebelum entry gede.
+                </div>
+              )}
+              {isBlacklisted(selectedToken.ca) && (
+                <div className="price-discrepancy-warning">
+                  ⚠ Token ini ada di blacklist lokal: {getBlacklistEntry(selectedToken.ca)?.reason || 'pernah ditandai'}
+                </div>
+              )}
             </div>
 
             <div className="source-grid">
@@ -1140,51 +1188,99 @@ function upsertTokens(currentTokens, newTokens) {
 
 function pruneTokens(tokens) {
   const now = Date.now();
-  const maxTokens = 150; // Batasi feed supaya tetap performa
+  const maxTokens = 220;
 
-  const filtered = tokens.filter((t) => {
-    if (!t?.ca) return false;
+  // Push semua snapshot ke history store dulu — analisis rug & runner butuh ini.
+  for (const token of tokens) {
+    if (token?.ca) pushSnapshot(token.ca, token);
+  }
 
-    const report = analyzeToken(t);
-    const isPumpBondingCurve = t.provider === 'PumpPortal live websocket' || t.lpStatus === 'Bonding curve';
-    const lastSeenAgeMins = ((now - (t._lastSeenAt || t._fetchedAt || now)) / 60000);
-    const entryScore = computeEntryScore(t, report);
-    const isStrong = entryScore >= 74 || report.score >= 68 || t.liquidityUsd >= 30000 || t.flags?.reportedVolume >= 50000;
-    
-    // Filter yang terlalu lemah — tapi kasih kelonggaran buat token baru
+  const annotated = tokens
+    .filter((t) => Boolean(t?.ca))
+    .map((token) => {
+      const report = analyzeToken(token);
+      const rug = analyzeRug(token);
+      const runner = analyzeRunner(token);
+
+      // Persistent blacklist check — sekali rugged, masuk Dead tab sampai TTL habis
+      const blacklistEntry = getBlacklistEntry(token.ca);
+      const isBlacklistedToken = Boolean(blacklistEntry);
+
+      // Tambahkan ke blacklist kalau confirmed rugged / critical level
+      if (rug.isRugged || rug.level === 'critical') {
+        addToBlacklist(token.ca, {
+          reason: rug.reasons.slice(0, 2).join('; ') || 'rug pattern terdeteksi',
+          level: rug.level
+        });
+      }
+
+      const isDead = rug.isDead || rug.isRugged || isBlacklistedToken || rug.level === 'critical' || rug.level === 'high';
+
+      return {
+        ...token,
+        _report: report,
+        _rug: rug,
+        _runner: runner,
+        _isDead: isDead,
+        _isRugged: rug.isRugged || isBlacklistedToken,
+        _isRunner: runner.isRunner,
+        _runnerScore: runner.runnerScore,
+        _blacklistEntry: blacklistEntry
+      };
+    });
+
+  const filtered = annotated.filter((token) => {
+    const report = token._report;
+    const isPumpBondingCurve = token.provider === 'PumpPortal live websocket'
+      || token.provider === 'Pump.fun frontend API'
+      || token.lpStatus === 'Bonding curve';
+    const lastSeenAgeMins = ((now - (token._lastSeenAt || token._fetchedAt || now)) / 60000);
+    const entryScore = computeEntryScore(token, report);
+    const isStrong = entryScore >= 74
+      || report.score >= 68
+      || token.liquidityUsd >= 30000
+      || token.flags?.reportedVolume >= 50000
+      || token._isRunner;
+
+    // Token mati / rugged jangan dibuang — biar masuk tab Dead. Tapi tetap batasi umur.
+    if (token._isDead) {
+      // Tab Dead: simpan maksimal 1 hari
+      const ageInFeed = lastSeenAgeMins;
+      if (ageInFeed > 1440) return false;
+      return true;
+    }
+
+    // Filter lemah
     if (entryScore < 38) return false;
     if (report.score <= 28 && entryScore < 60) return false;
-    if (isPumpBondingCurve && entryScore < 55) return false;
-    if (!isPumpBondingCurve && t.liquidityUsd < 5000) return false;
-    if (!isPumpBondingCurve && t.flags?.volumeLiquidityRatio > 12) return false;
-    if (!isPumpBondingCurve && t.flags?.sells5m > (t.flags?.buys5m * 3.5) + 10) return false;
-    
-    // Filter token mati — tapi jangan terlalu agresif buang token yang masih aktif
-    if (!isPumpBondingCurve && t.priceChange?.m5 < -18) return false;
-    if (!isPumpBondingCurve && t.priceChange?.h1 < -35) return false;
-    if (!isPumpBondingCurve && t.flags?.txns5m < 4 && t.liquidityUsd < 12000) return false;
+    if (isPumpBondingCurve && entryScore < 50 && !token._isRunner) return false;
+    if (!isPumpBondingCurve && token.liquidityUsd < 5000) return false;
+    if (!isPumpBondingCurve && token.flags?.volumeLiquidityRatio > 12) return false;
+    if (!isPumpBondingCurve && token.flags?.sells5m > (token.flags?.buys5m * 3.5) + 10) return false;
+
+    // Sebelum tampil di feed normal, double-check pakai rug analyzer
+    if (token._rug?.level === 'critical') return true; // tampil di Dead, sudah di-flag isDead di atas
+    if (token._rug?.level === 'high') return true;
+
     // Token yang gak muncul di refresh tetap dipertahankan lebih lama (4 jam), asal pernah strong
     if (!isPumpBondingCurve && lastSeenAgeMins > 240 && !isStrong) return false;
 
-    // Evaluasi umur token — new pair (< 4 jam) selalu dipertahankan
     if (isPumpBondingCurve) {
-      const feedAgeMins = t._fetchedAt ? (now - t._fetchedAt) / 60000 : 0;
+      const feedAgeMins = token._fetchedAt ? (now - token._fetchedAt) / 60000 : 0;
       if (feedAgeMins > LIVE_FEED_MAX_AGE_MINUTES) return false;
       if (lastSeenAgeMins > 120 && !isStrong) return false;
-    } else if (t.pairCreatedAt) {
-      const ageMins = (now - t.pairCreatedAt) / 60000;
+    } else if (token.pairCreatedAt) {
+      const ageMins = (now - token.pairCreatedAt) / 60000;
       if (ageMins > LIVE_FEED_MAX_AGE_MINUTES) return false;
-      // Token baru (< 4 jam) tetap dipertahankan meski gak strong
       if (ageMins > 360 && !isStrong) return false;
-    } else if (t.ageMinutes !== null) {
-      if (t.ageMinutes > LIVE_FEED_MAX_AGE_MINUTES) return false;
-      if (t.ageMinutes > 360 && !isStrong) return false;
+    } else if (token.ageMinutes !== null) {
+      if (token.ageMinutes > LIVE_FEED_MAX_AGE_MINUTES) return false;
+      if (token.ageMinutes > 360 && !isStrong) return false;
     }
-    
+
     return true;
   });
 
-  // Kalau masih kebanyakan, keep top 150 berdasarkan rank
   if (filtered.length > maxTokens) {
     return filtered
       .sort((a, b) => feedRank(b) - feedRank(a))
@@ -1196,7 +1292,9 @@ function pruneTokens(tokens) {
 
 function feedRank(token) {
   const now = Date.now();
-  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || token.lpStatus === 'Bonding curve';
+  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket'
+    || token.provider === 'Pump.fun frontend API'
+    || token.lpStatus === 'Bonding curve';
   const ageMinutes = token.pairCreatedAt ? Math.max(0, (now - token.pairCreatedAt) / 60000) : 0;
   const lastSeenAge = token._lastSeenAt ? Math.max(0, (now - token._lastSeenAt) / 1000) : 0;
   const txns = Number(token.flags?.txns5m || 0);
@@ -1204,21 +1302,51 @@ function feedRank(token) {
   const liquidity = Number(token.liquidityUsd || 0);
   const entryScore = computeEntryScore(token);
 
-  return entryScore * 8
+  let score = entryScore * 8
     + (isPumpBondingCurve ? -120 : 0)
     + Math.max(0, 180 - Math.abs(ageMinutes - 90))
     + Math.max(0, 120 - lastSeenAge)
     + Math.min(txns * 3, 180)
     + Math.min(volume / 100, 120)
     + Math.min(liquidity / 1000, 80);
+
+  if (token._isRunner) {
+    const runnerScore = Number(token._runnerScore || 0);
+    score += 320 + runnerScore * 2;
+  }
+
+  if (token._isDead) {
+    score -= 1200;
+  }
+
+  return score;
+}
+
+function pipelineCount(tokens, key) {
+  if (key === 'all') return tokens.filter((t) => !t._isDead).length;
+  if (key === 'dead') return tokens.filter((t) => t._isDead).length;
+  if (key === 'runner') return tokens.filter((t) => t._isRunner && !t._isDead).length;
+  return tokens.filter((t) => t.phase === key && !t._isDead).length;
+}
+
+function filterByPipeline(token, key) {
+  if (key === 'dead') return Boolean(token._isDead);
+  if (key === 'runner') return Boolean(token._isRunner) && !token._isDead;
+  if (key === 'all') return !token._isDead;
+  return token.phase === key && !token._isDead;
 }
 
 function getFeedHealth(token) {
   const now = Date.now();
   const lastSeenAge = token._lastSeenAt ? (now - token._lastSeenAt) / 1000 : 0;
-  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || token.lpStatus === 'Bonding curve';
+  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket'
+    || token.provider === 'Pump.fun frontend API'
+    || token.lpStatus === 'Bonding curve';
   const entryScore = computeEntryScore(token);
 
+  if (token._isRugged) return { tone: 'danger', label: 'RUGGED' };
+  if (token._isDead) return { tone: 'danger', label: 'DEAD' };
+  if (token._isRunner && (token._runnerScore || 0) >= 70) return { tone: 'live', label: 'RUNNER' };
   if (entryScore >= 78 && lastSeenAge < 90) return { tone: 'live', label: 'ENTRY' };
   if (entryScore >= 66) return { tone: 'live', label: 'KUAT' };
   if (isPumpBondingCurve) return { tone: lastSeenAge < 30 ? 'watch' : 'watch', label: 'AWAL' };
@@ -1240,7 +1368,9 @@ function computeEntryScore(token, reportOverride = null) {
   const priceM5 = Number(token.priceChange?.m5 || 0);
   const priceH1 = Number(token.priceChange?.h1 || 0);
   const volumeLiquidityRatio = Number(flags.volumeLiquidityRatio || 0);
-  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket' || token.lpStatus === 'Bonding curve';
+  const isPumpBondingCurve = token.provider === 'PumpPortal live websocket'
+    || token.provider === 'Pump.fun frontend API'
+    || token.lpStatus === 'Bonding curve';
   const buyRatio = buys5m + sells5m > 0 ? buys5m / (buys5m + sells5m) : 0.5;
 
   let score = Math.min(report.score, 82) * 0.55;

@@ -1869,3 +1869,106 @@ a {
   font-size: 10px;
   color: var(--muted);
 }
+
+/* ─── Runner / Rug badges + Dead tab styling ─────────────────────────────── */
+.token-cell-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.token-runner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24, #f97316);
+  color: #1a1a1a;
+  box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.55);
+  animation: sia-runner-pulse 2s ease-in-out infinite;
+  text-transform: uppercase;
+}
+
+@keyframes sia-runner-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.55); }
+  50% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
+}
+
+.token-rugged-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.token-dead-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  background: rgba(120, 120, 130, 0.22);
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.feed-table tr.runner-row {
+  background: rgba(251, 191, 36, 0.04);
+}
+
+.feed-table tr.runner-row:hover {
+  background: rgba(251, 191, 36, 0.09);
+}
+
+.feed-table tr.dead-row {
+  opacity: 0.66;
+}
+
+.feed-table tr.dead-row:hover {
+  opacity: 1;
+}
+
+.pipeline-tabs button.runner {
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.pipeline-tabs button.runner.active {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.14);
+  color: #fbbf24;
+}
+
+.pipeline-tabs button.dead {
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.pipeline-tabs button.dead.active {
+  border-color: #ef4444;
+  background: rgba(220, 38, 38, 0.14);
+  color: #fca5a5;
+}
+
+.price-discrepancy-warning {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.06);
+  color: #fde68a;
+  font-size: 12px;
+  line-height: 1.5;
+}

@@ -9,6 +9,9 @@ import tokenIntelHandler from './api/token-intel.js';
 import healthHandler from './api/health.js';
 import scanDeepHandler from './api/scan-deep.js';
 import feedEnrichedHandler from './api/feed-enriched.js';
+import birdeyeHandler from './api/birdeye.js';
+import jupiterHandler from './api/jupiter.js';
+import pumpfunHandler from './api/pumpfun.js';
 import { startIndexerEngine } from './services/indexer/engine.js';
 import { startWebSocketServer } from './services/indexer/websocket.js';
 
@@ -26,6 +29,11 @@ app.get('/api/health', healthHandler);
 // new indexer endpoints
 app.get('/api/scan-deep', scanDeepHandler);
 app.get('/api/feed-enriched', feedEnrichedHandler);
+
+// new market provider proxies (Birdeye, Jupiter, Pump.fun)
+app.get('/api/birdeye', birdeyeHandler);
+app.get('/api/jupiter', jupiterHandler);
+app.get('/api/pumpfun', pumpfunHandler);
 
 // test endpoint
 app.get('/', (req, res) => {
