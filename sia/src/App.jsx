@@ -665,6 +665,8 @@ export default function App() {
         <RedFlagPanel redFlags={deepScan?.redFlags || []} />
         <BundleGraph bundle={deepScan?.stages?.holder?.bundle || deepScan?.stages?.bundle || null} />
 
+        <DexScreenerChart token={selectedToken} />
+
         <div className="check-grid">
           {report.checks.map((check) => (
             <CheckCard key={check.label} check={check} />
@@ -1055,6 +1057,40 @@ function MetricBox({ label, value, tone = '' }) {
     <div className={`metric-box ${tone}`}>
       <span>{label}</span>
       <strong>{value ?? 'belum diketahui'}</strong>
+    </div>
+  );
+}
+
+function DexScreenerChart({ token }) {
+  if (!token?.ca) return null;
+
+  // DexScreener embed accepts pairAddress untuk hasil paling akurat,
+  // fallback ke CA token. Theme dark + sembunyikan trade panel & info biar fokus chart.
+  const target = token.pairAddress || token.ca;
+  const src = `https://dexscreener.com/solana/${target}?embed=1&theme=dark&trades=0&info=0`;
+  const fullUrl = token.pairAddress
+    ? `https://dexscreener.com/solana/${token.pairAddress}`
+    : `https://dexscreener.com/solana/${token.ca}`;
+
+  return (
+    <div className="dex-chart-panel">
+      <div className="dex-chart-head">
+        <div>
+          <span className="eyebrow compact">Chart Live</span>
+          <strong>{token.name} {token.ticker ? `· $${token.ticker}` : ''}</strong>
+        </div>
+        <a href={fullUrl} target="_blank" rel="noreferrer">Buka di DexScreener →</a>
+      </div>
+      <div className="dex-chart-frame">
+        <iframe
+          key={target}
+          src={src}
+          title={`DexScreener chart ${token.ticker || token.ca}`}
+          loading="lazy"
+          allow="clipboard-write"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
     </div>
   );
 }
