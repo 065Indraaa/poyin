@@ -2226,3 +2226,144 @@ a {
     align-self: flex-start;
   }
 }
+
+/* ─────────── "Cara pakai" 3-step strip ─────────── */
+
+.howto-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.howto-strip li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(16, 20, 27, 0.6);
+}
+
+.howto-strip li > span {
+  display: grid;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid rgba(45, 212, 191, 0.42);
+  border-radius: 50%;
+  background: rgba(45, 212, 191, 0.12);
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.howto-strip li > div {
+  min-width: 0;
+}
+
+.howto-strip strong {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.howto-strip small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+@media (max-width: 720px) {
+  .howto-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─────────── Pipeline helper text ─────────── */
+
+.pipeline-helper {
+  margin: 8px 4px 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* ─────────── Result empty hint ─────────── */
+
+.result-empty-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border: 1px dashed rgba(45, 212, 191, 0.32);
+  border-radius: var(--radius);
+  background: rgba(45, 212, 191, 0.05);
+  color: var(--soft);
+}
+
+.result-empty-hint svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--cyan);
+}
+
+.result-empty-hint strong {
+  display: block;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.result-empty-hint span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* ─────────── Verdict chip icon spacing ─────────── */
+
+.verdict-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─────────── Metric hint indicator ─────────── */
+
+.metric-hint {
+  display: inline-grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  margin-left: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: middle;
+  cursor: help;
+}
+
+.metric-box,
+.source-pill {
+  cursor: default;
+}
+
+.metric-box[title]:hover .metric-hint,
+.source-pill[title]:hover .metric-hint {
+  border-color: rgba(45, 212, 191, 0.55);
+  color: var(--cyan);
+}

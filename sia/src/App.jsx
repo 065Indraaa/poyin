@@ -446,6 +446,30 @@ export default function App() {
               </button>
             ))}
           </div>
+
+          <ol className="howto-strip" aria-label="Cara pakai">
+            <li>
+              <span>1</span>
+              <div>
+                <strong>Tempel CA</strong>
+                <small>atau klik token dari feed di bawah.</small>
+              </div>
+            </li>
+            <li>
+              <span>2</span>
+              <div>
+                <strong>Engine scan 5 lapis</strong>
+                <small>contract, bundle, volume, marketing, candle.</small>
+              </div>
+            </li>
+            <li>
+              <span>3</span>
+              <div>
+                <strong>Baca verdict</strong>
+                <small>skor 0–100 + ringkasan AI + materi terkait.</small>
+              </div>
+            </li>
+          </ol>
         </div>
 
         <div className="intel-panel">
@@ -496,17 +520,19 @@ export default function App() {
 
         <div className="pipeline-tabs">
           {[
-            { key: 'all', label: 'Semua' },
-            { key: 'runner', label: 'Runner' },
-            { key: 'new', label: 'New' },
-            { key: 'early', label: 'Early' },
-            { key: 'soon', label: 'Soon' },
-            { key: 'migrated', label: 'Migrated' },
-            { key: 'dead', label: 'Dead' },
+            { key: 'all', label: 'Semua', hint: 'Semua token aktif kecuali yang sudah Dead' },
+            { key: 'runner', label: 'Runner', hint: 'Token dengan momentum kuat & sinyal entry terbaik' },
+            { key: 'new', label: 'New', hint: 'Umur 0–30 menit, masih di bonding curve' },
+            { key: 'early', label: 'Early', hint: 'Umur 30 menit – 6 jam, fase trench' },
+            { key: 'soon', label: 'Soon', hint: 'Bonding mendekati migrasi DEX (6–24 jam)' },
+            { key: 'migrated', label: 'Migrated', hint: 'Sudah di Raydium / Orca / Meteora' },
+            { key: 'dead', label: 'Dead', hint: 'Terdeteksi rug, dump, atau likuiditas habis' },
           ].map((tab) => (
             <button
               key={tab.key}
               type="button"
+              title={tab.hint}
+              aria-label={`${tab.label} — ${tab.hint}`}
               className={`${activePipeline === tab.key ? 'active' : ''} ${tab.key === 'dead' ? 'dead' : ''} ${tab.key === 'runner' ? 'runner' : ''}`}
               onClick={() => setActivePipeline(tab.key)}
             >
@@ -515,20 +541,34 @@ export default function App() {
             </button>
           ))}
         </div>
+        <p className="pipeline-helper">
+          {(() => {
+            const tip = {
+              all: 'Tampilkan semua token aktif yang lolos kriteria entry.',
+              runner: 'Filter token momentum: skor entry ≥ 70 dan tren harga positif.',
+              new: 'Baru lahir, masih bonding curve — wajib cek bundle dan authority sebelum apa-apa.',
+              early: 'Sudah lewat menit pertama — fokus pada retensi holder dan dev sell.',
+              soon: 'Bonding curve mendekati migrasi — pantau kedalaman LP dan keberlanjutan volume.',
+              migrated: 'Sudah listing DEX — fokus pada kesehatan LP, rasio fee, dan deteksi wash trading.',
+              dead: 'Sudah ter-flag rug / dump / LP kering. Disimpan ≤ 1 hari untuk catatan, jangan entry.',
+            }[activePipeline];
+            return tip;
+          })()}
+        </p>
 
         <div className="table-container">
           <table className="feed-table">
             <thead>
               <tr>
-                <th>Token</th>
-                <th>Fase</th>
-                <th>Umur</th>
-                <th>MCap</th>
-                <th>Likuiditas</th>
-                <th>Vol 5m</th>
-                <th>Txns 5m</th>
-                <th>B/S</th>
-                <th>Status</th>
+                <th title="Ticker dan nama token">Token</th>
+                <th title="Fase token: New, Early, Soon Migrate, atau Migrated">Fase</th>
+                <th title="Umur token sejak pair dibuat (DexScreener) atau pertama terdeteksi (PumpPortal)">Umur</th>
+                <th title="Market Cap (MCap) — kapitalisasi pasar saat ini">MCap</th>
+                <th title="Total nilai LP di pair aktif (USD)">Likuiditas</th>
+                <th title="Volume perdagangan 5 menit terakhir">Vol 5m</th>
+                <th title="Jumlah transaksi dalam 5 menit terakhir">Txns 5m</th>
+                <th title="Rasio Buy / Sell dalam 5 menit terakhir">B/S</th>
+                <th title="Status kesehatan untuk entry: ENTRY, RUNNER, KUAT, PANTAU, USANG, AWAL, DEAD, RUGGED">Status</th>
                 <th>Aksi</th>
               </tr>
             </thead>
@@ -595,9 +635,21 @@ export default function App() {
       </section>
 
       <section className="result-section" id="result">
+        {!selectedToken.ca && (
+          <div className="result-empty-hint">
+            <Sparkles size={18} />
+            <div>
+              <strong>Belum ada token yang dianalisis.</strong>
+              <span>Tempel contract address di atas atau klik salah satu token pada feed untuk memulai. Hasil di bawah masih kosong sampai scan pertama dijalankan.</span>
+            </div>
+          </div>
+        )}
         <div className="result-layout">
           <div className="meter-card">
-            <div className={`verdict-chip ${report.verdict.tone}`}>
+            <div className={`verdict-chip ${report.verdict.tone}`} title={`Verdict ${report.verdict.tone} — ${report.verdict.instruction}`}>
+              {report.verdict.tone === 'danger' && <ShieldAlert size={14} />}
+              {report.verdict.tone === 'warn' && <AlertTriangle size={14} />}
+              {report.verdict.tone === 'good' && <CheckCircle2 size={14} />}
               {report.verdict.label}
             </div>
             <div className="meter" style={{ '--needle-angle': `${meterAngle}deg` }}>
@@ -646,9 +698,9 @@ export default function App() {
             </div>
 
             <div className="source-grid">
-              <SourcePill icon={DatabaseZap} label="Sumber data" value={cleanPublicCopy(selectedToken.source)} />
-              <SourcePill icon={Signal} label="Keyakinan data" value={`${report.confidence}%`} />
-              <SourcePill icon={ShieldAlert} label="Risiko utama" value={report.primaryRisk} />
+              <SourcePill icon={DatabaseZap} label="Sumber data" value={cleanPublicCopy(selectedToken.source)} hint="Asal data: pair market, on-chain RPC, atau indeks pasar" />
+              <SourcePill icon={Signal} label="Keyakinan data" value={`${report.confidence}%`} hint="Seberapa lengkap data yang menjadi dasar verdict (semakin tinggi = lebih banyak sumber tervalidasi)" />
+              <SourcePill icon={ShieldAlert} label="Risiko utama" value={report.primaryRisk} hint="Risiko paling kritis yang ditemukan engine pada token ini" />
             </div>
 
             <div className="action-row">
@@ -703,7 +755,7 @@ export default function App() {
               {principle.materiId && (
                 <a
                   className="materi-link"
-                  href={`/#materi`}
+                  href={`/#${principle.materiId}`}
                   target="_blank"
                   rel="noreferrer"
                   title={`Buka materi ${principle.materiLabel} di Poyin Trading`}
@@ -859,12 +911,12 @@ function LogLine({ tone, text }) {
 
 
 
-function SourcePill({ icon: Icon, label, value }) {
+function SourcePill({ icon: Icon, label, value, hint = '' }) {
   return (
-    <div className="source-pill">
+    <div className="source-pill" title={hint || undefined}>
       <Icon size={18} />
       <div>
-        <span>{label}</span>
+        <span>{label}{hint && <em className="metric-hint" aria-hidden="true">?</em>}</span>
         <strong>{value || 'belum diketahui'}</strong>
       </div>
     </div>
@@ -900,20 +952,20 @@ function ForensicPanel({ token, report, status, now }) {
       </div>
 
       <div className="forensic-grid">
-        <MetricBox label="Harga" value={token.priceUsd ? `$${Number(token.priceUsd).toPrecision(4)}` : 'belum diketahui'} />
-        <MetricBox label="Umur live" value={formatLiveAge(token, now)} />
-        <MetricBox label="MCap / FDV" value={formatLiveMarketCap(token)} />
-        <MetricBox label="Likuiditas" value={formatUsd(token.liquidityUsd)} />
-        <MetricBox label="Status LP" value={liquidityPool?.status || token.lpStatus || 'belum diketahui'} tone={token.liquidityUsd < 5000 && token.phase === 'migrated' ? 'danger' : token.liquidityUsd < 25000 ? 'warn' : 'good'} />
-        <MetricBox label="Volume 5m / 1h" value={`${formatUsd(metrics.volume?.m5)} / ${formatUsd(metrics.volume?.h1)}`} />
-        <MetricBox label="Transaksi 5m / 1h" value={`${metrics.txns?.m5 ?? flags.txns5m ?? '-'} / ${metrics.txns?.h1 ?? '-'}`} />
-        <MetricBox label="Buy / Sell 5m" value={`${metrics.buys?.m5 ?? flags.buys5m ?? 0} / ${metrics.sells?.m5 ?? flags.sells5m ?? 0}`} />
-        <MetricBox label="Harga 5m / 1h" value={`${formatPct(token.priceChange?.m5)} / ${formatPct(token.priceChange?.h1)}`} tone={priceTone(token.priceChange?.m5)} />
-        <MetricBox label="Rasio Vol/LP" value={`${Number(flags.volumeLiquidityRatio || 0).toFixed(2)}×`} tone={flags.volumeLiquidityRatio > 5 ? 'danger' : flags.volumeLiquidityRatio > 2 ? 'warn' : 'good'} />
-        <MetricBox label="Supply Top 10" value={flags.top10Pct == null ? 'belum diketahui' : `${flags.top10Pct.toFixed(1)}%`} tone={flags.top10Pct > 55 ? 'danger' : flags.top10Pct > 40 ? 'warn' : 'good'} />
-        <MetricBox label="Owner unik" value={flags.uniqueOwnerCount ?? 'belum diketahui'} tone={flags.uniqueOwnerCount == null ? '' : flags.uniqueOwnerCount <= 3 ? 'danger' : flags.uniqueOwnerCount <= 6 ? 'warn' : 'good'} />
-        <MetricBox label="Whale / Burner" value={`${flags.whales || 0} / ${flags.burners || 0}`} />
-        <MetricBox label="Jumlah pair" value={flags.dexPairCount ?? 'belum diketahui'} />
+        <MetricBox label="Harga" value={token.priceUsd ? `$${Number(token.priceUsd).toPrecision(4)}` : 'belum diketahui'} hint="Harga token saat ini dalam USD" />
+        <MetricBox label="Umur live" value={formatLiveAge(token, now)} hint="Waktu sejak pair dibuat atau token pertama terdeteksi" />
+        <MetricBox label="MCap / FDV" value={formatLiveMarketCap(token)} hint="Market Cap saat ini (FDV = Fully Diluted Valuation)" />
+        <MetricBox label="Likuiditas" value={formatUsd(token.liquidityUsd)} hint="Total nilai LP di pair aktif" />
+        <MetricBox label="Status LP" value={liquidityPool?.status || token.lpStatus || 'belum diketahui'} tone={token.liquidityUsd < 5000 && token.phase === 'migrated' ? 'danger' : token.liquidityUsd < 25000 ? 'warn' : 'good'} hint="Kondisi liquidity pool: bonding curve, terkunci, atau open" />
+        <MetricBox label="Volume 5m / 1h" value={`${formatUsd(metrics.volume?.m5)} / ${formatUsd(metrics.volume?.h1)}`} hint="Total volume perdagangan dalam 5 menit dan 1 jam terakhir" />
+        <MetricBox label="Transaksi 5m / 1h" value={`${metrics.txns?.m5 ?? flags.txns5m ?? '-'} / ${metrics.txns?.h1 ?? '-'}`} hint="Jumlah transaksi (buy + sell) dalam 5 menit dan 1 jam terakhir" />
+        <MetricBox label="Buy / Sell 5m" value={`${metrics.buys?.m5 ?? flags.buys5m ?? 0} / ${metrics.sells?.m5 ?? flags.sells5m ?? 0}`} hint="Komposisi transaksi buy vs sell 5 menit terakhir" />
+        <MetricBox label="Harga 5m / 1h" value={`${formatPct(token.priceChange?.m5)} / ${formatPct(token.priceChange?.h1)}`} tone={priceTone(token.priceChange?.m5)} hint="Perubahan harga (%) dalam 5 menit dan 1 jam terakhir" />
+        <MetricBox label="Rasio Vol/LP" value={`${Number(flags.volumeLiquidityRatio || 0).toFixed(2)}×`} tone={flags.volumeLiquidityRatio > 5 ? 'danger' : flags.volumeLiquidityRatio > 2 ? 'warn' : 'good'} hint="Volume dibagi LP — rasio >5× berpotensi wash trading" />
+        <MetricBox label="Supply Top 10" value={flags.top10Pct == null ? 'belum diketahui' : `${flags.top10Pct.toFixed(1)}%`} tone={flags.top10Pct > 55 ? 'danger' : flags.top10Pct > 40 ? 'warn' : 'good'} hint="Persentase supply yang dipegang 10 wallet teratas (di luar LP). >55% = red flag" />
+        <MetricBox label="Owner unik" value={flags.uniqueOwnerCount ?? 'belum diketahui'} tone={flags.uniqueOwnerCount == null ? '' : flags.uniqueOwnerCount <= 3 ? 'danger' : flags.uniqueOwnerCount <= 6 ? 'warn' : 'good'} hint="Jumlah wallet unik di antara top holder. Sedikit = berisiko bundle" />
+        <MetricBox label="Whale / Burner" value={`${flags.whales || 0} / ${flags.burners || 0}`} hint="Wallet whale (top holder besar) vs burner (alamat burn / dead)" />
+        <MetricBox label="Jumlah pair" value={flags.dexPairCount ?? 'belum diketahui'} hint="Jumlah pair perdagangan aktif di seluruh DEX" />
       </div>
 
       <div className="forensic-columns">
@@ -1010,7 +1062,7 @@ function ForensicPanel({ token, report, status, now }) {
                   {principle?.materiId && (
                     <a
                       className="materi-link compact"
-                      href={`/#materi`}
+                      href={`/#${principle.materiId}`}
                       target="_blank"
                       rel="noreferrer"
                       title={`Buka materi ${principle.materiLabel}`}
@@ -1088,10 +1140,10 @@ function ForensicPanel({ token, report, status, now }) {
   );
 }
 
-function MetricBox({ label, value, tone = '' }) {
+function MetricBox({ label, value, tone = '', hint = '' }) {
   return (
-    <div className={`metric-box ${tone}`}>
-      <span>{label}</span>
+    <div className={`metric-box ${tone}`} title={hint || undefined}>
+      <span>{label}{hint && <em className="metric-hint" aria-hidden="true">?</em>}</span>
       <strong>{value ?? 'belum diketahui'}</strong>
     </div>
   );

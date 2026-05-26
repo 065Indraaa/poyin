@@ -15,10 +15,16 @@ import Chatbot from './components/Chatbot';
 import SpaceRecordings from './components/SpaceRecordings';
 import ProofGallery from './components/ProofGallery';
 import ScammerList from './components/ScammerList';
+import { PANEL_ORDER } from './data/panelData';
 import './styles/main.css';
 
+function readPanelFromHash() {
+  const hash = (window.location.hash || '').replace(/^#/, '').trim();
+  return PANEL_ORDER.includes(hash) ? hash : null;
+}
+
 export default function App() {
-  const [activePanel, setActivePanel] = useState('p0');
+  const [activePanel, setActivePanel] = useState(() => readPanelFromHash() || 'p0');
 
   useScrollReveal();
   useSecurity();
@@ -52,6 +58,16 @@ export default function App() {
     };
     window.addEventListener('navigate-panel', handleNavigatePanel);
     return () => window.removeEventListener('navigate-panel', handleNavigatePanel);
+  }, [switchPanel]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const panelId = readPanelFromHash();
+      if (panelId) switchPanel(panelId);
+    };
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, [switchPanel]);
 
   return (
