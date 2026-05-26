@@ -1082,6 +1082,8 @@ a {
 }
 
 .knowledge-card {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   padding: 16px;
   border: 1px solid var(--line);
@@ -1578,6 +1580,11 @@ a {
   .forensic-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .pipeline-tabs button {
+    padding: 0 12px;
+    font-size: 11px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -1657,6 +1664,67 @@ a {
   .provider-line,
   .wallet-score-row {
     grid-template-columns: 1fr;
+  }
+
+  .pipeline-tabs {
+    gap: 6px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    margin-left: -4px;
+    margin-right: -4px;
+    padding: 4px;
+    scrollbar-width: thin;
+  }
+
+  .pipeline-tabs::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .pipeline-tabs button {
+    flex: 0 0 auto;
+    padding: 0 12px;
+    font-size: 11px;
+    min-height: 34px;
+  }
+
+  .pipeline-tabs button .count {
+    padding: 1px 5px;
+    font-size: 9px;
+  }
+
+  .token-cell {
+    max-width: 180px;
+  }
+
+  .token-name {
+    max-width: 100%;
+  }
+
+  .token-runner-badge,
+  .token-rugged-badge,
+  .token-dead-badge {
+    padding: 1px 6px;
+    font-size: 8px;
+  }
+
+  .dex-chart-panel {
+    padding: 14px;
+  }
+
+  .dex-chart-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .dex-chart-head a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .price-discrepancy-warning {
+    font-size: 11px;
+    padding: 7px 10px;
   }
 }
 
@@ -1844,6 +1912,9 @@ a {
 }
 
 .pipeline-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 36px;
   padding: 0 14px;
   border: 1px solid var(--line);
@@ -1853,6 +1924,7 @@ a {
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .pipeline-tabs button.active {
@@ -1871,11 +1943,34 @@ a {
 }
 
 /* ─── Runner / Rug badges + Dead tab styling ─────────────────────────────── */
+.token-cell {
+  min-width: 0;
+}
+
 .token-cell-line {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
+  min-width: 0;
+}
+
+.token-cell-line strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.token-name {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
 }
 
 .token-runner-badge {
@@ -2043,5 +2138,91 @@ a {
 @media (max-width: 720px) {
   .dex-chart-frame {
     padding-bottom: 90%;
+  }
+}
+
+/* ─────────── Materi Link (cross-app to Poyin Trading) ─────────── */
+
+.materi-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding: 9px 12px;
+  border: 1px solid rgba(45, 212, 191, 0.32);
+  border-radius: var(--radius);
+  background: rgba(45, 212, 191, 0.08);
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.knowledge-card .materi-link {
+  margin-top: 14px;
+}
+
+.materi-link:hover {
+  border-color: rgba(45, 212, 191, 0.6);
+  background: rgba(45, 212, 191, 0.16);
+  color: #dffefa;
+}
+
+.materi-link.compact {
+  margin-top: 10px;
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.nav-links .nav-link-external {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--cyan);
+  border-color: rgba(45, 212, 191, 0.32);
+  background: rgba(45, 212, 191, 0.06);
+}
+
+.nav-links .nav-link-external:hover {
+  border-color: rgba(45, 212, 191, 0.55);
+  background: rgba(45, 212, 191, 0.14);
+  color: #dffefa;
+}
+
+.footer-materi-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: var(--radius);
+  background: rgba(45, 212, 191, 0.06);
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.footer-materi-link:hover {
+  border-color: rgba(45, 212, 191, 0.55);
+  background: rgba(45, 212, 191, 0.14);
+  color: #dffefa;
+}
+
+@media (max-width: 720px) {
+  .nav-links .nav-link-external {
+    display: none;
+  }
+
+  .materi-link {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .footer-materi-link {
+    align-self: flex-start;
   }
 }

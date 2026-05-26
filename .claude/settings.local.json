@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:4173/sia/)",
+      "Bash(pkill -f \"vite preview\")"
     ]
   }
 }

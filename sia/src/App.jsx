@@ -34,41 +34,41 @@ import RedFlagPanel from './components/RedFlagPanel';
 import BundleGraph from './components/BundleGraph';
 
 const scanSteps = [
-  'Lagi ambil data pair sama likuiditas live...',
-  'Cek dulu mint authority sama freeze authority Solana-nya...',
-  'Muat registry wallet pintar sama cek kualitas holder...',
-  'Baca stream transaksi yang paling baru...',
-  'Nilai token pake ilmu Ponyin sama data live...',
-  'Rangkum verdict entry sama catetan risiko...'
+  'Mengambil data pair dan likuiditas secara live...',
+  'Memeriksa mint authority dan freeze authority on-chain...',
+  'Memuat registry smart wallet dan memvalidasi kualitas holder...',
+  'Membaca stream transaksi terbaru...',
+  'Menilai token dengan kerangka Ponyin dan sinyal pasar live...',
+  'Menyusun ringkasan verdict dan catatan risiko...'
 ];
 
 const phases = [
   {
     key: 'new',
     title: 'New Launch',
-    subtitle: '0-30 menit / bonding curve',
-    focus: 'Bundle dev awal, fake volume, authority check',
+    subtitle: '0–30 menit · masih di bonding curve',
+    focus: 'Bundle dev awal, fake volume, dan validasi authority',
     icon: Flame
   },
   {
     key: 'early',
     title: 'Early Trench',
-    subtitle: '30 menit - 6 jam',
-    focus: 'Holder retention, dev sell signal, kabal sync',
+    subtitle: '30 menit – 6 jam',
+    focus: 'Retensi holder, sinyal dev sell, dan sinkronisasi cabal',
     icon: Radar
   },
   {
     key: 'soon',
     title: 'Soon Migrate',
-    subtitle: '6-24 jam / bonding mendekati DEX',
-    focus: 'Migrate readiness, LP depth, volume sustain',
+    subtitle: '6–24 jam · bonding mendekati DEX',
+    focus: 'Kesiapan migrasi, kedalaman LP, dan keberlanjutan volume',
     icon: AlertTriangle
   },
   {
     key: 'migrated',
     title: 'Migrated',
-    subtitle: 'Udah Raydium / Orca / Meteora',
-    focus: 'Kesehatan LP, fee ratio, wash trading',
+    subtitle: 'Sudah di Raydium / Orca / Meteora',
+    focus: 'Kesehatan LP, rasio fee, dan deteksi wash trading',
     icon: Lock
   }
 ];
@@ -412,12 +412,13 @@ export default function App() {
         <div className="hero-copy">
           <div className="eyebrow">
             <Bot size={16} />
-            Mesin Keputusan AI Ponyin
+            AI Decision Engine · Ponyin
           </div>
           <h1>Should I Ape?</h1>
           <p className="hero-lead">
-            Scanner live buat trader Solana memecoin. Data diambil dari on-chain, pair market,
-            sama stream transaksi, terus dinilai pake ilmu Ponyin, Space X, dan sinyal pasar tambahan.
+            Scanner real-time untuk trader memecoin Solana. Data dihimpun dari on-chain,
+            pair market, dan stream transaksi, lalu dinilai dengan kerangka analisis Ponyin,
+            arsip Space X, dan sinyal pasar tambahan.
           </p>
 
           <form className="search-card" onSubmit={onSubmit}>
@@ -425,11 +426,11 @@ export default function App() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Paste contract address..."
+              placeholder="Tempel contract address Solana..."
               aria-label="Contract address"
             />
             <button type="submit" disabled={isScanning}>
-              {isScanning ? 'Lagi Scan' : 'Analisis'}
+              {isScanning ? 'Menganalisis...' : 'Analisis'}
               <ArrowRight size={18} />
             </button>
           </form>
@@ -437,7 +438,7 @@ export default function App() {
           <div className="quick-actions">
             <button type="button" onClick={refreshFeed} disabled={feedStatus.loading}>
               <RefreshCw size={15} />
-              {feedStatus.loading ? 'Lagi muat ulang' : 'Muat ulang daftar live'}
+              {feedStatus.loading ? 'Memuat ulang...' : 'Muat ulang feed live'}
             </button>
             {feedTokens.slice(0, 2).map((token) => (
               <button type="button" key={token.id} onClick={() => runAnalysis(token)}>
@@ -457,7 +458,7 @@ export default function App() {
           <div className="intel-score">
             <Gauge size={44} />
             <div>
-              <span>Verdict Saat Ini</span>
+              <span>Verdict saat ini</span>
               <strong>{report.verdict.instruction}</strong>
             </div>
           </div>
@@ -478,9 +479,9 @@ export default function App() {
 
       <section className="feed-section" id="feed">
         <SectionHeader
-          kicker="Daftar Entry"
-          title="Daftar live buat kandidat entry yang valid."
-          text="Daftar ini prioritasin token yang peluang entry-nya lebih sehat: likuiditas cukup, transaksi aktif, buy pressure wajar, volume gak aneh, dan drawdown belum rusak."
+          kicker="Feed Token Live"
+          title="Daftar real-time kandidat entry yang valid."
+          text="Feed ini memprioritaskan token dengan peluang entry yang lebih sehat: likuiditas memadai, transaksi aktif, tekanan beli wajar, volume tidak janggal, dan struktur harga belum rusak oleh drawdown."
         />
 
         <ProviderStrip
@@ -534,12 +535,12 @@ export default function App() {
             <tbody>
               {feedStatus.loading && feedTokens.length === 0 && (
                 <tr>
-                  <td colSpan="10" className="empty-row">Memuat daftar live...</td>
+                  <td colSpan="10" className="empty-row">Memuat feed live...</td>
                 </tr>
               )}
               {!feedStatus.loading && feedTokens.length === 0 && (
                 <tr>
-                  <td colSpan="10" className="empty-row">Belum ada token live yang cocok kriteria entry valid. Token baru tanpa bukti pasar gak diprioritasin.</td>
+                  <td colSpan="10" className="empty-row">Belum ada token yang memenuhi kriteria entry valid. Token baru tanpa bukti pasar tidak diprioritaskan.</td>
                 </tr>
               )}
               {feedTokens
@@ -587,8 +588,8 @@ export default function App() {
             <Radar size={28} />
           </div>
           <div>
-            <strong>{isScanning ? `Lagi analisis ${selectedToken.ticker}` : 'Engine siap'}</strong>
-            <p>{isScanning ? scanSteps[scanIndex] : 'Paste CA atau klik token dari feed buat jalanin 5 lapis analisis.'}</p>
+            <strong>{isScanning ? `Menganalisis ${selectedToken.ticker}` : 'Engine siap digunakan'}</strong>
+            <p>{isScanning ? scanSteps[scanIndex] : 'Tempel CA atau pilih token dari feed untuk menjalankan 5 lapis analisis.'}</p>
           </div>
         </div>
       </section>
@@ -605,14 +606,14 @@ export default function App() {
               <div className="needle" />
               <div className="meter-center">
                 <strong>{report.score}</strong>
-              <span>Meter Ape</span>
+              <span>Ape Meter</span>
               </div>
             </div>
             <div className="meter-scale">
               <span>Bahaya</span>
               <span>PvP</span>
-              <span>Mulai Matang</span>
-              <span>Chad</span>
+              <span>Mulai matang</span>
+              <span>Aman</span>
             </div>
           </div>
 
@@ -621,7 +622,7 @@ export default function App() {
               <div>
                 <span className="eyebrow compact">{cleanPublicCopy(selectedToken.source)}</span>
                 <h2>{selectedToken.name} <small>{selectedToken.ticker ? `$${selectedToken.ticker}` : ''}</small></h2>
-                <p>{selectedToken.ca || 'Belum ada contract yang dipilih nih'}</p>
+                <p>{selectedToken.ca || 'Belum ada contract yang dipilih.'}</p>
               </div>
               <button type="button" className="copy-btn" onClick={copyCa} disabled={!selectedToken.ca}>
                 {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />}
@@ -634,12 +635,12 @@ export default function App() {
               <p>{cleanPublicCopy(report.summary)}</p>
               {Number(selectedToken.flags?.priceDiscrepancyPct || 0) > 10 && (
                 <div className="price-discrepancy-warning">
-                  ⚠ Harga beda {Number(selectedToken.flags.priceDiscrepancyPct).toFixed(1)}% antar sumber (DexScreener / Birdeye / Jupiter). Validasi manual sebelum entry gede.
+                  ⚠ Harga berbeda {Number(selectedToken.flags.priceDiscrepancyPct).toFixed(1)}% antar sumber (DexScreener / Birdeye / Jupiter). Validasi manual sebelum entry besar.
                 </div>
               )}
               {isBlacklisted(selectedToken.ca) && (
                 <div className="price-discrepancy-warning">
-                  ⚠ Token ini ada di blacklist lokal: {getBlacklistEntry(selectedToken.ca)?.reason || 'pernah ditandai'}
+                  ⚠ Token ini terdaftar di blacklist lokal: {getBlacklistEntry(selectedToken.ca)?.reason || 'pernah ditandai'}
                 </div>
               )}
             </div>
@@ -652,10 +653,10 @@ export default function App() {
 
             <div className="action-row">
               <a href={selectedToken.ca ? `https://trojan.com/@Ponyinnn?start=${selectedToken.ca}` : '#home'} target="_blank" rel="noreferrer">
-                Trojan
+                Buka di Trojan
               </a>
               <a href={selectedToken.url || (selectedToken.ca ? `https://dexscreener.com/solana/${selectedToken.ca}` : '#home')} target="_blank" rel="noreferrer">
-                Chart
+                Lihat chart
               </a>
             </div>
           </div>
@@ -679,8 +680,8 @@ export default function App() {
       <section className="engine-section" id="engine">
         <SectionHeader
           kicker="Ponyin Engine"
-          title="Dasar analisis dari materi utama."
-          text="Tiap verdict ditambatin ke materi Bundle Token, Global Fees, Revoke, Dex Paid, konfirmasi candle, baca holder, instant scalping, Space X, sama sinyal pasar live."
+          title="Setiap verdict berakar pada materi utama."
+          text="Setiap keputusan diturunkan dari Bundle Token, Global Fees, Revoke & Minting, Dex Paid, Konfirmasi Candle, Membaca Holder, Instant Scalping, arsip Space X, dan sinyal pasar live."
         />
 
         <div className="engine-grid">
@@ -699,6 +700,18 @@ export default function App() {
               <strong>{principle.title}</strong>
               <span>{principle.source}</span>
               <p>{principle.rule}</p>
+              {principle.materiId && (
+                <a
+                  className="materi-link"
+                  href={`/#materi`}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={`Buka materi ${principle.materiLabel} di Poyin Trading`}
+                >
+                  📚 Buka materi: {principle.materiLabel}
+                  <ArrowRight size={14} />
+                </a>
+              )}
             </article>
           ))}
         </div>
@@ -707,19 +720,23 @@ export default function App() {
       <section className="roadmap-section" id="roadmap">
         <SectionHeader
           kicker="Cakupan Data"
-          title="Live sekarang, indexer forensik selanjutnya."
-          text="Data publik cukup buat discovery, pair, liquidity, mint/freeze, sama timing marketing. Bukti penuh common funder, top holder, dev sell, sama fee exact tetap butuh indexer on-chain yang lebih dalem."
+          title="Live sekarang, forensik indexer menyusul."
+          text="Data publik sudah cukup untuk discovery, pair, likuiditas, mint/freeze, dan timing marketing. Bukti penuh atas common funder, top holder, dev sell, dan fee exact tetap membutuhkan indexer on-chain yang lebih dalam."
         />
         <div className="roadmap-grid">
-          <RoadmapCard title="Sudah live" text="Profile, boost, data pair, mint authority on-chain, serta stream transaksi saat scan." />
-          <RoadmapCard title="Butuh indexer" text="Normalisasi top holder, graph common funder, retensi holder menit pertama, dan realized PnL wallet dev." />
-          <RoadmapCard title="Siap dikembangkan" text="Alert Telegram /ape, watchlist wallet ping, dan scoring personal sesuai style scalping atau swing." />
+          <RoadmapCard title="Sudah live" text="Profil token, boost, data pair, mint authority on-chain, serta stream transaksi saat scan." />
+          <RoadmapCard title="Membutuhkan indexer" text="Normalisasi top holder, graph common funder, retensi holder menit pertama, dan realized PnL wallet dev." />
+          <RoadmapCard title="Roadmap berikutnya" text="Alert Telegram /ape, watchlist wallet ping, dan scoring personal sesuai gaya scalping atau swing." />
         </div>
       </section>
 
       <footer className="site-footer">
         <strong>Should I Ape?</strong>
-        <span>Aplikasi monitoring live di dalam workspace Ponyin. Feed utama gak pake daftar token statis.</span>
+        <span>Aplikasi monitoring real-time dalam ekosistem Ponyin. Feed utama tidak menggunakan daftar token statis.</span>
+        <a className="footer-materi-link" href="/" target="_blank" rel="noreferrer">
+          Pelajari materi Poyin Trading
+          <ArrowRight size={14} />
+        </a>
       </footer>
     </main>
   );
@@ -732,14 +749,17 @@ function Navigation() {
         <span>SI</span>
         <div>
           <strong>Should I Ape?</strong>
-          <small>Engine Ponyin</small>
+          <small>Ponyin Decision Engine</small>
         </div>
       </a>
       <div className="nav-links">
-        <a href="#feed">Daftar Live</a>
-        <a href="#result">Meter Ape</a>
+        <a href="#feed">Feed Live</a>
+        <a href="#result">Ape Meter</a>
         <a href="#engine">Engine</a>
-        <a href="#roadmap">Cakupan</a>
+        <a href="#roadmap">Cakupan Data</a>
+        <a href="/" target="_blank" rel="noreferrer" className="nav-link-external">
+          Materi Ponyin <ArrowRight size={13} />
+        </a>
       </div>
     </nav>
   );
@@ -763,18 +783,18 @@ function ProviderStrip({ status, health, count, onRefresh }) {
       <div>
         {status.error ? <ServerCrash size={20} /> : <DatabaseZap size={20} />}
         <div>
-          <strong>{status.error ? 'Sumber data lagi terganggu' : 'Sumber data live aktif'}</strong>
+          <strong>{status.error ? 'Sumber data sedang terganggu' : 'Sumber data live aktif'}</strong>
           <span>
             {status.error
               ? status.error
-            : `${count} token Solana aktif${status.fetchedAt ? `, refresh ${formatTime(status.fetchedAt)}` : ''}, ${formatStreamStatus(status)}`}
+            : `${count} token Solana aktif${status.fetchedAt ? ` · refresh ${formatTime(status.fetchedAt)}` : ''} · ${formatStreamStatus(status)}`}
           </span>
           <ProviderHealthChips health={health} />
         </div>
       </div>
       <button type="button" onClick={onRefresh} disabled={status.loading}>
         <RefreshCw size={16} />
-        {status.loading ? 'Memuat' : 'Muat ulang'}
+        {status.loading ? 'Memuat...' : 'Muat ulang'}
       </button>
     </div>
   );
@@ -784,7 +804,7 @@ function ProviderHealthChips({ health }) {
   const smartSize = Number(health?.smartWallets?.size || 0);
   const chips = [
     {
-      label: health?.env?.madeOnSolKey ? 'indeks wallet aktif' : 'indeks wallet kosong',
+      label: health?.env?.madeOnSolKey ? 'indeks wallet aktif' : 'indeks wallet belum aktif',
       ok: Boolean(health?.env?.madeOnSolKey)
     },
     {
@@ -792,7 +812,7 @@ function ProviderHealthChips({ health }) {
       ok: Boolean(health?.env?.heliusKey || health?.env?.solanaRpcUrl)
     },
     {
-      label: smartSize > 0 ? `${smartSize} wallet pintar` : 'registry wallet kosong',
+      label: smartSize > 0 ? `${smartSize} smart wallet termuat` : 'registry smart wallet kosong',
       ok: smartSize > 0
     }
   ];
@@ -870,12 +890,12 @@ function ForensicPanel({ token, report, status, now }) {
     <div className="forensic-panel">
       <div className="forensic-head">
         <div>
-          <span className="eyebrow compact">Forensic Realtime</span>
-          <h2>Monitoring live berbasis Ponyin</h2>
+          <span className="eyebrow compact">Forensik Real-Time</span>
+          <h2>Monitoring real-time berbasis kerangka Ponyin</h2>
         </div>
         <span className={`live-chip ${status.streamConnected ? 'on' : 'off'}`}>
           <span />
-          {status.streamConnected ? 'Stream live' : 'Stream menyambung ulang'}
+          {status.streamConnected ? 'Stream live' : 'Menyambung ulang...'}
         </span>
       </div>
 
@@ -885,21 +905,21 @@ function ForensicPanel({ token, report, status, now }) {
         <MetricBox label="MCap / FDV" value={formatLiveMarketCap(token)} />
         <MetricBox label="Likuiditas" value={formatUsd(token.liquidityUsd)} />
         <MetricBox label="Status LP" value={liquidityPool?.status || token.lpStatus || 'belum diketahui'} tone={token.liquidityUsd < 5000 && token.phase === 'migrated' ? 'danger' : token.liquidityUsd < 25000 ? 'warn' : 'good'} />
-        <MetricBox label="Vol 5m / 1h" value={`${formatUsd(metrics.volume?.m5)} / ${formatUsd(metrics.volume?.h1)}`} />
-        <MetricBox label="Txns 5m / 1h" value={`${metrics.txns?.m5 ?? flags.txns5m ?? '-'} / ${metrics.txns?.h1 ?? '-'}`} />
-        <MetricBox label="Buy/Sell 5m" value={`${metrics.buys?.m5 ?? flags.buys5m ?? 0}/${metrics.sells?.m5 ?? flags.sells5m ?? 0}`} />
-        <MetricBox label="Harga m5 / h1" value={`${formatPct(token.priceChange?.m5)} / ${formatPct(token.priceChange?.h1)}`} tone={priceTone(token.priceChange?.m5)} />
-        <MetricBox label="Vol/LP Ratio" value={`${Number(flags.volumeLiquidityRatio || 0).toFixed(2)}x`} tone={flags.volumeLiquidityRatio > 5 ? 'danger' : flags.volumeLiquidityRatio > 2 ? 'warn' : 'good'} />
+        <MetricBox label="Volume 5m / 1h" value={`${formatUsd(metrics.volume?.m5)} / ${formatUsd(metrics.volume?.h1)}`} />
+        <MetricBox label="Transaksi 5m / 1h" value={`${metrics.txns?.m5 ?? flags.txns5m ?? '-'} / ${metrics.txns?.h1 ?? '-'}`} />
+        <MetricBox label="Buy / Sell 5m" value={`${metrics.buys?.m5 ?? flags.buys5m ?? 0} / ${metrics.sells?.m5 ?? flags.sells5m ?? 0}`} />
+        <MetricBox label="Harga 5m / 1h" value={`${formatPct(token.priceChange?.m5)} / ${formatPct(token.priceChange?.h1)}`} tone={priceTone(token.priceChange?.m5)} />
+        <MetricBox label="Rasio Vol/LP" value={`${Number(flags.volumeLiquidityRatio || 0).toFixed(2)}×`} tone={flags.volumeLiquidityRatio > 5 ? 'danger' : flags.volumeLiquidityRatio > 2 ? 'warn' : 'good'} />
         <MetricBox label="Supply Top 10" value={flags.top10Pct == null ? 'belum diketahui' : `${flags.top10Pct.toFixed(1)}%`} tone={flags.top10Pct > 55 ? 'danger' : flags.top10Pct > 40 ? 'warn' : 'good'} />
-        <MetricBox label="Owner Unik" value={flags.uniqueOwnerCount ?? 'belum diketahui'} tone={flags.uniqueOwnerCount == null ? '' : flags.uniqueOwnerCount <= 3 ? 'danger' : flags.uniqueOwnerCount <= 6 ? 'warn' : 'good'} />
+        <MetricBox label="Owner unik" value={flags.uniqueOwnerCount ?? 'belum diketahui'} tone={flags.uniqueOwnerCount == null ? '' : flags.uniqueOwnerCount <= 3 ? 'danger' : flags.uniqueOwnerCount <= 6 ? 'warn' : 'good'} />
         <MetricBox label="Whale / Burner" value={`${flags.whales || 0} / ${flags.burners || 0}`} />
-        <MetricBox label="Jumlah Pair" value={flags.dexPairCount ?? 'belum diketahui'} />
+        <MetricBox label="Jumlah pair" value={flags.dexPairCount ?? 'belum diketahui'} />
       </div>
 
       <div className="forensic-columns">
         <div className="forensic-card">
           <h3>Snapshot Top Holder</h3>
-          <p className="card-note">Akun LP/pool dipisahkan, jadi persentase top holder tidak ikut menghitung liquidity pool.</p>
+          <p className="card-note">Akun LP/pool dipisahkan sehingga persentase top holder tidak ikut menghitung liquidity pool.</p>
           {insightSummary.length > 0 && (
             <div className="intel-summary">
               {insightSummary.slice(0, 4).map((item) => (
@@ -916,12 +936,12 @@ function ForensicPanel({ token, report, status, now }) {
                 <small>{holder.label || holder.type || formatSol(holder.solBalance)}</small>
               </div>
             )) : (
-              <p className="muted-copy">Top holder belum tersedia. Gunakan jalur RPC privat agar pembacaan holder lebih stabil.</p>
+              <p className="muted-copy">Top holder belum tersedia. Gunakan jalur RPC privat untuk pembacaan holder yang lebih stabil.</p>
             )}
           </div>
           {excludedHolders.length > 0 && (
             <div className="excluded-note">
-              {excludedHolders.length} akun pool/vault dikeluarkan dari top holder.
+              {excludedHolders.length} akun pool/vault dikecualikan dari top holder.
             </div>
           )}
         </div>
@@ -954,7 +974,7 @@ function ForensicPanel({ token, report, status, now }) {
               )}
             </>
           ) : (
-            <p className="muted-copy">LP belum terbaca dari pair aktif. Kalau token masih bonding curve, tunggu pair DEX muncul.</p>
+            <p className="muted-copy">LP belum terbaca dari pair aktif. Jika token masih dalam fase bonding curve, tunggu pair DEX muncul.</p>
           )}
         </div>
 
@@ -965,27 +985,43 @@ function ForensicPanel({ token, report, status, now }) {
               <div className="wallet-score-row" key={`${wallet.rank}-${wallet.owner || wallet.label}`}>
                 <div>
                   <strong>#{wallet.rank} {wallet.label || shortAddress(wallet.owner)}</strong>
-                  <span>{wallet.type || 'holder'} - {wallet.pct == null ? 'supply belum diketahui' : `${wallet.pct.toFixed(2)}% supply`}</span>
+                  <span>{wallet.type || 'holder'} · {wallet.pct == null ? 'supply belum diketahui' : `${wallet.pct.toFixed(2)}% supply`}</span>
                 </div>
                 <em>{wallet.score}</em>
                 <small>{wallet.tags?.length ? wallet.tags.join(', ') : formatSol(wallet.solBalance)}</small>
               </div>
             )) : (
-              <p className="muted-copy">Skor wallet belum tersedia. Data ini akan terisi saat analisis holder on-chain aktif.</p>
+              <p className="muted-copy">Skor wallet belum tersedia. Data akan terisi saat analisis holder on-chain aktif.</p>
             )}
           </div>
         </div>
 
         <div className="forensic-card">
-          <h3>Kecocokan Materi & Space</h3>
+          <h3>Kecocokan Materi &amp; Space</h3>
+          <p className="card-note">Verdict di atas berakar pada prinsip-prinsip berikut. Klik tombol untuk membuka materi lengkap di Poyin Trading.</p>
           <div className="rule-match-list">
-            {report.knowledgeHits.map((hit) => (
-              <div className="rule-match" key={hit.id}>
-                <strong>{cleanPublicCopy(hit.title)}</strong>
-                <span>{cleanPublicCopy(hit.source)}</span>
-                <p>{cleanPublicCopy(hit.rule)}</p>
-              </div>
-            ))}
+            {report.knowledgeHits.map((hit) => {
+              const principle = ponyinPrinciples.find((p) => p.id === hit.id);
+              return (
+                <div className="rule-match" key={hit.id}>
+                  <strong>{cleanPublicCopy(hit.title)}</strong>
+                  <span>{cleanPublicCopy(hit.source)}</span>
+                  <p>{cleanPublicCopy(hit.rule)}</p>
+                  {principle?.materiId && (
+                    <a
+                      className="materi-link compact"
+                      href={`/#materi`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={`Buka materi ${principle.materiLabel}`}
+                    >
+                      Buka materi: {principle.materiLabel}
+                      <ArrowRight size={12} />
+                    </a>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -1008,13 +1044,13 @@ function ForensicPanel({ token, report, status, now }) {
             <div className="market-index-grid">
               <MetricMini label="Umur indexer" value={madeOnSol.ageSeconds == null ? 'belum diketahui' : formatAgeSeconds(madeOnSol.ageSeconds)} />
               <MetricMini label="MCap indeks" value={formatUsd(madeOnSol.marketCapUsd)} />
-              <MetricMini label="Volume 24h" value={formatUsd(madeOnSol.volume24hUsd)} />
+              <MetricMini label="Volume 24 jam" value={formatUsd(madeOnSol.volume24hUsd)} />
               <MetricMini label="MEV 5m" value={formatOptionalPct(readWindow(madeOnSol.mevVolumePct, '5m'))} />
-              <MetricMini label="KOL flow" value={madeOnSol.kolActivity?.signal || 'belum ada'} />
+              <MetricMini label="Aliran KOL" value={madeOnSol.kolActivity?.signal || 'belum ada'} />
               <MetricMini label="Deployer" value={madeOnSol.deployer?.tier || 'belum diketahui'} />
             </div>
           ) : (
-            <p className="muted-copy">Intelijen indeks pasar belum tersedia. Data ini muncul jika token sudah terbaca oleh sumber indeks tambahan.</p>
+            <p className="muted-copy">Intelijen indeks pasar belum tersedia. Data ini muncul ketika token sudah terbaca oleh sumber indeks tambahan.</p>
           )}
         </div>
 
@@ -1022,13 +1058,13 @@ function ForensicPanel({ token, report, status, now }) {
           <h3>Kesehatan Data</h3>
           <div className="provider-list">
             <ProviderLine label="Data pair" ok={Boolean(token.rawProviders?.dexPair)} detail={token.pairDex ? `${token.pairDex} aktif` : cleanPublicCopy(token.source)} />
-            <ProviderLine label="Authority on-chain" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah revoke' : 'masih terbuka'}`} />
-            <ProviderLine label="Intel holder" ok={Boolean(token.rawProviders?.holderMeta)} detail={token.rawProviders?.holderMeta?.tokenIntelProvider ? cleanPublicCopy(token.rawProviders.holderMeta.tokenIntelProvider) : 'Helius key belum diatur — holder gak bisa dibaca'} />
+            <ProviderLine label="Authority on-chain" ok={Boolean(token.rawProviders?.mint)} detail={flags.mintRevoked == null ? 'authority belum diketahui' : `mint ${flags.mintRevoked ? 'sudah di-revoke' : 'masih terbuka'}`} />
+            <ProviderLine label="Intel holder" ok={Boolean(token.rawProviders?.holderMeta)} detail={token.rawProviders?.holderMeta?.tokenIntelProvider ? cleanPublicCopy(token.rawProviders.holderMeta.tokenIntelProvider) : 'Helius key belum diatur — pembacaan holder tidak tersedia'} />
             <ProviderLine label="Indeks pasar" ok={Boolean(madeOnSol)} detail={madeOnSol ? 'data indeks tambahan aktif' : 'MadeOnSol key belum diatur'} />
-            <ProviderLine label="Registry wallet" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} wallet pintar. Tambah SMART_WALLETS di env kalau mau aktif.`} />
-            <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'PumpPortal WS kadang putus di browser, tapi DexScreener tetap jalan'} />
-            <ProviderLine label="Order/boost" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost aktif`} />
-            <ProviderLine label="Keyakinan data live" ok={report.confidence >= 45} detail={`${report.confidence}% confidence — ${report.confidence < 45 ? 'tambahin HELIUS_API_KEY di env Vercel buat naikin' : report.primaryRisk}`} />
+            <ProviderLine label="Registry wallet" ok={Number(token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0) > 0} detail={`${token.rawProviders?.holderMeta?.smartWalletRegistrySize || flags.smartWalletRegistrySize || 0} smart wallet termuat. Tambahkan SMART_WALLETS pada env untuk mengaktifkan.`} />
+            <ProviderLine label="Trade stream" ok={Boolean(token.rawProviders?.pump || flags.pumpPortalTradeSeen)} detail={flags.pumpPortalTradeSeen ? 'trade terbaru terbaca' : 'PumpPortal WS kadang terputus di browser; sumber pair tetap berjalan'} />
+            <ProviderLine label="Order / boost" ok={(flags.activeBoosts || 0) > 0} detail={`${flags.activeBoosts || 0} order/boost aktif`} />
+            <ProviderLine label="Keyakinan data live" ok={report.confidence >= 45} detail={`${report.confidence}% confidence — ${report.confidence < 45 ? 'tambahkan HELIUS_API_KEY pada env Vercel untuk menaikkan' : report.primaryRisk}`} />
           </div>
 
           {Object.values(providerErrors).some(Boolean) && (
@@ -1079,7 +1115,7 @@ function DexScreenerChart({ token }) {
           <span className="eyebrow compact">Chart Live</span>
           <strong>{token.name} {token.ticker ? `· $${token.ticker}` : ''}</strong>
         </div>
-        <a href={fullUrl} target="_blank" rel="noreferrer">Buka di DexScreener →</a>
+        <a href={fullUrl} target="_blank" rel="noreferrer">Buka penuh di DexScreener →</a>
       </div>
       <div className="dex-chart-frame">
         <iframe
@@ -1121,7 +1157,7 @@ function CheckCard({ check }) {
     <article className={`check-card ${check.status}`}>
       <Icon size={20} />
       <div>
-        <span>{check.status === 'pass' ? 'LOLOS' : check.status === 'fail' ? 'GAGAL' : 'PANTAU'}</span>
+        <span>{check.status === 'pass' ? 'AMAN' : check.status === 'fail' ? 'GAGAL' : 'WASPADA'}</span>
         <h3>{check.label}</h3>
         <p>{cleanPublicCopy(check.detail)}</p>
       </div>
@@ -1150,21 +1186,21 @@ function buildStats(feedTokens, report, feedStatus) {
 
 function translateProviderError(message) {
   if (!message) return message;
-  if (String(message).includes('Health endpoint')) return 'Status data belum tersedia di pratinjau lokal';
-  if (message === 'PumpPortal websocket error') return 'Stream transaksi lagi bermasalah';
-  if (message === 'PumpPortal reconnecting') return 'Stream transaksi lagi nyambung ulang';
+  if (String(message).includes('Health endpoint')) return 'Status data belum tersedia pada pratinjau lokal';
+  if (message === 'PumpPortal websocket error') return 'Stream transaksi sedang bermasalah';
+  if (message === 'PumpPortal reconnecting') return 'Stream transaksi sedang menyambung ulang';
   if (message === 'No live tokens returned from DexScreener') return 'Belum ada token live dari sumber pair';
   return cleanPublicCopy(message);
 }
 
 function formatStreamStatus(status) {
-  if (!status.streamConnected) return 'stream transaksi lagi nyambung ulang, data pair tetap aktif';
-  if (!status.streamLastTokenAt) return 'stream transaksi udah nyambung, nunggu token baru';
+  if (!status.streamConnected) return 'stream transaksi sedang menyambung ulang · data pair tetap aktif';
+  if (!status.streamLastTokenAt) return 'stream transaksi tersambung · menunggu token baru';
 
   const seconds = Math.max(0, Math.floor((Date.now() - status.streamLastTokenAt) / 1000));
-  if (seconds < 45) return `stream live, data ${seconds}dtk lalu`;
-  if (seconds < 180) return `stream sepi ${Math.floor(seconds / 60)}m, data pair tetap aktif`;
-  return 'stream belum ngasih data baru, data pair tetap aktif';
+  if (seconds < 45) return `stream live · data ${seconds} detik lalu`;
+  if (seconds < 180) return `stream sepi ${Math.floor(seconds / 60)} menit · data pair tetap aktif`;
+  return 'stream belum mengirim data baru · data pair tetap aktif';
 }
 
 function cleanPublicCopy(value) {
@@ -1513,7 +1549,7 @@ function formatSol(value) {
 
 function formatTokenAmount(value) {
   const num = Number(value || 0);
-  if (!Number.isFinite(num) || num <= 0) return 'unknown';
+  if (!Number.isFinite(num) || num <= 0) return 'belum diketahui';
   if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`;
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
