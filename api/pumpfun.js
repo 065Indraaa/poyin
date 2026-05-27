@@ -102,11 +102,16 @@ function normalizePumpFunCoin(coin) {
 }
 
 function computeBondingProgress(virtualSolReserves) {
-  const sol = Number(virtualSolReserves || 0);
-  if (!sol) return 0;
-  const INITIAL_SOL = 30;
-  const MIGRATION_SOL = 115;
-  const pct = ((sol - INITIAL_SOL) / (MIGRATION_SOL - INITIAL_SOL)) * 100;
+  const raw = Number(virtualSolReserves || 0);
+  if (!raw) return 0;
+  // pump.fun frontend API returns virtual_sol_reserves in lamports (1 SOL = 1e9 lamports).
+  // Auto-detect: if raw > 1e6 it's almost certainly lamports (30 SOL = 3e10).
+  const sol = raw > 1e6 ? raw / 1e9 : raw;
+  // Bonding curve invariant: virtualSolReserves starts at 30 SOL, reaches ~115 SOL
+  // at migration (after ~85 real SOL collected). See pump.fun program docs.
+  const INITIAL_VSOL = 30;
+  const MIGRATION_VSOL = 115;
+  const pct = ((sol - INITIAL_VSOL) / (MIGRATION_VSOL - INITIAL_VSOL)) * 100;
   return Math.max(0, Math.min(100, Math.round(pct)));
 }
 

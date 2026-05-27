@@ -22,8 +22,11 @@ export function analyzeRug(token) {
     level = escalate(level, 'critical');
   }
 
+  const m5 = Number(priceChange.m5 || 0);
+  const h1 = Number(priceChange.h1 || 0);
+
   // 2. Authority red flag with active mint + LP drop
-  if (flags.mintRevoked === false && (priceChange.h1 || 0) < -25) {
+  if (flags.mintRevoked === false && h1 < -25) {
     reasons.push('Mint authority masih kebuka dan harga 1 jam terakhir drop > 25%.');
     level = escalate(level, 'critical');
   }
@@ -33,18 +36,18 @@ export function analyzeRug(token) {
   }
 
   // 3. Price cliff
-  if ((priceChange.m5 || 0) <= -30) {
-    reasons.push(`Candle 5m drop ${priceChange.m5.toFixed(1)}%.`);
+  if (m5 <= -30) {
+    reasons.push(`Candle 5m drop ${m5.toFixed(1)}%.`);
     level = escalate(level, 'critical');
-  } else if ((priceChange.m5 || 0) <= -18) {
-    reasons.push(`Candle 5m drop ${priceChange.m5.toFixed(1)}%.`);
+  } else if (m5 <= -18) {
+    reasons.push(`Candle 5m drop ${m5.toFixed(1)}%.`);
     level = escalate(level, 'high');
   }
-  if ((priceChange.h1 || 0) <= -50) {
-    reasons.push(`Drawdown 1 jam ${priceChange.h1.toFixed(1)}%.`);
+  if (h1 <= -50) {
+    reasons.push(`Drawdown 1 jam ${h1.toFixed(1)}%.`);
     level = escalate(level, 'critical');
-  } else if ((priceChange.h1 || 0) <= -35) {
-    reasons.push(`Drawdown 1 jam ${priceChange.h1.toFixed(1)}%.`);
+  } else if (h1 <= -35) {
+    reasons.push(`Drawdown 1 jam ${h1.toFixed(1)}%.`);
     level = escalate(level, 'high');
   }
 
@@ -62,11 +65,11 @@ export function analyzeRug(token) {
     const previous = snapshots[snapshots.length - 2];
     const elapsedSeconds = Math.max(1, (latest._ts - previous._ts) / 1000);
 
-    if (previous.liquidityUsd > 3000 && latest.liquidityUsd < previous.liquidityUsd * 0.6 && elapsedSeconds <= 120) {
+    if (previous.liquidityUsd > 8000 && latest.liquidityUsd < previous.liquidityUsd * 0.5 && elapsedSeconds <= 120) {
       const dropPct = ((previous.liquidityUsd - latest.liquidityUsd) / previous.liquidityUsd) * 100;
       reasons.push(`LP ditarik ${dropPct.toFixed(0)}% dalam ${elapsedSeconds.toFixed(0)}s.`);
       level = escalate(level, 'critical');
-    } else if (previous.liquidityUsd > 5000 && latest.liquidityUsd < previous.liquidityUsd * 0.75) {
+    } else if (previous.liquidityUsd > 15000 && latest.liquidityUsd < previous.liquidityUsd * 0.7) {
       const dropPct = ((previous.liquidityUsd - latest.liquidityUsd) / previous.liquidityUsd) * 100;
       reasons.push(`LP turun ${dropPct.toFixed(0)}% antar snapshot.`);
       level = escalate(level, 'high');
@@ -106,7 +109,8 @@ export function analyzeRug(token) {
   }
 
   const isDead = txns5m === 0 && Number(token.liquidityUsd || 0) < 3000 && !isBondingCurve && ageSec > 600;
-  const isRugged = level === 'critical' || (level === 'high' && reasons.some((reason) => /lp/i.test(reason) || /rug/i.test(reason)));
+  const RUG_KEYWORDS = /lp|rug|ditarik|freeze|blacklist|authority|mint/i;
+  const isRugged = level === 'critical' || (level === 'high' && reasons.some((reason) => RUG_KEYWORDS.test(reason)));
 
   return {
     isDead,

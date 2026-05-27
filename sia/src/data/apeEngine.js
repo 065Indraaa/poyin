@@ -1,4 +1,4 @@
-import { analysisLayers, criticalUnknownCopy, ponyinPrinciples } from './knowledgeBase';
+import { analysisLayers, ponyinPrinciples } from './knowledgeBase';
 
 export const emptyToken = {
   id: 'empty',
@@ -61,6 +61,7 @@ export function analyzeToken(token = emptyToken) {
   score += scoreCandle(flags);
   score += scoreLiquidity(target, flags);
   score += scoreUnknowns(flags, target);
+  score += scoreExternalSignals(flags);
 
   if (confidence < 42) score = Math.min(score, 61);
   if (confidence < 28) score = Math.min(score, 48);
@@ -204,6 +205,33 @@ function scoreUnknowns(flags, token) {
   return penalty;
 }
 
+function scoreExternalSignals(flags) {
+  let score = 0;
+
+  // MadeOnSol blacklist = hard rug flag
+  if (flags.madeOnSolBlacklisted === true) score -= 32;
+
+  // Birdeye LP locked status (only credible kalau true; null = belum kebaca)
+  if (flags.birdeyeLpLocked === true) score += 8;
+  else if (flags.birdeyeLpLocked === false) score -= 6;
+
+  // Birdeye creator percentage (semakin tinggi semakin berbahaya)
+  const creatorPct = Number(flags.birdeyeCreatorPct);
+  if (Number.isFinite(creatorPct) && creatorPct > 0) {
+    if (creatorPct >= 15) score -= 18;
+    else if (creatorPct >= 8) score -= 10;
+    else if (creatorPct <= 2) score += 4;
+  }
+
+  // Price discrepancy antar provider (Dex vs Birdeye vs Jupiter)
+  if (flags.priceDiscrepancySuspicious === true) score -= 10;
+
+  // Jupiter registry verification — terdaftar = legit-ish
+  if (flags.jupiterRegistered === true) score += 5;
+
+  return score;
+}
+
 function computeFeeHealth(flags) {
   const reportedVolume = Number(flags.reportedVolume || 0);
   const feeCollected = Number(flags.feeCollected || 0);
@@ -253,8 +281,11 @@ function computeConfidence(token, flags) {
 function getPrimaryRisk(token, flags, volumeIntegrity, confidence) {
   if (!token.ca) return 'contract belum dimasukin';
   if (confidence < 28) return 'bukti live belum cukup';
+  if (flags.madeOnSolBlacklisted === true) return 'token masuk blacklist indexer';
   if (flags.freezeActive === true) return 'freeze authority aktif';
   if (flags.mintRevoked === false) return 'mint authority masih kebuka';
+  if (Number(flags.birdeyeCreatorPct) >= 15) return 'creator pegang >15% supply';
+  if (flags.priceDiscrepancySuspicious === true) return 'harga tidak konsisten antar provider';
   if (flags.burners >= 5) return 'banyak burner wallet di top holder';
   if (flags.commonFunderWallets >= 7) return 'monopoli bundle';
   if (flags.uniqueOwnerCount != null && flags.uniqueOwnerCount <= 3 && flags.burners > 0) return 'cluster owner sama burner wallet';
@@ -273,7 +304,10 @@ function buildSummary(token, verdict, primaryRisk, volumeIntegrity, confidence) 
   }
 
   const dataLine = `[Keyakinan data live: ${confidence}% | Integritas volume: ${volumeIntegrity}%]`;
-  const kolAlert = token.flags?.kolDetected ? `\nKOL ALERT: ${token.flags.kolDetected.name} (${token.flags.kolDetected.x}) terpantau memegang supply token ini.` : '';
+  const kol = token.flags?.kolDetected;
+  const kolName = (kol && typeof kol === 'object' && kol.name) ? kol.name : null;
+  const kolHandle = (kol && typeof kol === 'object' && kol.x) ? kol.x : 'handle tidak tercatat';
+  const kolAlert = kolName ? `\nKOL ALERT: ${kolName} (${kolHandle}) terpantau memegang supply token ini.` : '';
   const smartAlert = token.flags?.smartMoneyCount > 0 ? `\nSMART MONEY: ${token.flags.smartMoneyCount} dompet smart/large holder terdeteksi di top holders. Ini sinyal positif kalau tidak bersamaan dengan burner/cluster berat.` : '';
   const whaleAlert = token.flags?.whales > 0 ? `\nWHALE: ${token.flags.whales} dompet dengan balance besar (> 250 SOL) berada di Top 10.` : '';
   const burnerAlert = token.flags?.burners > 0 ? `\nBURNER: ${token.flags.burners} dompet proxy/sekali pakai (balance < 0.05 SOL) ada di Top 10. Waspada indikasi bundle dev.` : '';
@@ -348,8 +382,8 @@ function buildChecks(token, flags, volumeIntegrity) {
     {
       label: 'Smart Money / KOL',
       status: flags.burners >= 3 ? 'warn' : (flags.kolDetected || flags.smartMoneyCount > 0 || flags.whales > 0) ? 'pass' : 'watch',
-      detail: flags.kolDetected
-        ? `KOL kedeteksi: ${flags.kolDetected.name} (${flags.kolDetected.x}). ${flags.whales > 0 ? `Ada ${flags.whales} whale di Top 10.` : ''} Sinyal ini positif selama gak ada burner/cluster berat.`
+      detail: (flags.kolDetected && typeof flags.kolDetected === 'object' && flags.kolDetected.name)
+        ? `KOL kedeteksi: ${flags.kolDetected.name} (${flags.kolDetected.x || 'handle tidak tercatat'}). ${flags.whales > 0 ? `Ada ${flags.whales} whale di Top 10.` : ''} Sinyal ini positif selama gak ada burner/cluster berat.`
         : flags.smartMoneyCount > 0 || flags.whales > 0
           ? `${flags.smartMoneyCount || 0} smart/large wallet dan ${flags.whales || 0} whale kedeteksi. Makin banyak dompet berkualitas makin baik, tapi tetep cek distribusi supply.`
           : 'Belum ada dompet Smart Money atau whale di top 10.'

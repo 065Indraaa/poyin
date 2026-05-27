@@ -17,12 +17,18 @@ export function analyzeRunner(token) {
   const sells5m = Number(flags.sells5m || 0);
   const volume5m = Number(flags.reportedVolume || 0);
   const volumeRatio = Number(flags.volumeLiquidityRatio || 0);
+  const m5 = Number(priceChange.m5 || 0);
+  const h1 = Number(priceChange.h1 || 0);
 
   // Hard exclusions — token tidak boleh jadi runner kalau kondisi ini terjadi
-  if (isBondingCurve && liquidityUsd === 0) return emptyResult();
-  if (liquidityUsd < 4000) return emptyResult();
-  if ((priceChange.h1 || 0) < -10) return emptyResult();
-  if ((priceChange.m5 || 0) < -8) return emptyResult();
+  // Bonding-curve: izinkan LP rendah selama ada txn (pump.fun report LP 0-3k sebelum migrasi)
+  if (isBondingCurve) {
+    if (liquidityUsd === 0 && txns5m === 0) return emptyResult();
+  } else if (liquidityUsd < 4000) {
+    return emptyResult();
+  }
+  if (h1 < -10) return emptyResult();
+  if (m5 < -8) return emptyResult();
   if (sells5m > buys5m * 1.8) return emptyResult();
   if (volumeRatio > 7) return emptyResult();
 
@@ -37,13 +43,14 @@ export function analyzeRunner(token) {
   const signals = [];
 
   // 1. Price momentum
-  if ((priceChange.m5 || 0) > 3) {
+  if (m5 > 3) {
     score += 14;
-    signals.push(`m5 +${priceChange.m5.toFixed(1)}%`);
+    signals.push(`m5 +${m5.toFixed(1)}%`);
   }
-  if ((priceChange.h1 || 0) > 8 && (priceChange.h1 || 0) < 250) {
+  // Cap h1 ditinggikan ke 500% — pump legit early-stage sering >250% h1 dalam menit awal
+  if (h1 > 8 && h1 < 500) {
     score += 14;
-    signals.push(`h1 +${priceChange.h1.toFixed(1)}%`);
+    signals.push(`h1 +${h1.toFixed(1)}%`);
   }
 
   // 2. Buy dominance
@@ -85,12 +92,16 @@ export function analyzeRunner(token) {
     if (velocity.liquidityRatePerMin > 0) {
       score += 4;
       signals.push('LP nambah');
-    } else if (velocity.liquidityRatePerMin < -50) {
-      score -= 10;
+    } else if (liquidityUsd > 0) {
+      // Threshold proporsional: drain >1.5% LP/menit = warning (LP $200k → -$3k/menit, bukan -$50)
+      const drainPctPerMin = (velocity.liquidityRatePerMin / liquidityUsd) * 100;
+      if (drainPctPerMin < -1.5) {
+        score -= 10;
+      }
     }
   } else if (snapshots.length < 2) {
     // Tanpa history, tidak bisa konfirmasi runner — beri grace tapi cap rendah
-    if ((priceChange.m5 || 0) > 12 && totalTx >= 30 && buyRatio >= 0.6) {
+    if (m5 > 12 && totalTx >= 30 && buyRatio >= 0.6) {
       score += 18;
       signals.push('momentum awal kuat (belum ada history)');
     }

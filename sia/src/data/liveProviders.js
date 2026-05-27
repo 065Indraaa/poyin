@@ -316,7 +316,7 @@ export async function fetchTokenSnapshot(address) {
 }
 
 export async function fetchPumpPortalSnapshot(address) {
-  const target = address.toLowerCase();
+  const target = address.trim();
 
   return new Promise((resolve) => {
     if (typeof WebSocket === 'undefined') {
@@ -362,7 +362,7 @@ export async function fetchPumpPortalSnapshot(address) {
       if (settled) return;
       try {
         const payload = JSON.parse(event.data);
-        const mint = String(payload.mint || payload.tokenAddress || '').toLowerCase();
+        const mint = String(payload.mint || payload.tokenAddress || '').trim();
         if (!mint || mint !== target) return;
         cleanup();
         resolve({
@@ -532,9 +532,6 @@ async function fetchTopHolders(address, supplyFromMint = null, dexPairs = []) {
               .forEach((holder) => {
                 holder.solBalance = solBalance;
               });
-            if (solBalance >= 250) whales++;       // Balance > 250 SOL = Whale
-            if (solBalance >= 75) algorithmicSmartWallets++; // Proxy smart holder dari Helius balance, bukan label palsu.
-            else if (solBalance <= 0.05) burners++; // Balance < 0.05 SOL = Fresh Burner Wallet (Indikasi dev/bundle proxy)
           }
         });
       }

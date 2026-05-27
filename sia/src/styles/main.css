@@ -1312,6 +1312,28 @@ a {
   white-space: nowrap;
 }
 
+.address-link {
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.18);
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.address-link:hover,
+.address-link:focus-visible {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+  outline: none;
+}
+
+.address-link strong {
+  color: inherit;
+}
+
 .holder-row em {
   color: var(--cyan);
   font-style: normal;

@@ -18,8 +18,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'MOONSHOT_API_KEY tidak ditemukan di environment' });
     }
 
-    console.log(`[Moonshot] Using key: ${key.substring(0, 12)}... (len=${key.length})`);
-
     const response = await fetch('https://api.moonshot.ai/v1/chat/completions', {
       method: 'POST',
       headers: {

@@ -57,7 +57,9 @@ export function getVelocity(ca) {
     txnsTrend: trend(list.map((item) => item.txns5m)),
     buyRatio: computeBuyRatio(latest),
     buyRatioTrend: trend(list.map(computeBuyRatio)),
-    priceVelocityPctPerMin: ((latest.priceUsd - oldest.priceUsd) / Math.max(1, oldest.priceUsd || latest.priceUsd || 1)) * 100 / Math.max(1, elapsedTotal / 60),
+    priceVelocityPctPerMin: (oldest.priceUsd > 0 || latest.priceUsd > 0)
+      ? ((latest.priceUsd - oldest.priceUsd) / Math.max(0.0000001, oldest.priceUsd || latest.priceUsd)) * 100 / Math.max(1, elapsedTotal / 60)
+      : null,
     age: elapsedTotal,
     recentAge: elapsedRecent
   };
@@ -138,6 +140,7 @@ function snapshotEquivalent(a, b) {
   if (!a || !b) return false;
   return a.liquidityUsd === b.liquidityUsd
     && a.priceUsd === b.priceUsd
+    && a.marketCap === b.marketCap
     && a.txns5m === b.txns5m
     && a.buys5m === b.buys5m
     && a.sells5m === b.sells5m

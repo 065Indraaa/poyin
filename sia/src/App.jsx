@@ -980,14 +980,25 @@ function ForensicPanel({ token, report, status, now }) {
             </div>
           )}
           <div className="holder-list">
-            {holders.length ? holders.slice(0, 10).map((holder) => (
-              <div className="holder-row" key={`${holder.rank}-${holder.tokenAccount}`}>
-                <span>#{holder.rank}</span>
-                <strong>{shortAddress(holder.owner || holder.tokenAccount)}</strong>
-                <em>{holder.pct == null ? 'belum diketahui' : `${holder.pct.toFixed(2)}%`}</em>
-                <small>{holder.label || holder.type || formatSol(holder.solBalance)}</small>
-              </div>
-            )) : (
+            {holders.length ? holders.slice(0, 10).map((holder) => {
+              const addr = holder.owner || holder.tokenAccount;
+              return (
+                <div className="holder-row" key={`${holder.rank}-${holder.tokenAccount}`}>
+                  <span>#{holder.rank}</span>
+                  <a
+                    href={solscanAccountUrl(addr)}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={`Buka ${addr} di Solscan`}
+                    className="address-link"
+                  >
+                    <strong>{shortAddress(addr)}</strong>
+                  </a>
+                  <em>{holder.pct == null ? 'belum diketahui' : `${holder.pct.toFixed(2)}%`}</em>
+                  <small>{holder.label || holder.type || formatSol(holder.solBalance)}</small>
+                </div>
+              );
+            }) : (
               <p className="muted-copy">Top holder belum tersedia. Gunakan jalur RPC privat untuk pembacaan holder yang lebih stabil.</p>
             )}
           </div>
@@ -1010,18 +1021,41 @@ function ForensicPanel({ token, report, status, now }) {
               </div>
               <div className="pool-address">
                 <span>Pair</span>
-                <strong>{liquidityPool.pairAddress ? shortAddress(liquidityPool.pairAddress) : 'belum terindeks'}</strong>
+                {liquidityPool.pairAddress ? (
+                  <a
+                    href={solscanAccountUrl(liquidityPool.pairAddress)}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={`Buka pair ${liquidityPool.pairAddress} di Solscan`}
+                    className="address-link"
+                  >
+                    <strong>{shortAddress(liquidityPool.pairAddress)}</strong>
+                  </a>
+                ) : (
+                  <strong>belum terindeks</strong>
+                )}
               </div>
               {liquidityPool.excludedTopAccounts?.length > 0 && (
                 <div className="holder-list compact">
-                  {liquidityPool.excludedTopAccounts.slice(0, 4).map((holder) => (
-                    <div className="holder-row" key={`lp-${holder.rank}-${holder.tokenAccount}`}>
-                      <span>LP</span>
-                      <strong>{shortAddress(holder.owner || holder.tokenAccount)}</strong>
-                      <em>{holder.pct == null ? 'belum diketahui' : `${holder.pct.toFixed(2)}%`}</em>
-                      <small>{holder.label || holder.type || 'pool vault'}</small>
-                    </div>
-                  ))}
+                  {liquidityPool.excludedTopAccounts.slice(0, 4).map((holder) => {
+                    const addr = holder.owner || holder.tokenAccount;
+                    return (
+                      <div className="holder-row" key={`lp-${holder.rank}-${holder.tokenAccount}`}>
+                        <span>LP</span>
+                        <a
+                          href={solscanAccountUrl(addr)}
+                          target="_blank"
+                          rel="noreferrer"
+                          title={`Buka ${addr} di Solscan`}
+                          className="address-link"
+                        >
+                          <strong>{shortAddress(addr)}</strong>
+                        </a>
+                        <em>{holder.pct == null ? 'belum diketahui' : `${holder.pct.toFixed(2)}%`}</em>
+                        <small>{holder.label || holder.type || 'pool vault'}</small>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </>
@@ -1036,7 +1070,19 @@ function ForensicPanel({ token, report, status, now }) {
             {walletIntel.length ? walletIntel.slice(0, 8).map((wallet) => (
               <div className="wallet-score-row" key={`${wallet.rank}-${wallet.owner || wallet.label}`}>
                 <div>
-                  <strong>#{wallet.rank} {wallet.label || shortAddress(wallet.owner)}</strong>
+                  {wallet.owner ? (
+                    <a
+                      href={solscanAccountUrl(wallet.owner)}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={`Buka ${wallet.owner} di Solscan`}
+                      className="address-link"
+                    >
+                      <strong>#{wallet.rank} {wallet.label || shortAddress(wallet.owner)}</strong>
+                    </a>
+                  ) : (
+                    <strong>#{wallet.rank} {wallet.label || 'holder'}</strong>
+                  )}
                   <span>{wallet.type || 'holder'} · {wallet.pct == null ? 'supply belum diketahui' : `${wallet.pct.toFixed(2)}% supply`}</span>
                 </div>
                 <em>{wallet.score}</em>
@@ -1520,6 +1566,16 @@ function computeEntryScore(token, reportOverride = null) {
 function shortAddress(address) {
   if (!address) return 'SCAN';
   return `${address.slice(0, 4)}...${address.slice(-4)}`.toUpperCase();
+}
+
+function solscanAccountUrl(address) {
+  if (!address) return null;
+  return `https://solscan.io/account/${encodeURIComponent(address)}`;
+}
+
+function solscanTokenUrl(address) {
+  if (!address) return null;
+  return `https://solscan.io/token/${encodeURIComponent(address)}`;
 }
 
 function formatLiveAge(token, currentTime = Date.now()) {

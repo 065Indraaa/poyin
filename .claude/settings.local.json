@@ -7,7 +7,12 @@
       "Bash(node -e \"import\\('./src/data/liveProviders.js'\\).then\\(\\(\\)=>console.log\\('OK'\\)\\).catch\\(e=>console.error\\('FAIL:', e.message\\)\\)\")",
       "Bash(node --check sia/src/data/liveProviders.js)",
       "Bash(node -e \"const fs=require\\('fs'\\);const code=fs.readFileSync\\('sia/src/data/liveProviders.js','utf8'\\);new Function\\(code\\);console.log\\('PARSE_OK'\\)\")",
-      "Bash(node --check /e/poyin-react/sia/src/data/liveProviders.js)"
+      "Bash(node --check /e/poyin-react/sia/src/data/liveProviders.js)",
+      "Bash(node --check /e/poyin-react/sia/src/App.jsx)",
+      "Bash(npx --no-install vite build)",
+      "Bash(node --check /e/poyin-react/api/chat.js)",
+      "Bash(node --check /e/poyin-react/api/pumpfun.js)",
+      "Bash(node --check /e/poyin-react/api/feed-enriched.js)"
     ]
   }
 }

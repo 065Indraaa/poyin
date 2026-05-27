@@ -7,7 +7,8 @@ export default async function handler(req, res) {
   }
 
   const phase = req.query?.phase || 'all';
-  const limit = Math.min(Number(req.query?.limit || 50), 200);
+  const rawLimit = Number(req.query?.limit);
+  const limit = Math.min(Number.isFinite(rawLimit) && rawLimit > 0 ? rawLimit : 50, 200);
 
   let tokens = tokenDb.listRecent(300);
 
