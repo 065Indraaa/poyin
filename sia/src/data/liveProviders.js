@@ -20,6 +20,31 @@ const TOKEN_PROGRAM_IDS = new Set([
 const SYSTEM_PROGRAM_ID = '11111111111111111111111111111111';
 
 const PUMP_PROGRAM_ID = '6EF8rrecthR5Dk4r49j5b3m1TQBTciV4Xed2sW6qx6';
+
+const AMM_PROGRAM_LABELS = {
+  '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8': 'Raydium AMM',
+  'CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK': 'Raydium CLMM',
+  'CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C': 'Raydium CPMM',
+  'whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc': 'Orca Whirlpool',
+  '9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP': 'Orca V1',
+  'LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo': 'Meteora DLMM',
+  'Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB': 'Meteora pool',
+  'cysPAa9aBwUWFQVnzcfYpcSEFLgYsRwUSSQ8MwGsHCH': 'Meteora dynamic AMM',
+  '6EF8rrecthR5Dk4r49j5b3m1TQBTciV4Xed2sW6qx6': 'Pump.fun bonding',
+  'pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA': 'Pump Swap',
+  'srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX': 'Serum',
+  '9HzJyW1qZsEiSfMUf6L2jo3CcTKAyBmSyKdwQeYisHrC': 'Phoenix',
+  'CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR': 'Crema CLMM',
+  'EhhTKczWMGQt46ynNeRX1WfeagwwJd7ufHvCDjRxjo5Q': 'Aldrin',
+  'PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu': 'Drift',
+  'AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6': 'AMM legacy'
+};
+
+const KNOWN_BURN_ADDRESSES = new Set([
+  '1nc1nerator11111111111111111111111111111111',
+  'deadDeadDeadDeadDeadDeadDeadDeadDeadDead111',
+  'burnburnburnburnburnburnburnburnburnburn111'
+]);
 const WS_TIMEOUT_MS = 2200;
 const HTTP_TIMEOUT_MS = 9500;
 const DEX_DISCOVERY_MAX_AGE_MINUTES = 3 * 24 * 60;
@@ -599,14 +624,28 @@ function holderIntelScore(item = {}) {
 }
 
 function classifyHolderRole(holder, ownerAccountPrograms, dexPairs = []) {
+  if (holder.owner && KNOWN_BURN_ADDRESSES.has(holder.owner)) {
+    return { type: 'Burn', label: 'Burn / dead address' };
+  }
+
   const ownerProgram = holder.owner ? ownerAccountPrograms.get(holder.owner) : null;
   const pairAddresses = new Set(dexPairs.map((pair) => pair?.pairAddress).filter(Boolean));
   if (pairAddresses.has(holder.tokenAccount) || pairAddresses.has(holder.owner)) {
     return { type: 'Liquidity Pool', label: 'LP / pair account' };
   }
+
+  if (ownerProgram && AMM_PROGRAM_LABELS[ownerProgram]) {
+    return { type: 'Liquidity Pool', label: `${AMM_PROGRAM_LABELS[ownerProgram]} vault` };
+  }
+
+  if (TOKEN_PROGRAM_IDS.has(ownerProgram)) {
+    return { type: 'Liquidity Pool', label: 'Token program vault' };
+  }
+
   if (ownerProgram && ownerProgram !== SYSTEM_PROGRAM_ID) {
     return { type: 'Liquidity Pool', label: 'Pool/program vault' };
   }
+
   return null;
 }
 
@@ -1186,7 +1225,9 @@ function normalizeTokenSnapshot({ address, dexPair, mint, pump, dexOrders, holde
       ...base.flags,
       mintRevoked: mint?.tokenProgram ? !mint.mintAuthority : base.flags.mintRevoked,
       freezeActive: mint?.tokenProgram ? Boolean(mint.freezeAuthority) : base.flags.freezeActive,
-      top10Pct: holders ? holders.top10Pct : (birdeye?.security?.top10HolderPercent ?? base.flags.top10Pct),
+      top10Pct: holders
+        ? holders.top10Pct
+        : (birdeye?.security?.top10UserPercent ?? birdeye?.security?.top10HolderPercent ?? base.flags.top10Pct),
       commonFunderWallets: holders ? holders.commonFunderWallets : base.flags.commonFunderWallets,
       uniqueOwnerCount: holders ? holders.uniqueOwnerCount : base.flags.uniqueOwnerCount,
       kolDetected: holders ? holders.kol : base.flags.kolDetected,

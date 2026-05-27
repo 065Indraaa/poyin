@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npm run *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:4173/sia/)",
-      "Bash(pkill -f \"vite preview\")"
+      "Bash(pkill -f \"vite preview\")",
+      "Bash(node -e \"import\\('./src/data/liveProviders.js'\\).then\\(\\(\\)=>console.log\\('OK'\\)\\).catch\\(e=>console.error\\('FAIL:', e.message\\)\\)\")",
+      "Bash(node --check sia/src/data/liveProviders.js)",
+      "Bash(node -e \"const fs=require\\('fs'\\);const code=fs.readFileSync\\('sia/src/data/liveProviders.js','utf8'\\);new Function\\(code\\);console.log\\('PARSE_OK'\\)\")",
+      "Bash(node --check /e/poyin-react/sia/src/data/liveProviders.js)"
     ]
   }
 }
