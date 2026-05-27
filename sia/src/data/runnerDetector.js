@@ -21,23 +21,26 @@ export function analyzeRunner(token) {
   const h1 = Number(priceChange.h1 || 0);
 
   // Hard exclusions — token tidak boleh jadi runner kalau kondisi ini terjadi
-  // Bonding-curve: izinkan LP rendah selama ada txn (pump.fun report LP 0-3k sebelum migrasi)
+  // Bonding-curve: izinkan LP rendah selama ada txn aktif (pump.fun report LP 0-3k sebelum migrasi)
   if (isBondingCurve) {
-    if (liquidityUsd === 0 && txns5m === 0) return emptyResult();
-  } else if (liquidityUsd < 4000) {
+    if (txns5m < 6) return emptyResult();
+  } else if (liquidityUsd < 8000) {
     return emptyResult();
   }
   if (h1 < -10) return emptyResult();
-  if (m5 < -8) return emptyResult();
-  if (sells5m > buys5m * 1.8) return emptyResult();
-  if (volumeRatio > 7) return emptyResult();
+  if (m5 < -5) return emptyResult();
+  if (sells5m > buys5m * 1.6) return emptyResult();
+  if (volumeRatio > 6) return emptyResult();
 
   // Age sweet spot 5min - 6jam (untuk pair) atau new bonding
   const ageMinutes = token.ageMinutes
     || (token.pairCreatedAt ? Math.floor((Date.now() - token.pairCreatedAt) / 60000) : null);
   if (ageMinutes != null) {
-    if (ageMinutes > 8 * 60) return emptyResult();
+    if (ageMinutes > 6 * 60) return emptyResult();
   }
+
+  // Runner harus punya history minimal 3 snapshot (sudah teramati ≥ 2 kali update)
+  if (snapshots.length < 3) return emptyResult();
 
   let score = 0;
   const signals = [];
@@ -119,13 +122,21 @@ export function analyzeRunner(token) {
 
   score = Math.max(0, Math.min(100, Math.round(score)));
 
-  const isRunner = score >= 60 && signals.length >= 3 && (velocity ? velocity.priceTrend >= 0 : true);
+  // Runner = terbaik dari yang terbaik. Harus punya momentum konsisten, history, dan signal berkualitas.
+  const hasPositiveVelocity = velocity && velocity.priceTrend > 0 && velocity.priceM5Delta >= 0;
+  const hasMeaningfulVolume = isBondingCurve
+    ? (txns5m >= 15 && volume5m >= 800)
+    : (volume5m >= 1500);
+  const isRunner = score >= 72
+    && signals.length >= 3
+    && hasPositiveVelocity
+    && hasMeaningfulVolume;
 
   return {
     isRunner,
     runnerScore: score,
     signals,
-    hasHistory: snapshots.length >= 2,
+    hasHistory: snapshots.length >= 3,
     ageMinutes
   };
 }

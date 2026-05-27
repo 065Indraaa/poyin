@@ -153,7 +153,7 @@ export default function App() {
 
     const marketRefreshInterval = setInterval(() => {
       refreshFeedMarketSnapshots();
-    }, 5000);
+    }, 8000);
 
     const pruneInterval = setInterval(() => {
       setFeedTokens((current) => pruneTokens(current));
@@ -287,7 +287,21 @@ export default function App() {
       const marketTokens = await fetchTokenMarketSnapshots(addresses);
       if (!marketTokens.length) return;
 
-      const stampedTokens = marketTokens.map((token) => ({
+      const currentMap = new Map(feedTokensRef.current.map((t) => [t.ca, t]));
+
+      // Debounce: hanya apply update kalau ada perubahan signifikan (>5% price/vol/LP)
+      const meaningfulTokens = marketTokens.filter((token) => {
+        const existing = currentMap.get(token.ca);
+        if (!existing) return true; // token baru, selalu masuk
+        const priceChange = Math.abs((token.priceUsd || 0) - (existing.priceUsd || 0)) / Math.max(0.0000001, existing.priceUsd || 0.0000001);
+        const volChange = Math.abs((token.flags?.reportedVolume || 0) - (existing.flags?.reportedVolume || 0)) / Math.max(1, existing.flags?.reportedVolume || 1);
+        const liqChange = Math.abs((token.liquidityUsd || 0) - (existing.liquidityUsd || 0)) / Math.max(1, existing.liquidityUsd || 1);
+        return priceChange > 0.05 || volChange > 0.05 || liqChange > 0.05;
+      });
+
+      if (!meaningfulTokens.length) return;
+
+      const stampedTokens = meaningfulTokens.map((token) => ({
         ...token,
         _marketRefreshedAt: Date.now()
       }));
@@ -1325,18 +1339,23 @@ function formatProviderErrorKey(key) {
   }[key] || key;
 }
 
+const MIN_FEED_AGE_MS = 90_000; // token baru harus bertahan minimal 90 detik di feed
+
 function upsertTokens(currentTokens, newTokens) {
   const map = new Map(currentTokens.map((t) => [t.ca, t]));
   newTokens.forEach((t) => {
     const previous = map.get(t.ca);
     // _fetchedAt = first time this token appeared in our feed (keep old)
     // _lastSeenAt = last time this token was seen from API (always update)
+    // _feedJoinAt = first time this token entered the visible feed (keep old)
     const fetchedAt = previous?._fetchedAt || t._fetchedAt || Date.now();
+    const feedJoinAt = previous?._feedJoinAt || t._feedJoinAt || null;
     const enriched = {
       ...previous,
       ...t,
       _fetchedAt: fetchedAt,
       _lastSeenAt: Date.now(),
+      _feedJoinAt: feedJoinAt,
     };
     // Untuk token DexScreener, selalu pertahankan pairCreatedAt yang paling awal
     if (previous?.pairCreatedAt && !t.pairCreatedAt) {
@@ -1358,7 +1377,7 @@ function upsertTokens(currentTokens, newTokens) {
 
 function pruneTokens(tokens) {
   const now = Date.now();
-  const maxTokens = 220;
+  const maxTokens = 260;
 
   // Push semua snapshot ke history store dulu — analisis rug & runner butuh ini.
   for (const token of tokens) {
@@ -1386,6 +1405,10 @@ function pruneTokens(tokens) {
 
       const isDead = rug.isDead || rug.isRugged || isBlacklistedToken || rug.level === 'critical' || rug.level === 'high';
 
+      // Hysteresis: runner established tetap runner sampai score turun < 55
+      const wasRunner = token._wasRunner || false;
+      const isRunner = runner.isRunner || (wasRunner && runner.runnerScore >= 55);
+
       return {
         ...token,
         _report: report,
@@ -1393,7 +1416,8 @@ function pruneTokens(tokens) {
         _runner: runner,
         _isDead: isDead,
         _isRugged: rug.isRugged || isBlacklistedToken,
-        _isRunner: runner.isRunner,
+        _isRunner: isRunner,
+        _wasRunner: isRunner,
         _runnerScore: runner.runnerScore,
         _blacklistEntry: blacklistEntry
       };
@@ -1405,6 +1429,7 @@ function pruneTokens(tokens) {
       || token.provider === 'Pump.fun frontend API'
       || token.lpStatus === 'Bonding curve';
     const lastSeenAgeMins = ((now - (token._lastSeenAt || token._fetchedAt || now)) / 60000);
+    const feedJoinAgeMs = token._feedJoinAt ? (now - token._feedJoinAt) : (now - (token._fetchedAt || now));
     const entryScore = computeEntryScore(token, report);
     const isStrong = entryScore >= 74
       || report.score >= 68
@@ -1420,9 +1445,18 @@ function pruneTokens(tokens) {
       return true;
     }
 
-    // Filter lemah
-    if (entryScore < 38) return false;
-    if (report.score <= 28 && entryScore < 60) return false;
+    // Stability window: token baru yang baru masuk feed jangan langsung dibuang
+    // (kecuali sudah dipastikan dead/rug — di-handle di atas)
+    if (feedJoinAgeMs < MIN_FEED_AGE_MS && !token._isDead) {
+      // Tetap jalankan filter kritis, tapi jangan buang karena lemah sementara
+      if (entryScore < 22) return false;
+      if (report.score <= 14) return false;
+    } else {
+      // Filter lemah — hanya untuk token yang sudah lewat stability window
+      if (entryScore < 38) return false;
+      if (report.score <= 28 && entryScore < 60) return false;
+    }
+
     if (isPumpBondingCurve && entryScore < 50 && !token._isRunner) return false;
     if (!isPumpBondingCurve && token.liquidityUsd < 5000) return false;
     if (!isPumpBondingCurve && token.flags?.volumeLiquidityRatio > 12) return false;
@@ -1451,13 +1485,21 @@ function pruneTokens(tokens) {
     return true;
   });
 
-  if (filtered.length > maxTokens) {
-    return filtered
+  // Assign _feedJoinAt untuk token yang lolos filter dan belum punya
+  const stabilized = filtered.map((token) => {
+    if (!token._feedJoinAt) {
+      return { ...token, _feedJoinAt: now };
+    }
+    return token;
+  });
+
+  if (stabilized.length > maxTokens) {
+    return stabilized
       .sort((a, b) => feedRank(b) - feedRank(a))
       .slice(0, maxTokens);
   }
 
-  return filtered;
+  return stabilized;
 }
 
 function feedRank(token) {
@@ -1516,7 +1558,7 @@ function getFeedHealth(token) {
 
   if (token._isRugged) return { tone: 'danger', label: 'RUGGED' };
   if (token._isDead) return { tone: 'danger', label: 'DEAD' };
-  if (token._isRunner && (token._runnerScore || 0) >= 70) return { tone: 'live', label: 'RUNNER' };
+  if (token._isRunner && (token._runnerScore || 0) >= 72) return { tone: 'live', label: 'RUNNER' };
   if (entryScore >= 78 && lastSeenAge < 90) return { tone: 'live', label: 'ENTRY' };
   if (entryScore >= 66) return { tone: 'live', label: 'KUAT' };
   if (isPumpBondingCurve) return { tone: lastSeenAge < 30 ? 'watch' : 'watch', label: 'AWAL' };
