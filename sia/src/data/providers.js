@@ -1,12 +1,13 @@
 const DEV = import.meta.env.DEV;
 const BIRDEYE_ENDPOINT = DEV ? 'http://localhost:3001/api/birdeye' : '/api/birdeye';
-const JUPITER_ENDPOINT = DEV ? 'http://localhost:3001/api/jupiter' : '/api/jupiter';
+const JUPITER_PRICE_API = 'https://price.jup.ag/v6/price';
+const JUPITER_TOKEN_LIST = 'https://token.jup.ag/strict';
 const PUMPFUN_ENDPOINT = DEV ? 'http://localhost:3001/api/pumpfun' : '/api/pumpfun';
 const HTTP_TIMEOUT_MS = 9000;
 
 let tokenRegistryPromise = null;
 const priceCache = new Map();
-const PRICE_CACHE_TTL_MS = 4000;
+const PRICE_CACHE_TTL_MS = 15000;
 
 export async function fetchBirdeyeOverview(ca) {
   if (!ca) return null;
@@ -38,11 +39,13 @@ export async function fetchJupiterPrice(addresses = []) {
 
   if (missing.length) {
     try {
-      const data = await fetchJson(`${JUPITER_ENDPOINT}?action=price&ids=${missing.join(',')}`);
-      if (data?.prices) {
-        for (const [address, entry] of Object.entries(data.prices)) {
-          priceCache.set(address, { entry, expiresAt: now + PRICE_CACHE_TTL_MS });
-          result[address] = entry;
+      const data = await fetchJson(`${JUPITER_PRICE_API}?ids=${missing.join(',')}`);
+      if (data?.data) {
+        for (const [address, entry] of Object.entries(data.data)) {
+          if (!entry) continue;
+          const normalized = { priceUsd: Number(entry.price || 0) || null, mintSymbol: entry.mintSymbol || null };
+          priceCache.set(address, { entry: normalized, expiresAt: now + PRICE_CACHE_TTL_MS });
+          result[address] = normalized;
         }
       }
     } catch {
@@ -55,8 +58,15 @@ export async function fetchJupiterPrice(addresses = []) {
 
 export async function fetchJupiterTokenRegistry() {
   if (!tokenRegistryPromise) {
-    tokenRegistryPromise = fetchJson(`${JUPITER_ENDPOINT}?action=tokens`)
-      .then((data) => data?.byAddress || {})
+    tokenRegistryPromise = fetchJson(JUPITER_TOKEN_LIST)
+      .then((data) => {
+        const list = Array.isArray(data) ? data : Array.isArray(data?.tokens) ? data.tokens : [];
+        const byAddress = {};
+        for (const token of list) {
+          if (token?.address) byAddress[token.address] = { symbol: token.symbol, name: token.name };
+        }
+        return byAddress;
+      })
       .catch(() => ({}));
   }
   return tokenRegistryPromise;

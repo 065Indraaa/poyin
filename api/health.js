@@ -38,7 +38,7 @@ export default async function handler(req, res) {
   if (!providers.birdeye?.ok) tips.push('Birdeye proxy belum balas. Cek koneksi atau quota free tier.');
   if (!providers.pumpfun?.ok) tips.push('Pump.fun frontend API belum balas. Discovery bonding curve sementara fallback ke PumpPortal WS.');
 
-  res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
+  res.setHeader('Cache-Control', 'private, max-age=10');
   return res.status(200).json({
     ok: Boolean(rpc.ok),
     timestamp: new Date().toISOString(),

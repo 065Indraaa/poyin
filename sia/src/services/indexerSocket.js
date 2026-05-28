@@ -5,13 +5,15 @@
 // the frontend automatically falls back to short-polling.
 
 const WS_URL = import.meta.env.VITE_INDEXER_WS_URL || '';
-const POLL_INTERVAL_MS = 8000;
+const POLL_INTERVAL_MS = 60000; // 60 detik — hemat Vercel hit count
 
 let ws = null;
 let reconnectTimer = null;
 let pollTimer = null;
 let isFallback = false;
 let lastPollAt = 0;
+let isPolling = false;
+let visibilityHandler = null;
 
 function getWsUrl() {
   if (WS_URL) return WS_URL;
@@ -79,8 +81,15 @@ function startFallbackPolling(onMessage) {
   doPoll(onMessage);
 
   pollTimer = setInterval(() => {
+    if (document.hidden) return; // skip kalau tab tidak aktif
     doPoll(onMessage);
   }, POLL_INTERVAL_MS);
+
+  // Hentikan polling kalau tab hidden, resume kalau visible
+  visibilityHandler = () => {
+    if (!document.hidden) doPoll(onMessage);
+  };
+  document.addEventListener('visibilitychange', visibilityHandler);
 }
 
 function stopFallbackPolling() {
@@ -88,9 +97,15 @@ function stopFallbackPolling() {
     clearInterval(pollTimer);
     pollTimer = null;
   }
+  if (visibilityHandler) {
+    document.removeEventListener('visibilitychange', visibilityHandler);
+    visibilityHandler = null;
+  }
 }
 
 async function doPoll(onMessage) {
+  if (isPolling) return; // no-overlap guard
+  isPolling = true;
   try {
     const res = await fetch(`/api/feed-enriched?phase=all&limit=50`);
     if (!res.ok) return;
@@ -111,6 +126,8 @@ async function doPoll(onMessage) {
     }
   } catch {
     // Silently ignore poll failures
+  } finally {
+    isPolling = false;
   }
 }
 

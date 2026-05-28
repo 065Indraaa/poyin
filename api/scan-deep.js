@@ -16,11 +16,13 @@ export default async function handler(req, res) {
     const cached = tokenDb.get(ca)?.lastScan;
     // If fresh cache (< 20s), return cached
     if (cached && Date.now() - (cached._ts || 0) < 20000) {
+      res.setHeader('Cache-Control', 'private, max-age=5');
       return res.status(200).json({ ...cached, cached: true });
     }
 
     const result = await requestScan(ca);
     result._ts = Date.now();
+    res.setHeader('Cache-Control', 'private, max-age=5');
     return res.status(200).json({ ...result, cached: false });
   } catch (error) {
     // Fallback: kalau indexer engine gak jalan (Vercel serverless),

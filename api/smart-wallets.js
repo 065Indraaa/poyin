@@ -253,7 +253,7 @@ function normalizeList(value) {
 }
 
 function setCacheHeaders(res, maxAgeSeconds) {
-  res.setHeader('Cache-Control', `public, s-maxage=${Math.max(60, Math.floor(maxAgeSeconds))}, stale-while-revalidate=600`);
+  res.setHeader('Cache-Control', `private, max-age=${Math.max(60, Math.floor(maxAgeSeconds))}`);
 }
 
 function isSolanaAddress(value) {

@@ -1,5 +1,5 @@
 const PUMPFUN_API = 'https://frontend-api.pump.fun';
-const CACHE_TTL_MS = 8 * 1000;
+const CACHE_TTL_MS = 30 * 1000;
 const HTTP_TIMEOUT_MS = 7000;
 const cache = new Map();
 

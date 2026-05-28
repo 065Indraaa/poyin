@@ -52,6 +52,18 @@ const DEX_SEARCH_TERMS = ['pumpfun', 'pump.fun', 'pumpswap', 'raydium', 'moonsho
 const DEX_BROAD_QUERIES = ['solana', 'pump migrated', 'raydium fresh', 'meteora pool', 'pumpfun new'];
 const DEFAULT_DEX_FEE_RATE = 0.0025;
 
+// Rotasi subset search terms tiap call untuk kurangi request fan-out
+let _searchRotation = 0;
+function getRotatedTerms(terms, count = 2) {
+  const start = _searchRotation % terms.length;
+  _searchRotation++;
+  const rotated = [];
+  for (let i = 0; i < count; i++) {
+    rotated.push(terms[(start + i) % terms.length]);
+  }
+  return rotated;
+}
+
 import { fetchPumpFunDiscovery, pumpFunToFeedToken, fetchBirdeyeOverview, fetchJupiterPrice, crossValidatePrice, isJupiterRegistered } from './providers';
 
 export async function fetchDiscoveryFeed() {
@@ -89,9 +101,19 @@ export async function fetchDiscoveryFeed() {
   };
 }
 
+let lastPumpFunFetchAt = 0;
+let lastPumpFunResult = [];
+
 async function fetchPumpFunFeedTokens({ limit = 30 } = {}) {
+  const now = Date.now();
+  // Throttle: max 1 call per 60 detik per browser tab
+  if (now - lastPumpFunFetchAt < 60000 && lastPumpFunResult.length) {
+    return lastPumpFunResult;
+  }
+  lastPumpFunFetchAt = now;
   const coins = await fetchPumpFunDiscovery({ limit });
-  return coins.map(pumpFunToFeedToken).filter(Boolean);
+  lastPumpFunResult = coins.map(pumpFunToFeedToken).filter(Boolean);
+  return lastPumpFunResult;
 }
 
 export async function fetchTokenMarketSnapshots(addresses = []) {
@@ -166,8 +188,9 @@ async function fetchDexDiscoveryFeed() {
 }
 
 async function fetchDexSearchDiscoveryFeed() {
+  const terms = getRotatedTerms(DEX_SEARCH_TERMS, 2);
   const searches = await Promise.allSettled(
-    DEX_SEARCH_TERMS.map((term) => fetchJson(`${DEX_API}/latest/dex/search?q=${encodeURIComponent(term)}`))
+    terms.map((term) => fetchJson(`${DEX_API}/latest/dex/search?q=${encodeURIComponent(term)}`))
   );
 
   const pairs = searches
@@ -184,8 +207,9 @@ async function fetchDexSearchDiscoveryFeed() {
 async function fetchDexBroadSearchFeed() {
   // /latest/dex/pairs/solana bukan endpoint valid DexScreener (404).
   // Ganti pakai paralel /latest/dex/search dengan query berbeda buat coverage lebih luas.
+  const queries = getRotatedTerms(DEX_BROAD_QUERIES, 2);
   const searches = await Promise.allSettled(
-    DEX_BROAD_QUERIES.map((query) => fetchJson(`${DEX_API}/latest/dex/search?q=${encodeURIComponent(query)}`))
+    queries.map((query) => fetchJson(`${DEX_API}/latest/dex/search?q=${encodeURIComponent(query)}`))
   );
 
   const pairs = searches

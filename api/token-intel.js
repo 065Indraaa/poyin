@@ -405,7 +405,7 @@ async function fetchWithTimeout(url, options = {}) {
 }
 
 function setCacheHeaders(res, maxAgeSeconds) {
-  res.setHeader('Cache-Control', `public, s-maxage=${Math.max(15, Math.floor(maxAgeSeconds))}, stale-while-revalidate=120`);
+  res.setHeader('Cache-Control', `private, max-age=${Math.max(5, Math.floor(maxAgeSeconds))}`);
 }
 
 function isSolanaAddress(value) {

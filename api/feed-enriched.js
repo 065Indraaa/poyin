@@ -68,6 +68,9 @@ export default async function handler(req, res) {
     return (b.volume5m || 0) - (a.volume5m || 0);
   });
 
+  // Hanya browser cache 5 detik — edge CDN tidak cache supaya data tetap real-time
+  res.setHeader('Cache-Control', 'private, max-age=5');
+
   return res.status(200).json({
     tokens: tokens.slice(0, limit),
     total: tokens.length,
