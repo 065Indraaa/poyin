@@ -9,10 +9,15 @@ function getRedirectUrl() {
 
 export async function signInWithX() {
   if (!supabase) throw new Error('Supabase belum dikonfigurasi');
+  // Scopes wajib untuk X (Twitter) OAuth 2.0:
+  // tweet.read  = baca tweet publik user
+  // users.read  = baca profil user (handle, avatar)
+  // offline.access = dapat refresh token (opsional tapi direkomendasikan)
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'twitter',
     options: {
-      redirectTo: getRedirectUrl()
+      redirectTo: getRedirectUrl(),
+      scopes: 'tweet.read users.read offline.access'
     }
   });
   if (error) throw error;

@@ -41,7 +41,15 @@ export default function LandingLogin() {
     try {
       await signInWithX();
     } catch (err) {
-      setError(err.message || 'Login gagal. Coba lagi.');
+      const msg = err?.message || '';
+      // Error 400 dari Supabase authorize biasanya konfigurasi provider, bukan code.
+      if (msg.includes('400') || msg.includes('Bad Request')) {
+        setError(
+          'Login gagal (400). Pastikan: 1) Provider X/Twitter di Supabase Dashboard sudah di-enable dan Client ID/Secret sudah diisi. 2) Redirect URL https://www.ponyin.id/sia/ sudah didaftarkan di Supabase → Authentication → URL Configuration. 3) Callback URI di X Developer Portal diarahkan ke Supabase callback.'
+        );
+      } else {
+        setError(msg || 'Login gagal. Coba lagi.');
+      }
       setSigningIn(false);
     }
   };
