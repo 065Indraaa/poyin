@@ -109,16 +109,17 @@ async function doPoll(onMessage) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 8000);
   try {
-    const res = await fetch(`/api/feed-enriched?phase=all&limit=50`, { signal: controller.signal });
+    const res = await fetch(`/api/feed-omnibus`, { signal: controller.signal });
     clearTimeout(timeoutId);
     if (!res.ok) return;
     const data = await res.json();
+    const feed = data.feed || {};
 
     // Emit a synthetic discovery message so the UI can update counts
-    onMessage({ type: 'poll_discovery', tokens: data.tokens, counts: data.counts });
+    onMessage({ type: 'poll_discovery', tokens: feed.tokens || [], counts: feed.counts || {} });
 
     // If any token has critical alerts, emit them
-    const alerted = (data.tokens || []).filter((t) => t.redFlagCount > 0 || t.latestAlert);
+    const alerted = (feed.tokens || []).filter((t) => t.redFlagCount > 0 || t.latestAlert);
     for (const t of alerted) {
       onMessage({
         type: 'alert',

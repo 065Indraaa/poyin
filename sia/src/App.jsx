@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { analyzeToken, emptyToken } from './data/apeEngine';
 import { ponyinPrinciples } from './data/knowledgeBase';
-import { fetchDiscoveryFeed, fetchProviderHealth, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
+import { fetchDiscoveryFeed, fetchTokenMarketSnapshots, fetchTokenSnapshot, formatUsd, subscribeToPumpPortalStream } from './data/liveProviders';
 import { connectIndexerSocket, fetchScanDeep, fetchEnrichedFeed } from './services/indexerSocket';
 import { pushSnapshot } from './data/snapshotStore';
 import { analyzeRug } from './data/rugDetector';
@@ -122,7 +122,7 @@ export default function App() {
   useEffect(() => {
     pruneBlacklist();
     refreshFeed();
-    refreshProviderHealth();
+    refreshOmnibus();
 
     const unsubscribePumpPortal = subscribeToPumpPortalStream(
       (token) => {
@@ -148,9 +148,9 @@ export default function App() {
       refreshFeed();
     }, 10000);
 
-    const healthInterval = setInterval(() => {
-      refreshProviderHealth();
-    }, 60000);
+    const omnibusInterval = setInterval(() => {
+      refreshOmnibus();
+    }, 15000);
 
     const marketRefreshInterval = setInterval(() => {
       refreshFeedMarketSnapshots();
@@ -211,7 +211,7 @@ export default function App() {
 
     return () => {
       clearInterval(refreshInterval);
-      clearInterval(healthInterval);
+      clearInterval(omnibusInterval);
       clearInterval(marketRefreshInterval);
       clearInterval(clockInterval);
       clearInterval(pruneInterval);
@@ -220,23 +220,77 @@ export default function App() {
     };
   }, []);
 
-  async function refreshProviderHealth() {
-    setProviderHealth((current) => ({ ...current, loading: true, error: null }));
+  async function refreshOmnibus() {
     try {
-      const health = await fetchProviderHealth();
-      setProviderHealth({
-        loading: false,
-        ok: Boolean(health.ok),
-        error: null,
-        ...health
-      });
-    } catch (error) {
-      setProviderHealth((current) => ({
-        ...current,
-        loading: false,
-        ok: false,
-        error: translateProviderError(error.message) || 'Status data belum nyambung'
-      }));
+      const data = await fetch('/api/feed-omnibus').then((r) => r.json());
+      if (data.health) {
+        setProviderHealth({
+          loading: false,
+          ok: Boolean(data.health.ok),
+          error: null,
+          ...data.health
+        });
+      }
+      if (data.pumpfun?.tokens?.length) {
+        const pumpTokens = data.pumpfun.tokens.map((t) => ({
+          id: t.ca,
+          ca: t.ca,
+          name: t.name || 'Pump.fun Token',
+          ticker: t.symbol || t.ca.slice(0, 4).toUpperCase(),
+          phase: t.completed ? 'soon' : 'new',
+          source: 'Pump.fun frontend API',
+          age: t.ageSeconds != null ? `${Math.floor(t.ageSeconds / 60)}m` : 'live',
+          ageMinutes: t.ageSeconds != null ? Math.floor(t.ageSeconds / 60) : null,
+          pairAddress: null,
+          pairCreatedAt: t.createdAt || null,
+          curve: t.bondingCurveProgress ?? 0,
+          buySell: '0/0',
+          devTx: t.creator || null,
+          lpStatus: t.completed ? 'Migrated dari bonding' : 'Bonding curve',
+          marketCap: t.usdMarketCap || (t.marketCapSol ? `${t.marketCapSol.toFixed(t.marketCapSol >= 10 ? 1 : 2)} SOL` : 'bonding'),
+          volume5m: 'bonding',
+          priceUsd: 0,
+          liquidityUsd: 0,
+          priceChange: { m5: 0, h1: 0, h6: 0, h24: 0 },
+          url: t.url,
+          websites: t.website ? [{ label: 'Website', url: t.website }] : [],
+          socials: [
+            t.twitter ? { type: 'twitter', url: t.twitter } : null,
+            t.telegram ? { type: 'telegram', url: t.telegram } : null
+          ].filter(Boolean),
+          flags: {
+            mintRevoked: null,
+            freezeActive: null,
+            lpBurned: false,
+            devSoldPct: null,
+            top10Pct: null,
+            commonFunderWallets: null,
+            firstMinuteHoldingPct: null,
+            cabalSync: (t.bondingCurveProgress ?? 0) > 60 ? 42 : 28,
+            reportedVolume: 0,
+            feeCollected: null,
+            globalFees: null,
+            dexPaidTiming: 'none',
+            activeBoosts: 0,
+            pumpFromLowPct: 0,
+            candleConfirmation: 36,
+            volumeLiquidityRatio: 0,
+            txns5m: 0,
+            buys5m: 0,
+            sells5m: 0,
+            bondingCurveProgress: t.bondingCurveProgress ?? 0,
+            pumpFunReplies: t.replies || 0
+          },
+          provider: 'Pump.fun frontend API',
+          providerConfidence: 'medium',
+          feedInsight: t.completed
+            ? 'Token udah selesai bonding dan migrate. Verifikasi LP Raydium sebelum entry.'
+            : `Bonding ${t.bondingCurveProgress || 0}%. Cek dev, replies, dan top buyer awal sebelum entry.`
+        }));
+        setFeedTokens((current) => pruneTokens(upsertTokens(current, pumpTokens)));
+      }
+    } catch (e) {
+      console.warn('[omnibus] failed', e);
     }
   }
 
@@ -529,7 +583,7 @@ export default function App() {
           count={feedTokens.length}
           onRefresh={() => {
             refreshFeed();
-            refreshProviderHealth();
+            refreshOmnibus();
           }}
         />
 

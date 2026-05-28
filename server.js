@@ -13,6 +13,7 @@ import birdeyeHandler from './api/birdeye.js';
 import jupiterHandler from './api/jupiter.js';
 import pumpfunHandler from './api/pumpfun.js';
 import verifyFollowHandler from './api/verify-follow.js';
+import feedOmnibusHandler from './api/feed-omnibus.js';
 import { startIndexerEngine } from './services/indexer/engine.js';
 import { startWebSocketServer } from './services/indexer/websocket.js';
 
@@ -38,6 +39,9 @@ app.get('/api/pumpfun', pumpfunHandler);
 
 // verify X follow status (auto-check)
 app.post('/api/verify-follow', verifyFollowHandler);
+
+// omnibus: gabungan feed-enriched + pumpfun + health (hemat edge request)
+app.get('/api/feed-omnibus', feedOmnibusHandler);
 
 // test endpoint
 app.get('/', (req, res) => {

@@ -67,15 +67,14 @@ function getRotatedTerms(terms, count = 2) {
 import { fetchPumpFunDiscovery, pumpFunToFeedToken, fetchBirdeyeOverview, fetchJupiterPrice, crossValidatePrice, isJupiterRegistered } from './providers';
 
 export async function fetchDiscoveryFeed() {
-  const [dexFeed, dexSearchFeed, dexBroadFeed, pumpFeed, pumpFunFeed] = await Promise.all([
+  const [dexFeed, dexSearchFeed, dexBroadFeed, pumpFeed] = await Promise.all([
     fetchDexDiscoveryFeed().catch(() => []),
     fetchDexSearchDiscoveryFeed().catch(() => []),
     fetchDexBroadSearchFeed().catch(() => []),
-    collectPumpPortalNewTokens({ limit: 8, timeoutMs: 4000 }).catch(() => []),
-    fetchPumpFunFeedTokens({ limit: 30 }).catch(() => [])
+    collectPumpPortalNewTokens({ limit: 8, timeoutMs: 4000 }).catch(() => [])
   ]);
 
-  const tokens = uniqueTokens([...pumpFeed, ...pumpFunFeed, ...dexSearchFeed, ...dexFeed, ...dexBroadFeed]);
+  const tokens = uniqueTokens([...pumpFeed, ...dexSearchFeed, ...dexFeed, ...dexBroadFeed]);
 
   if (!tokens.length) {
     throw new Error('Belum ada token live yang balik dari semua sumber');
