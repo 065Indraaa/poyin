@@ -1419,19 +1419,35 @@ function pruneTokens(tokens) {
         });
       }
 
-      const isDead = rug.isDead || rug.isRugged || isBlacklistedToken || rug.level === 'critical' || rug.level === 'high';
+      const isPumpBondingCurve = token.provider === 'PumpPortal live websocket'
+        || token.provider === 'Pump.fun frontend API'
+        || token.lpStatus === 'Bonding curve';
 
       // Hysteresis: runner established tetap runner sampai score turun < 55
       const wasRunner = token._wasRunner || false;
       const isRunner = runner.isRunner || (wasRunner && runner.runnerScore >= 55);
+
+      // Proteksi: runner bonding curve yang masih aktif tidak boleh masuk dead
+      // karena volatilitas awal sering trigger false-positive di rug detector.
+      // Kecuali kalau token sudah di-blacklist atau madeOnSol blacklist — itu hard rug.
+      const isHealthyRunnerBonding = isRunner && isPumpBondingCurve && (token.flags?.txns5m || 0) > 0;
+      const hasHardRugProof = isBlacklistedToken || token.flags?.madeOnSolBlacklisted === true;
+
+      let finalIsDead = rug.isDead || rug.isRugged || isBlacklistedToken || rug.level === 'critical' || rug.level === 'high';
+      let finalIsRugged = rug.isRugged || isBlacklistedToken;
+
+      if (isHealthyRunnerBonding && !hasHardRugProof) {
+        finalIsDead = false;
+        finalIsRugged = false;
+      }
 
       return {
         ...token,
         _report: report,
         _rug: rug,
         _runner: runner,
-        _isDead: isDead,
-        _isRugged: rug.isRugged || isBlacklistedToken,
+        _isDead: finalIsDead,
+        _isRugged: finalIsRugged,
         _isRunner: isRunner,
         _wasRunner: isRunner,
         _runnerScore: runner.runnerScore,
