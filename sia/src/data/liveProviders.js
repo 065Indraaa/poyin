@@ -81,12 +81,10 @@ export async function fetchDiscoveryFeed() {
   }
 
   const pumpOk = pumpFeed.length > 0;
-  const pumpFunOk = pumpFunFeed.length > 0;
   const dexOk = dexFeed.length > 0 || dexSearchFeed.length > 0 || dexBroadFeed.length > 0;
 
   const providerLabel = [
     pumpOk ? 'PumpPortal stream' : null,
-    pumpFunOk ? 'Pump.fun frontend' : null,
     dexOk ? 'DexScreener discovery' : null
   ].filter(Boolean).join(' + ') || 'DexScreener live API';
 
@@ -94,9 +92,9 @@ export async function fetchDiscoveryFeed() {
     tokens,
     provider: providerLabel,
     fetchedAt: new Date().toISOString(),
-    degraded: !pumpOk && !pumpFunOk,
+    degraded: !pumpOk,
     pumpPortalOk: pumpOk,
-    pumpFunOk
+    pumpFunOk: false
   };
 }
 
