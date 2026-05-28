@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
+  BookOpen,
   Bot,
   CheckCircle2,
+  ChevronDown,
   Copy,
   DatabaseZap,
   Flame,
   Gauge,
   Layers3,
   Lock,
+  Microscope,
   Radar,
   RefreshCw,
   Rocket,
@@ -109,6 +112,12 @@ export default function App() {
   // Deep scan / indexer state
   const [deepScan, setDeepScan] = useState(null);
   const [activePipeline, setActivePipeline] = useState('all');
+  const [mobileOpenSections, setMobileOpenSections] = useState({
+    forensic: false,
+    chart: false,
+    checks: false,
+    engine: false
+  });
   const [pipelineCounts, setPipelineCounts] = useState({ new: 0, early: 0, soon: 0, migrated: 0, dead: 0 });
 
   useEffect(() => {
@@ -208,6 +217,28 @@ export default function App() {
         setFeedTokens((current) => pruneTokens(upsertTokens(current, incoming)));
       }
     });
+
+    // Auto-paste & auto-direct: URL param > clipboard
+    let autoTriggered = false;
+    const params = new URLSearchParams(window.location.search);
+    const urlCa = params.get('ca');
+    if (urlCa && isValidSolanaAddress(urlCa)) {
+      autoTriggered = true;
+      runAnalysis(urlCa);
+    }
+    if (!autoTriggered) {
+      window.setTimeout(() => {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          navigator.clipboard.readText().then((text) => {
+            if (text && isValidSolanaAddress(text)) {
+              runAnalysis(text);
+            }
+          }).catch(() => {
+            // Clipboard access denied or unavailable — silent fail
+          });
+        }
+      }, 600);
+    }
 
     return () => {
       clearInterval(refreshInterval);
@@ -791,56 +822,88 @@ export default function App() {
         <RedFlagPanel redFlags={deepScan?.redFlags || []} />
         <BundleGraph bundle={deepScan?.stages?.holder?.bundle || deepScan?.stages?.bundle || null} />
 
-        <DexScreenerChart token={selectedToken} />
+        <MobileAccordion
+          id="chart"
+          title="Chart Live"
+          icon={DatabaseZap}
+          open={mobileOpenSections.chart}
+          onToggle={() => setMobileOpenSections((s) => ({ ...s, chart: !s.chart }))}
+        >
+          <DexScreenerChart token={selectedToken} />
+        </MobileAccordion>
 
-        <div className="check-grid">
-          {report.checks.map((check) => (
-            <CheckCard key={check.label} check={check} />
-          ))}
-        </div>
+        <MobileAccordion
+          id="checks"
+          title={`11 Pemeriksaan (${report.checks.filter((c) => c.status === 'pass').length} lolos)`}
+          icon={CheckCircle2}
+          open={mobileOpenSections.checks}
+          onToggle={() => setMobileOpenSections((s) => ({ ...s, checks: !s.checks }))}
+        >
+          <div className="check-grid">
+            {report.checks.map((check) => (
+              <CheckCard key={check.label} check={check} />
+            ))}
+          </div>
+        </MobileAccordion>
 
-        <ForensicPanel token={selectedToken} report={report} status={feedStatus} now={now} />
+        <MobileAccordion
+          id="forensic"
+          title="Forensik Real-Time"
+          icon={Microscope}
+          open={mobileOpenSections.forensic}
+          onToggle={() => setMobileOpenSections((s) => ({ ...s, forensic: !s.forensic }))}
+        >
+          <ForensicPanel token={selectedToken} report={report} status={feedStatus} now={now} />
+        </MobileAccordion>
       </section>
 
-      <section className="engine-section" id="engine">
-        <SectionHeader
-          kicker="Ponyin Engine"
-          title="Setiap verdict berakar pada materi utama."
-          text="Setiap keputusan diturunkan dari Bundle Token, Global Fees, Revoke & Minting, Dex Paid, Konfirmasi Candle, Membaca Holder, Instant Scalping, arsip Space X, dan sinyal pasar live."
-        />
+      <MobileAccordion
+        id="engine"
+        title="Ponyin Engine & Materi"
+        icon={BookOpen}
+        open={mobileOpenSections.engine}
+        onToggle={() => setMobileOpenSections((s) => ({ ...s, engine: !s.engine }))}
+      >
+        <section className="engine-section" id="engine" style={{ margin: 0, padding: 0, border: 0 }}>
+          <SectionHeader
+            kicker="Ponyin Engine"
+            title="Setiap verdict berakar pada materi utama."
+            text="Setiap keputusan diturunkan dari Bundle Token, Global Fees, Revoke & Minting, Dex Paid, Konfirmasi Candle, Membaca Holder, Instant Scalping, arsip Space X, dan sinyal pasar live."
+          />
 
-        <div className="engine-grid">
-          {report.layers.map((layer) => (
-            <article className="engine-card" key={layer.title}>
-              <span>{layer.index}</span>
-              <h3>{layer.title}</h3>
-              <p>{layer.description}</p>
-            </article>
-          ))}
-        </div>
+          <div className="engine-grid">
+            {report.layers.map((layer) => (
+              <article className="engine-card" key={layer.title}>
+                <span>{layer.index}</span>
+                <h3>{layer.title}</h3>
+                <p>{layer.description}</p>
+              </article>
+            ))}
+          </div>
 
-        <div className="knowledge-grid">
-          {ponyinPrinciples.map((principle) => (
-            <article className="knowledge-card" key={principle.id}>
-              <strong>{principle.title}</strong>
-              <span>{principle.source}</span>
-              <p>{principle.rule}</p>
-              {principle.materiId && (
-                <a
-                  className="materi-link"
-                  href={`/#${principle.materiId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  title={`Buka materi ${principle.materiLabel} di Poyin Trading`}
-                >
-                  📚 Buka materi: {principle.materiLabel}
-                  <ArrowRight size={14} />
-                </a>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
+          <div className="knowledge-grid">
+            {ponyinPrinciples.map((principle) => (
+              <article className="knowledge-card" key={principle.id}>
+                <strong>{principle.title}</strong>
+                <span>{principle.source}</span>
+                <p>{principle.rule}</p>
+                {principle.materiId && (
+                  <a
+                    className="materi-link"
+                    href={`/#${principle.materiId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={`Buka materi ${principle.materiLabel} di Poyin Trading`}
+                  >
+                    📚 Buka materi: {principle.materiLabel}
+                    <ArrowRight size={14} />
+                  </a>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      </MobileAccordion>
 
       <section className="roadmap-section" id="roadmap">
         <SectionHeader
@@ -890,6 +953,25 @@ function Navigation() {
         <UserChip />
       </div>
     </nav>
+  );
+}
+
+function MobileAccordion({ id, title, icon: Icon, open, onToggle, children }) {
+  return (
+    <div className={`mobile-accordion ${open ? 'open' : ''}`}>
+      <button type="button" className="mobile-accordion-head" onClick={onToggle} aria-expanded={open}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {Icon && <Icon size={16} />}
+          {title}
+        </span>
+        <ChevronDown size={18} />
+      </button>
+      <div className="mobile-accordion-body">
+        <div className="mobile-accordion-inner">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1788,6 +1870,11 @@ function extractSolanaAddress(value) {
   const raw = String(value || '').trim();
   const match = raw.match(/[1-9A-HJ-NP-Za-km-z]{32,44}/);
   return match ? match[0] : raw;
+}
+
+function isValidSolanaAddress(value) {
+  const address = extractSolanaAddress(value);
+  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
 }
 
 function formatTime(iso) {
