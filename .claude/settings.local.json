@@ -12,7 +12,9 @@
       "Bash(npx --no-install vite build)",
       "Bash(node --check /e/poyin-react/api/chat.js)",
       "Bash(node --check /e/poyin-react/api/pumpfun.js)",
-      "Bash(node --check /e/poyin-react/api/feed-enriched.js)"
+      "Bash(node --check /e/poyin-react/api/feed-enriched.js)",
+      "Bash(npm install *)",
+      "Bash(npm --prefix E:/poyin-react/sia run build)"
     ]
   }
 }
