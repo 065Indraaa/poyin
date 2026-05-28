@@ -108,7 +108,7 @@ export default function App() {
 
   // Deep scan / indexer state
   const [deepScan, setDeepScan] = useState(null);
-  const [activePipeline, setActivePipeline] = useState('runner');
+  const [activePipeline, setActivePipeline] = useState('all');
   const [pipelineCounts, setPipelineCounts] = useState({ new: 0, early: 0, soon: 0, migrated: 0, dead: 0 });
 
   useEffect(() => {
