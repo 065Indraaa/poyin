@@ -111,14 +111,12 @@ export default function AuthGate({ children }) {
   }
 
   return (
-    <>
+    <AuthContext.Provider value={{ session, profile, refreshProfile: () => refreshProfile(session) }}>
       {profile && !profile.follow_claimed && (
         <FollowBanner profile={profile} onClaimed={() => refreshProfile(session)} />
       )}
-      <AuthContext.Provider value={{ session, profile, refreshProfile: () => refreshProfile(session) }}>
-        {children}
-      </AuthContext.Provider>
-    </>
+      {children}
+    </AuthContext.Provider>
   );
 }
 
