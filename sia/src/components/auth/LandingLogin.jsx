@@ -40,12 +40,26 @@ export default function LandingLogin() {
     setSigningIn(true);
     try {
       await signInWithX();
+      // Kalau redirect manual berjalan, halaman ini akan unload.
+      // Kalau sampai di sini, berarti redirect tidak terjadi.
+      setSigningIn(false);
     } catch (err) {
       const msg = err?.message || '';
-      // Error 400 dari Supabase authorize biasanya konfigurasi provider, bukan code.
-      if (msg.includes('400') || msg.includes('Bad Request')) {
+      const code = err?.code || '';
+      const status = err?.status || 0;
+
+      // Error 400 / "unsupported provider" dari Supabase = provider belum enable/salah nama
+      if (status === 400 || msg.includes('400') || msg.includes('Bad Request') || msg.includes('unsupported provider') || code === '400') {
         setError(
-          'Login gagal (400). Pastikan: 1) Provider X/Twitter di Supabase Dashboard sudah di-enable dan Client ID/Secret sudah diisi. 2) Redirect URL https://www.ponyin.id/sia/ sudah didaftarkan di Supabase → Authentication → URL Configuration. 3) Callback URI di X Developer Portal diarahkan ke Supabase callback.'
+          'Login gagal (400 / unsupported provider). Ini 100% masalah konfigurasi Supabase Dashboard, bukan kode. Ceklist wajib:\n\n' +
+          '1. Supabase Dashboard → Authentication → Providers → X (Twitter)\n' +
+          '   → PASTIKAN tombol Enable sudah ON (hijau/aktif).\n' +
+          '   → Isi Client ID & Client Secret dengan OAuth 2.0 (bukan Consumer Keys).\n' +
+          '   → Klik SAVE di pojok kanan bawah provider.\n\n' +
+          '2. X Developer Portal → User authentication settings → OAuth 2.0:\n' +
+          '   → Callback URI: https://agpwauyvoiictsvamexx.supabase.co/auth/v1/callback\n' +
+          '   → Type of App: Web App, Automated App or Bot\n\n' +
+          '3. Kalau semua sudah benar tapi tetap error, coba regenerate Client Secret di X Developer Portal, lalu paste ulang ke Supabase dan SAVE lagi.'
         );
       } else {
         setError(msg || 'Login gagal. Coba lagi.');

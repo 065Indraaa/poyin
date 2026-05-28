@@ -12,15 +12,24 @@ export async function signInWithX() {
   // Scopes wajib untuk X (Twitter) OAuth 2.0:
   // tweet.read  = baca tweet publik user
   // users.read  = baca profil user (handle, avatar)
-  // offline.access = dapat refresh token (opsional tapi direkomendasikan)
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'twitter',
+    provider: 'x',
     options: {
       redirectTo: getRedirectUrl(),
-      scopes: 'tweet.read users.read offline.access'
+      scopes: 'tweet.read users.read',
+      // skipBrowserRedirect: true supaya kita bisa inspect URL & error detail
+      skipBrowserRedirect: true
     }
   });
-  if (error) throw error;
+  if (error) {
+    console.error('[auth] signInWithOAuth error:', error);
+    throw error;
+  }
+  if (!data?.url) {
+    throw new Error('Supabase tidak mengembalikan authorize URL. Periksa konfigurasi provider Twitter di dashboard.');
+  }
+  // Redirect manual ke X authorize URL
+  window.location.href = data.url;
   return data;
 }
 
