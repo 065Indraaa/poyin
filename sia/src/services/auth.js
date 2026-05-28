@@ -33,6 +33,19 @@ export async function signInWithX() {
   return data;
 }
 
+export async function verifyFollowX(providerToken, targetHandle = 'ELPonyin') {
+  const res = await fetch('/api/verify-follow', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ providerToken, targetHandle })
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Verify follow failed: ${res.status} ${text}`);
+  }
+  return res.json();
+}
+
 export async function signOut() {
   if (!supabase) return;
   const { error } = await supabase.auth.signOut();

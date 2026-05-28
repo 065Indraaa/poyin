@@ -12,6 +12,7 @@ import feedEnrichedHandler from './api/feed-enriched.js';
 import birdeyeHandler from './api/birdeye.js';
 import jupiterHandler from './api/jupiter.js';
 import pumpfunHandler from './api/pumpfun.js';
+import verifyFollowHandler from './api/verify-follow.js';
 import { startIndexerEngine } from './services/indexer/engine.js';
 import { startWebSocketServer } from './services/indexer/websocket.js';
 
@@ -34,6 +35,9 @@ app.get('/api/feed-enriched', feedEnrichedHandler);
 app.get('/api/birdeye', birdeyeHandler);
 app.get('/api/jupiter', jupiterHandler);
 app.get('/api/pumpfun', pumpfunHandler);
+
+// verify X follow status (auto-check)
+app.post('/api/verify-follow', verifyFollowHandler);
 
 // test endpoint
 app.get('/', (req, res) => {
