@@ -5,7 +5,7 @@
 // the frontend automatically falls back to short-polling.
 
 const WS_URL = import.meta.env.VITE_INDEXER_WS_URL || '';
-const POLL_INTERVAL_MS = 60000; // 60 detik — hemat Vercel hit count
+const POLL_INTERVAL_MS = 15000; // 15 detik — balance real-time vs Vercel hit count
 
 let ws = null;
 let reconnectTimer = null;
@@ -106,8 +106,11 @@ function stopFallbackPolling() {
 async function doPoll(onMessage) {
   if (isPolling) return; // no-overlap guard
   isPolling = true;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
   try {
-    const res = await fetch(`/api/feed-enriched?phase=all&limit=50`);
+    const res = await fetch(`/api/feed-enriched?phase=all&limit=50`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     if (!res.ok) return;
     const data = await res.json();
 
@@ -127,6 +130,7 @@ async function doPoll(onMessage) {
   } catch {
     // Silently ignore poll failures
   } finally {
+    clearTimeout(timeoutId);
     isPolling = false;
   }
 }

@@ -101,19 +101,9 @@ export async function fetchDiscoveryFeed() {
   };
 }
 
-let lastPumpFunFetchAt = 0;
-let lastPumpFunResult = [];
-
 async function fetchPumpFunFeedTokens({ limit = 30 } = {}) {
-  const now = Date.now();
-  // Throttle: max 1 call per 60 detik per browser tab
-  if (now - lastPumpFunFetchAt < 60000 && lastPumpFunResult.length) {
-    return lastPumpFunResult;
-  }
-  lastPumpFunFetchAt = now;
   const coins = await fetchPumpFunDiscovery({ limit });
-  lastPumpFunResult = coins.map(pumpFunToFeedToken).filter(Boolean);
-  return lastPumpFunResult;
+  return coins.map(pumpFunToFeedToken).filter(Boolean);
 }
 
 export async function fetchTokenMarketSnapshots(addresses = []) {

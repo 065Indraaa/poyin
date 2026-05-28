@@ -146,15 +146,15 @@ export default function App() {
 
     const refreshInterval = setInterval(() => {
       refreshFeed();
-    }, 60000);
+    }, 10000);
 
     const healthInterval = setInterval(() => {
       refreshProviderHealth();
-    }, 300000);
+    }, 60000);
 
     const marketRefreshInterval = setInterval(() => {
       refreshFeedMarketSnapshots();
-    }, 60000);
+    }, 15000);
 
     const pruneInterval = setInterval(() => {
       setFeedTokens((current) => pruneTokens(current));
@@ -209,24 +209,14 @@ export default function App() {
       }
     });
 
-    // ─── Visibility guard: pause polling kalau tab hidden ────────────────
-    const timers = [clockInterval, refreshInterval, healthInterval, marketRefreshInterval, pruneInterval];
-    function onVisibilityChange() {
-      if (document.hidden) {
-        timers.forEach((id) => clearInterval(id));
-      } else {
-        refreshFeed();
-        refreshProviderHealth();
-        refreshFeedMarketSnapshots();
-      }
-    }
-    document.addEventListener('visibilitychange', onVisibilityChange);
-
     return () => {
-      timers.forEach((id) => clearInterval(id));
+      clearInterval(refreshInterval);
+      clearInterval(healthInterval);
+      clearInterval(marketRefreshInterval);
+      clearInterval(clockInterval);
+      clearInterval(pruneInterval);
       unsubscribePumpPortal();
       unsubscribeIndexer();
-      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, []);
 
@@ -259,8 +249,6 @@ export default function App() {
   }, [feedTokens]);
 
   async function refreshFeed() {
-    // Guard: jangan trigger request baru kalau yang lama masih pending
-    if (feedStatus.loading) return;
     const requestId = refreshRequestRef.current + 1;
     refreshRequestRef.current = requestId;
     setFeedStatus((current) => ({ ...current, loading: true, error: null }));
@@ -607,7 +595,11 @@ export default function App() {
               )}
               {!feedStatus.loading && feedTokens.length === 0 && (
                 <tr>
-                  <td colSpan="10" className="empty-row">Belum ada token yang memenuhi kriteria entry valid. Token baru tanpa bukti pasar tidak diprioritaskan.</td>
+                  <td colSpan="10" className="empty-row">
+                    {feedStatus.error
+                      ? `Gagal memuat feed: ${feedStatus.error}. Coba muat ulang atau tunggu beberapa saat.`
+                      : 'Belum ada token yang memenuhi kriteria entry valid. Token baru tanpa bukti pasar tidak diprioritaskan.'}
+                  </td>
                 </tr>
               )}
               {feedTokens
@@ -1481,18 +1473,18 @@ function pruneTokens(tokens) {
     // (kecuali sudah dipastikan dead/rug — di-handle di atas)
     if (feedJoinAgeMs < MIN_FEED_AGE_MS && !token._isDead) {
       // Tetap jalankan filter kritis, tapi jangan buang karena lemah sementara
-      if (entryScore < 22) return false;
-      if (report.score <= 14) return false;
+      if (entryScore < 10) return false;
+      if (report.score <= 10) return false;
     } else {
       // Filter lemah — hanya untuk token yang sudah lewat stability window
-      if (entryScore < 38) return false;
-      if (report.score <= 28 && entryScore < 60) return false;
+      if (entryScore < 25) return false;
+      if (report.score <= 20 && entryScore < 50) return false;
     }
 
-    if (isPumpBondingCurve && entryScore < 50 && !token._isRunner) return false;
-    if (!isPumpBondingCurve && token.liquidityUsd < 5000) return false;
-    if (!isPumpBondingCurve && token.flags?.volumeLiquidityRatio > 12) return false;
-    if (!isPumpBondingCurve && token.flags?.sells5m > (token.flags?.buys5m * 3.5) + 10) return false;
+    if (isPumpBondingCurve && entryScore < 35 && !token._isRunner) return false;
+    if (!isPumpBondingCurve && token.liquidityUsd < 3000) return false;
+    if (!isPumpBondingCurve && token.flags?.volumeLiquidityRatio > 20) return false;
+    if (!isPumpBondingCurve && token.flags?.sells5m > (token.flags?.buys5m * 4) + 12) return false;
 
     // Sebelum tampil di feed normal, double-check pakai rug analyzer
     if (token._rug?.level === 'critical') return true; // tampil di Dead, sudah di-flag isDead di atas
