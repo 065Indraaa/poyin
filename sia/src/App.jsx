@@ -36,6 +36,8 @@ import { addToBlacklist, getBlacklistEntry, isBlacklisted, prune as pruneBlackli
 import RedFlagPanel from './components/RedFlagPanel';
 import BundleGraph from './components/BundleGraph';
 import UserChip from './components/auth/UserChip';
+import { useAuth } from './components/auth/AuthGate';
+import { consumeQuota } from './services/auth';
 
 const scanSteps = [
   'Mengambil data pair dan likuiditas secara live...',
@@ -108,6 +110,7 @@ export default function App() {
   const refreshRequestRef = useRef(0);
   const selectedTokenRef = useRef(emptyToken);
   const feedTokensRef = useRef([]);
+  const auth = useAuth();
 
   // Deep scan / indexer state
   const [deepScan, setDeepScan] = useState(null);
@@ -398,9 +401,19 @@ export default function App() {
     }
   }
 
-  const runAnalysis = async (tokenLike) => {
+  const runAnalysis = async (tokenLike, source = 'meter') => {
     const address = typeof tokenLike === 'string' ? extractSolanaAddress(tokenLike) : tokenLike.ca;
     if (!address) return;
+
+    const userId = auth?.session?.user?.id;
+    if (userId) {
+      const result = await consumeQuota(userId, source);
+      if (!result.ok) {
+        window.alert(`Kuota ${source === 'scan' ? 'scan' : 'Ape Meter'} harian sudah habis (100/100). Coba lagi besok.`);
+        return;
+      }
+      auth?.refreshQuota?.();
+    }
 
     const optimisticToken = typeof tokenLike === 'string' ? { ...emptyToken, ca: address, ticker: shortAddress(address) } : tokenLike;
     const priorBlacklist = getBlacklistEntry(address);
@@ -487,7 +500,7 @@ export default function App() {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    runAnalysis(query);
+    runAnalysis(query, 'scan');
   };
 
   const copyCa = async () => {
@@ -534,6 +547,14 @@ export default function App() {
               <ArrowRight size={18} />
             </button>
           </form>
+
+          {auth?.session && (
+            <div style={{ display: 'flex', gap: 14, fontSize: '0.82rem', color: 'var(--muted)', marginTop: 8, paddingLeft: 2, flexWrap: 'wrap' }}>
+              <span>Sisa scan: <strong style={{ color: 'var(--soft)' }}>{auth.quota?.remainingScan ?? 100}/100</strong></span>
+              <span style={{ opacity: 0.5 }}>·</span>
+              <span>Ape Meter: <strong style={{ color: 'var(--soft)' }}>{auth.quota?.remainingMeter ?? 100}/100</strong></span>
+            </div>
+          )}
 
           <div className="quick-actions">
             <button type="button" onClick={refreshFeed} disabled={feedStatus.loading}>

@@ -109,4 +109,96 @@ export function subscribeAuth(callback) {
   };
 }
 
+const QUOTA_LIMIT = 100;
+
+function startOfDayUtc() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+}
+
+function defaultQuota() {
+  return {
+    scanUsed: 0,
+    scanLimit: QUOTA_LIMIT,
+    meterUsed: 0,
+    meterLimit: QUOTA_LIMIT,
+    remainingScan: QUOTA_LIMIT,
+    remainingMeter: QUOTA_LIMIT,
+    resetAt: null
+  };
+}
+
+export async function getQuota(userId) {
+  if (!supabase || !userId) return defaultQuota();
+  const { data, error } = await supabase
+    .from('user_quotas')
+    .select('scan_used, meter_used, reset_at')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    console.warn('[auth] getQuota failed:', error.message);
+    return defaultQuota();
+  }
+
+  const sod = startOfDayUtc();
+  if (!data || !data.reset_at || new Date(data.reset_at) < sod) {
+    return { ...defaultQuota(), resetAt: sod.toISOString() };
+  }
+
+  const scanUsed = data.scan_used || 0;
+  const meterUsed = data.meter_used || 0;
+  return {
+    scanUsed,
+    scanLimit: QUOTA_LIMIT,
+    meterUsed,
+    meterLimit: QUOTA_LIMIT,
+    remainingScan: Math.max(0, QUOTA_LIMIT - scanUsed),
+    remainingMeter: Math.max(0, QUOTA_LIMIT - meterUsed),
+    resetAt: data.reset_at
+  };
+}
+
+export async function consumeQuota(userId, type = 'scan') {
+  if (!supabase || !userId) return { ok: true, remaining: QUOTA_LIMIT };
+  const sod = startOfDayUtc();
+
+  const { data: existing } = await supabase
+    .from('user_quotas')
+    .select('scan_used, meter_used, reset_at')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  let scanUsed = existing?.scan_used || 0;
+  let meterUsed = existing?.meter_used || 0;
+
+  if (!existing || !existing.reset_at || new Date(existing.reset_at) < sod) {
+    scanUsed = 0;
+    meterUsed = 0;
+    await supabase.from('user_quotas').upsert(
+      {
+        user_id: userId,
+        scan_used: 0,
+        meter_used: 0,
+        reset_at: new Date().toISOString()
+      },
+      { onConflict: 'user_id' }
+    );
+  }
+
+  const used = type === 'scan' ? scanUsed : meterUsed;
+  if (used >= QUOTA_LIMIT) {
+    return { ok: false, remaining: 0, type };
+  }
+
+  const updates = type === 'scan' ? { scan_used: scanUsed + 1 } : { meter_used: meterUsed + 1 };
+  const { error } = await supabase.from('user_quotas').update(updates).eq('user_id', userId);
+  if (error) {
+    console.warn('[auth] consumeQuota update failed:', error.message);
+    return { ok: false, remaining: QUOTA_LIMIT - used, type };
+  }
+
+  return { ok: true, remaining: QUOTA_LIMIT - used - 1, type };
+}
+
 export { isSupabaseConfigured };
