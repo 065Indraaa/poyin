@@ -111,9 +111,9 @@ export function subscribeAuth(callback) {
 
 const QUOTA_LIMIT = 100;
 
-function startOfDayUtc() {
+function startOfDayLocal() {
   const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
 function defaultQuota() {
@@ -138,7 +138,7 @@ export async function getQuota(userId) {
     return defaultQuota();
   }
 
-  const sod = startOfDayUtc();
+  const sod = startOfDayLocal();
   if (!data || !data.reset_at || new Date(data.reset_at) < sod) {
     return { ...defaultQuota(), resetAt: sod.toISOString() };
   }
@@ -153,8 +153,8 @@ export async function getQuota(userId) {
 }
 
 export async function consumeQuota(userId) {
-  if (!supabase || !userId) return { ok: true, remaining: QUOTA_LIMIT };
-  const sod = startOfDayUtc();
+  if (!supabase || !userId) return { ok: true, used: 0, remaining: QUOTA_LIMIT };
+  const sod = startOfDayLocal();
 
   const { data: existing } = await supabase
     .from('user_quotas')
@@ -178,16 +178,17 @@ export async function consumeQuota(userId) {
   }
 
   if (used >= QUOTA_LIMIT) {
-    return { ok: false, remaining: 0 };
+    return { ok: false, used, remaining: 0 };
   }
 
-  const { error } = await supabase.from('user_quotas').update({ scan_used: used + 1 }).eq('user_id', userId);
+  const newUsed = used + 1;
+  const { error } = await supabase.from('user_quotas').update({ scan_used: newUsed }).eq('user_id', userId);
   if (error) {
     console.warn('[auth] consumeQuota update failed:', error.message);
-    return { ok: false, remaining: QUOTA_LIMIT - used };
+    return { ok: false, used, remaining: QUOTA_LIMIT - used };
   }
 
-  return { ok: true, remaining: QUOTA_LIMIT - used - 1 };
+  return { ok: true, used: newUsed, remaining: QUOTA_LIMIT - newUsed };
 }
 
 export { isSupabaseConfigured };

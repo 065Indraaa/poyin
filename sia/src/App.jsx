@@ -107,10 +107,15 @@ export default function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanIndex, setScanIndex] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [scanUsed, setScanUsed] = useState(0);
   const refreshRequestRef = useRef(0);
   const selectedTokenRef = useRef(emptyToken);
   const feedTokensRef = useRef([]);
   const auth = useAuth();
+
+  useEffect(() => {
+    setScanUsed(auth?.quota?.used ?? 0);
+  }, [auth?.quota?.used]);
 
   // Deep scan / indexer state
   const [deepScan, setDeepScan] = useState(null);
@@ -412,6 +417,7 @@ export default function App() {
         window.alert('Kuota scan harian sudah habis (100/100). Coba lagi besok.');
         return;
       }
+      setScanUsed(result.used);
       auth?.refreshQuota?.();
     }
 
@@ -550,7 +556,7 @@ export default function App() {
 
           {auth?.session && (
             <div style={{ display: 'flex', gap: 14, fontSize: '0.82rem', color: 'var(--muted)', marginTop: 8, paddingLeft: 2, flexWrap: 'wrap' }}>
-              <span>Sisa scan hari ini: <strong style={{ color: 'var(--soft)' }}>{auth.quota?.remaining ?? 100}/100</strong></span>
+              <span>Scan hari ini: <strong style={{ color: 'var(--soft)' }}>{scanUsed}/100</strong></span>
             </div>
           )}
 
