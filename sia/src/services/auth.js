@@ -111,9 +111,9 @@ export function subscribeAuth(callback) {
 
 const QUOTA_LIMIT = 100;
 
-function startOfDayLocal() {
+function todayLocalStr() {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
 function defaultQuota() {
@@ -138,9 +138,9 @@ export async function getQuota(userId) {
     return defaultQuota();
   }
 
-  const sod = startOfDayLocal();
-  if (!data || !data.reset_at || new Date(data.reset_at) < sod) {
-    return { ...defaultQuota(), resetAt: sod.toISOString() };
+  const today = todayLocalStr();
+  if (!data || !data.reset_at || data.reset_at !== today) {
+    return { ...defaultQuota(), resetAt: today };
   }
 
   const used = data.scan_used || 0;
@@ -154,7 +154,7 @@ export async function getQuota(userId) {
 
 export async function consumeQuota(userId) {
   if (!supabase || !userId) return { ok: true, used: 0, remaining: QUOTA_LIMIT };
-  const sod = startOfDayLocal();
+  const today = todayLocalStr();
 
   const { data: existing } = await supabase
     .from('user_quotas')
@@ -164,14 +164,14 @@ export async function consumeQuota(userId) {
 
   let used = existing?.scan_used || 0;
 
-  if (!existing || !existing.reset_at || new Date(existing.reset_at) < sod) {
+  if (!existing || !existing.reset_at || existing.reset_at !== today) {
     used = 0;
     await supabase.from('user_quotas').upsert(
       {
         user_id: userId,
         scan_used: 0,
         meter_used: 0,
-        reset_at: new Date().toISOString()
+        reset_at: today
       },
       { onConflict: 'user_id' }
     );

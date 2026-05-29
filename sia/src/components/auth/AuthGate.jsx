@@ -23,7 +23,7 @@ export default function AuthGate({ children }) {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [access, setAccess] = useState('loading'); // 'loading' | 'allowed' | 'denied'
-  const [quota, setQuota] = useState({ used: 0, limit: 100, remaining: 100, resetAt: null });
+  const [quota, setQuota] = useState({ used: 0, limit: 100, remaining: 100, resetAt: '' });
 
   const refreshProfile = useCallback(async (currentSession) => {
     const userId = currentSession?.user?.id;
