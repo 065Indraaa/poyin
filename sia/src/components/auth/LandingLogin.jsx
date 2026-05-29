@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Activity, Gauge, Microscope, BookOpen } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Activity, Gauge, Microscope, BookOpen, Users, Zap, TrendingUp, Lock } from 'lucide-react';
 import { signInWithX, isSupabaseConfigured } from '../../services/auth';
 
 const TARGET_HANDLE = 'ELPonyin';
@@ -30,6 +30,22 @@ const TEASERS = [
 export default function LandingLogin() {
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState(null);
+  const [stats, setStats] = useState({ users: null, loading: true });
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/stats')
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        setStats({ users: typeof data.users === 'number' ? data.users : null, loading: false });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStats({ users: null, loading: false });
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   const handleLogin = async () => {
     if (!isSupabaseConfigured) {
@@ -91,6 +107,38 @@ export default function LandingLogin() {
           timing marketing, dan konfirmasi dip teknis. Data dihimpun dari DexScreener, Solana RPC,
           PumpPortal stream, dan Pump.fun frontend.
         </p>
+
+        {/* Live stats */}
+        <div className="landing-stats">
+          <div className="landing-stat-card">
+            <Users size={18} />
+            <div>
+              <strong>{stats.loading ? '...' : stats.users != null ? stats.users.toLocaleString('id-ID') : '-'}</strong>
+              <span>User terdaftar</span>
+            </div>
+          </div>
+          <div className="landing-stat-card">
+            <Zap size={18} />
+            <div>
+              <strong>5</strong>
+              <span>Lapis analisis</span>
+            </div>
+          </div>
+          <div className="landing-stat-card">
+            <TrendingUp size={18} />
+            <div>
+              <strong>Live</strong>
+              <span>Feed real-time</span>
+            </div>
+          </div>
+          <div className="landing-stat-card">
+            <Lock size={18} />
+            <div>
+              <strong>100</strong>
+              <span>Scan/hari</span>
+            </div>
+          </div>
+        </div>
 
         <div className="landing-cta">
           <button

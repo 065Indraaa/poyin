@@ -14,6 +14,7 @@ import jupiterHandler from './api/jupiter.js';
 import pumpfunHandler from './api/pumpfun.js';
 import verifyFollowHandler from './api/verify-follow.js';
 import feedOmnibusHandler from './api/feed-omnibus.js';
+import statsHandler from './api/stats.js';
 import { startIndexerEngine } from './services/indexer/engine.js';
 import { startWebSocketServer } from './services/indexer/websocket.js';
 
@@ -42,6 +43,9 @@ app.post('/api/verify-follow', verifyFollowHandler);
 
 // omnibus: gabungan feed-enriched + pumpfun + health (hemat edge request)
 app.get('/api/feed-omnibus', feedOmnibusHandler);
+
+// public stats: jumlah user terdaftar
+app.get('/api/stats', statsHandler);
 
 // test endpoint
 app.get('/', (req, res) => {
