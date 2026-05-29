@@ -401,15 +401,15 @@ export default function App() {
     }
   }
 
-  const runAnalysis = async (tokenLike, source = 'meter') => {
+  const runAnalysis = async (tokenLike) => {
     const address = typeof tokenLike === 'string' ? extractSolanaAddress(tokenLike) : tokenLike.ca;
     if (!address) return;
 
     const userId = auth?.session?.user?.id;
     if (userId) {
-      const result = await consumeQuota(userId, source);
+      const result = await consumeQuota(userId);
       if (!result.ok) {
-        window.alert(`Kuota ${source === 'scan' ? 'scan' : 'Ape Meter'} harian sudah habis (100/100). Coba lagi besok.`);
+        window.alert('Kuota scan harian sudah habis (100/100). Coba lagi besok.');
         return;
       }
       auth?.refreshQuota?.();
@@ -500,7 +500,7 @@ export default function App() {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    runAnalysis(query, 'scan');
+    runAnalysis(query);
   };
 
   const copyCa = async () => {
@@ -550,9 +550,7 @@ export default function App() {
 
           {auth?.session && (
             <div style={{ display: 'flex', gap: 14, fontSize: '0.82rem', color: 'var(--muted)', marginTop: 8, paddingLeft: 2, flexWrap: 'wrap' }}>
-              <span>Sisa scan: <strong style={{ color: 'var(--soft)' }}>{auth.quota?.remainingScan ?? 100}/100</strong></span>
-              <span style={{ opacity: 0.5 }}>·</span>
-              <span>Ape Meter: <strong style={{ color: 'var(--soft)' }}>{auth.quota?.remainingMeter ?? 100}/100</strong></span>
+              <span>Sisa scan hari ini: <strong style={{ color: 'var(--soft)' }}>{auth.quota?.remaining ?? 100}/100</strong></span>
             </div>
           )}
 

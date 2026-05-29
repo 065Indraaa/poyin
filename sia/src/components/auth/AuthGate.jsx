@@ -23,7 +23,7 @@ export default function AuthGate({ children }) {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [access, setAccess] = useState('loading'); // 'loading' | 'allowed' | 'denied'
-  const [quota, setQuota] = useState({ scanUsed: 0, scanLimit: 100, meterUsed: 0, meterLimit: 100, remainingScan: 100, remainingMeter: 100, resetAt: null });
+  const [quota, setQuota] = useState({ used: 0, limit: 100, remaining: 100, resetAt: null });
 
   const refreshProfile = useCallback(async (currentSession) => {
     const userId = currentSession?.user?.id;
@@ -46,7 +46,7 @@ export default function AuthGate({ children }) {
   const refreshQuota = useCallback(async (currentSession) => {
     const userId = currentSession?.user?.id;
     if (!userId) {
-      setQuota({ scanUsed: 0, scanLimit: 100, meterUsed: 0, meterLimit: 100, remainingScan: 100, remainingMeter: 100, resetAt: null });
+      setQuota({ used: 0, limit: 100, remaining: 100, resetAt: null });
       return;
     }
     const q = await getQuota(userId);
@@ -87,7 +87,7 @@ export default function AuthGate({ children }) {
       } else {
         setProfile(null);
         setAccess('loading');
-        setQuota({ scanUsed: 0, scanLimit: 100, meterUsed: 0, meterLimit: 100, remainingScan: 100, remainingMeter: 100, resetAt: null });
+        setQuota({ used: 0, limit: 100, remaining: 100, resetAt: null });
       }
     });
 
