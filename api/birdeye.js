@@ -1,11 +1,35 @@
 const BIRDEYE_API = 'https://public-api.birdeye.so';
-const CACHE_TTL_MS = 60 * 1000;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 menit cache
 const HTTP_TIMEOUT_MS = 7000;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 menit window
+const RATE_LIMIT_MAX = 10; // maks 10 request per IP per menit
 const cache = new Map();
+const rateLimit = new Map(); // ip -> { count, resetAt }
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const entry = rateLimit.get(ip);
+  if (!entry || entry.resetAt < now) {
+    rateLimit.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { ok: true };
+  }
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return { ok: false, retryAfter: Math.ceil((entry.resetAt - now) / 1000) };
+  }
+  entry.count++;
+  return { ok: true };
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+  const rl = checkRateLimit(ip);
+  if (!rl.ok) {
+    res.setHeader('Retry-After', rl.retryAfter);
+    return res.status(429).json({ error: 'Rate limit. Coba lagi nanti.', retryAfter: rl.retryAfter });
   }
 
   const ca = String(req.query?.ca || req.query?.address || '').trim();
@@ -50,13 +74,11 @@ export async function fetchBirdeyeOverview(ca) {
   const headers = { accept: 'application/json', 'x-chain': 'solana' };
   if (apiKey) headers['x-api-key'] = apiKey;
 
-  const [overview, security] = await Promise.allSettled([
-    fetchJson(`${BIRDEYE_API}/defi/token_overview?address=${ca}`, { headers }),
-    fetchJson(`${BIRDEYE_API}/defi/token_security?address=${ca}`, { headers }).catch(() => null)
-  ]);
-
-  const overviewData = overview.status === 'fulfilled' ? (overview.value?.data || overview.value) : null;
-  const securityData = security.status === 'fulfilled' ? (security.value?.data || security.value) : null;
+  // Hanya panggil token_overview. token_security dihapus karena data mint/freeze
+  // authority sudah tercover oleh Solana RPC (fetchMintAuthority) di liveProviders.js,
+  // sehingga menghemat 1 request per scan (~50% pengurangan usage Birdeye).
+  const overview = await fetchJson(`${BIRDEYE_API}/defi/token_overview?address=${ca}`, { headers });
+  const overviewData = overview?.data || overview;
 
   if (!overviewData) {
     throw new Error('Birdeye overview tidak tersedia');
@@ -75,16 +97,6 @@ export async function fetchBirdeyeOverview(ca) {
     holderCount: numberOrNull(overviewData.holder || overviewData.holderCount),
     uniqueWallet24h: numberOrNull(overviewData.uniqueWallet24h),
     supply: numberOrNull(overviewData.supply || overviewData.totalSupply),
-    security: securityData ? {
-      isOpenSource: securityData.isOpenSource ?? null,
-      mintRevoked: securityData.mintAuthority === null || securityData.mintAuthority === '',
-      freezeRevoked: securityData.freezeAuthority === null || securityData.freezeAuthority === '',
-      top10HolderPercent: numberOrNull(securityData.top10HolderPercent),
-      top10UserPercent: numberOrNull(securityData.top10UserPercent),
-      lpLocked: securityData.lpLocked ?? null,
-      creatorBalance: numberOrNull(securityData.creatorBalance),
-      creatorPercentage: numberOrNull(securityData.creatorPercentage)
-    } : null,
     fetchedAt: new Date().toISOString()
   };
 }
