@@ -71,7 +71,7 @@ export default function CoinfestPopup() {
           rel="noopener noreferrer"
           className="coinfest-cta"
         >
-          Beli Tiket Diskon — coinfest.asia/with/Ponyin
+          Beli Tiket Diskon — Klik disini
         </a>
 
         <button type="button" className="coinfest-skip" onClick={dismiss}>
