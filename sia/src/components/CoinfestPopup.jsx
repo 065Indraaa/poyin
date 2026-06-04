@@ -1,22 +1,17 @@
 import { useState, useEffect } from 'react';
 
-const STORAGE_KEY = 'coinfest_popup_dismissed';
 const COINFEST_URL = 'https://coinfest.asia/with/Ponyin';
 
 export default function CoinfestPopup() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const dismissed = localStorage.getItem(STORAGE_KEY);
-    if (dismissed) return;
-
     const timer = setTimeout(() => setVisible(true), 800);
     return () => clearTimeout(timer);
   }, []);
 
   const dismiss = () => {
     setVisible(false);
-    localStorage.setItem(STORAGE_KEY, '1');
   };
 
   const handleBackdrop = (e) => {
