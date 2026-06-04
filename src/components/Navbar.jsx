@@ -20,8 +20,8 @@ export default function Navbar() {
       <div className="nav-links">
         <LangToggle />
         <ThemeToggle />
-        <a href="https://x.com/elponyin" target="_blank" rel="noopener" className="nav-link">
-          𝕏 @elponyin
+        <a href="https://x.com/ponyin" target="_blank" rel="noopener" className="nav-link">
+          𝕏 @ponyin
         </a>
         <a href="https://trojan.com/@Ponyinnn" target="_blank" rel="noopener" className="nav-link pri">
           ⚡ Trojan

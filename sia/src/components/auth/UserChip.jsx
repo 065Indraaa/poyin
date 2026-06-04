@@ -56,7 +56,7 @@ export default function UserChip() {
             <strong>@{handle}</strong>
             <small>
               {profile.follow_claimed
-                ? 'Status: follower @ELPonyin (klaim)'
+                ? 'Status: follower @ponyin (klaim)'
                 : 'Status: belum klaim follow'}
             </small>
           </div>

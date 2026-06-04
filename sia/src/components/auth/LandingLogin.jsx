@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Activity, Gauge, Microscope, BookOpen, Users, Zap, TrendingUp, Lock } from 'lucide-react';
 import { signInWithX, isSupabaseConfigured } from '../../services/auth';
+import CoinfestPopup from '../CoinfestPopup';
 
-const TARGET_HANDLE = 'ELPonyin';
+const TARGET_HANDLE = 'ponyin';
 
 const TEASERS = [
   {
@@ -86,6 +87,7 @@ export default function LandingLogin() {
 
   return (
     <div className="landing-shell">
+      <CoinfestPopup />
       <header className="landing-header">
         <div className="landing-brand">
           <div className="landing-brand-mark">SI</div>

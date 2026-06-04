@@ -476,7 +476,7 @@ export function PanelClosing({ onSwitch }) {
         <p style={{ fontSize: 15.5, color: 'rgba(255,255,255,.82)', marginBottom: 22, textAlign: 'center', lineHeight: 1.8 }}>
           {t.p1}
         </p>
-        <div className="closing-sig">{t.sig}<br />@ELPonyin ✨</div>
+        <div className="closing-sig">{t.sig}<br />@ponyin ✨</div>
       </div>
 
       <Callout type="ok" icon="🙏" title={t.calloutTitle}>
@@ -485,7 +485,7 @@ export function PanelClosing({ onSwitch }) {
 
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 24 }} className="reveal">
         <button onClick={() => onSwitch?.('pa0')} className="btn btn-blue" style={{ background: '#7c3aed', borderColor: '#7c3aed' }}>{t.btnVol2}</button>
-        <a href="https://x.com/elponyin" target="_blank" rel="noopener" className="btn btn-blue">𝕏 Follow @elponyin</a>
+        <a href="https://x.com/ponyin" target="_blank" rel="noopener" className="btn btn-blue">𝕏 Follow @ponyin</a>
         <a href="https://trojan.com/@Keusel" target="_blank" rel="noopener" className="btn btn-outline">{t.btnTrade}</a>
       </div>
     </>

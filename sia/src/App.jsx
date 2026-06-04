@@ -36,6 +36,7 @@ import { addToBlacklist, getBlacklistEntry, isBlacklisted, prune as pruneBlackli
 import RedFlagPanel from './components/RedFlagPanel';
 import BundleGraph from './components/BundleGraph';
 import UserChip from './components/auth/UserChip';
+import CoinfestPopup from './components/CoinfestPopup';
 import { useAuth } from './components/auth/AuthGate';
 import { consumeQuota } from './services/auth';
 
@@ -525,6 +526,7 @@ export default function App() {
 
   return (
     <main className="app-shell">
+      <CoinfestPopup />
       <Navigation />
 
       <section className="hero-section" id="home">

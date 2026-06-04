@@ -220,7 +220,7 @@ function AccessLimitScreen({ onLogout }) {
                 Status akun kamu: Belum terdaftar
               </strong>
               <span style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>
-                Akun X kamu belum ada dalam daftar anggota. Pantau X @ELPonyin untuk info buka pendaftaran berikutnya.
+                Akun X kamu belum ada dalam daftar anggota. Pantau X @ponyin untuk info buka pendaftaran berikutnya.
               </span>
             </div>
           </div>
@@ -238,7 +238,7 @@ function AccessLimitScreen({ onLogout }) {
           </div>
 
           <p style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 8 }}>
-            Butuh bantuan? Hubungi admin melalui X @ELPonyin.
+            Butuh bantuan? Hubungi admin melalui X @ponyin.
           </p>
         </div>
       </section>

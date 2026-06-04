@@ -12,6 +12,7 @@ import Sidebar from './components/Sidebar';
 import PanelArea from './components/PanelArea';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
+import CoinfestPopup from './components/CoinfestPopup';
 import SpaceRecordings from './components/SpaceRecordings';
 import ProofGallery from './components/ProofGallery';
 import ScammerList from './components/ScammerList';
@@ -93,6 +94,7 @@ export default function App() {
 
         <Footer />
         <Chatbot />
+        <CoinfestPopup />
         <Analytics />
       </LanguageProvider>
     </ThemeProvider>

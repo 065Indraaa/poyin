@@ -30,13 +30,13 @@ export default function Footer() {
           <div className="ft-links-title">{t('Terhubung', 'Connect')}</div>
           <div className="ft-links">
             <a
-              href="https://x.com/elponyin"
+              href="https://x.com/ponyin"
               target="_blank"
               rel="noopener"
               className="ft-link"
             >
               <span style={{ fontSize: 20 }}>𝕏</span>
-              {t('Follow @elponyin di X', 'Follow @elponyin on X')}
+              {t('Follow @ponyin di X', 'Follow @ponyin on X')}
             </a>
             <a
               href="https://trojan.com/@Ponyinnn"

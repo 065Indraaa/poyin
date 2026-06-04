@@ -3,7 +3,7 @@ import { ExternalLink, Check, X, Heart, Loader2 } from 'lucide-react';
 import { claimFollow, verifyFollowX } from '../../services/auth';
 import { useAuth } from './AuthGate';
 
-const TARGET_HANDLE = 'ELPonyin';
+const TARGET_HANDLE = 'ponyin';
 const TARGET_URL = `https://x.com/${TARGET_HANDLE}`;
 
 export default function FollowBanner({ profile, onClaimed }) {

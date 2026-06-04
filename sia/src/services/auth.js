@@ -33,7 +33,7 @@ export async function signInWithX() {
   return data;
 }
 
-export async function verifyFollowX(providerToken, targetHandle = 'ELPonyin') {
+export async function verifyFollowX(providerToken, targetHandle = 'ponyin') {
   const res = await fetch('/api/verify-follow', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
