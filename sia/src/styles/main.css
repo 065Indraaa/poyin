@@ -2477,12 +2477,17 @@ a {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
   display: grid;
   place-items: center;
   padding: 24px;
-  animation: coinfest-fade-in 0.3s ease;
+  animation: coinfest-fade-in 0.25s ease;
+}
+
+.coinfest-overlay.coinfest-out {
+  animation: coinfest-fade-out 0.2s ease forwards;
 }
 
 @keyframes coinfest-fade-in {
@@ -2490,207 +2495,172 @@ a {
   to { opacity: 1; }
 }
 
+@keyframes coinfest-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 .coinfest-popup {
   position: relative;
-  width: min(420px, 100%);
+  width: min(400px, 100%);
   background: var(--panel);
-  border-radius: 24px;
-  padding: 40px 32px 32px;
-  text-align: center;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
-  animation: coinfest-pop-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
   border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  text-align: center;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  animation: coinfest-pop-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.coinfest-popup.coinfest-popout {
+  animation: coinfest-pop-out 0.2s ease forwards;
 }
 
 @keyframes coinfest-pop-in {
-  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Glow orb */
-.coinfest-glow {
-  position: absolute;
-  top: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 240px;
-  height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(45, 212, 191, 0.14) 0%, rgba(88, 166, 255, 0.06) 50%, transparent 70%);
-  pointer-events: none;
+@keyframes coinfest-pop-out {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to { opacity: 0; transform: scale(0.94) translateY(12px); }
 }
 
-/* Close button */
+/* Close */
 .coinfest-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 32px;
-  height: 32px;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--muted);
   display: grid;
   place-items: center;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
-  z-index: 2;
 }
 
 .coinfest-close:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text);
 }
 
-/* Badge */
-.coinfest-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--cyan);
-  background: rgba(45, 212, 191, 0.1);
-  border: 1px solid rgba(45, 212, 191, 0.2);
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.coinfest-pulse {
+/* Logo */
+.coinfest-logo {
+  width: auto;
+  height: 48px;
+  max-width: 100%;
+  object-fit: contain;
+  margin-bottom: 16px;
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--cyan);
-  animation: coinfest-pulse-dot 1.8s ease-in-out infinite;
 }
 
-@keyframes coinfest-pulse-dot {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.6); }
-  50% { box-shadow: 0 0 0 10px rgba(45, 212, 191, 0); }
+/* Divider */
+.coinfest-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--line);
+  margin: 0 auto 16px;
+  border-radius: 1px;
 }
 
-/* Icon */
-.coinfest-icon-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 18px;
-  position: relative;
-  z-index: 1;
-}
-
-.coinfest-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
-  display: grid;
-  place-items: center;
-  box-shadow: 0 8px 32px rgba(45, 212, 191, 0.25);
-}
-
-.coinfest-icon-text {
-  font-size: 22px;
-  font-weight: 800;
-  color: #06140b;
-  letter-spacing: -0.5px;
+/* Kicker */
+.coinfest-kicker {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  margin: 0 0 4px;
+  letter-spacing: 0.02em;
 }
 
 /* Title */
 .coinfest-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--text);
-  margin: 0 0 10px;
+  margin: 0 0 18px;
   letter-spacing: -0.3px;
-  position: relative;
-  z-index: 1;
 }
 
-/* Description */
-.coinfest-desc {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--muted);
-  margin: 0 0 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.coinfest-desc strong {
-  color: var(--soft);
-  font-weight: 700;
-}
-
-/* Info pills */
-.coinfest-pills {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-  position: relative;
-  z-index: 1;
-}
-
-.coinfest-pill {
+/* Date badge */
+.coinfest-date-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 20px;
-  font-size: 12px;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--soft);
   background: var(--panel-2);
   border: 1px solid var(--line);
+  margin-bottom: 6px;
 }
 
-/* CTA button */
+.coinfest-date-badge svg {
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+
+/* Location */
+.coinfest-location {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0 0 22px;
+}
+
+.coinfest-location a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.coinfest-location a:hover {
+  text-decoration: underline;
+}
+
+/* CTA */
 .coinfest-cta {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
-  color: #06140b;
-  font-size: 15px;
-  font-weight: 700;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 12px;
+  background: var(--text);
+  color: #090b0f;
+  font-size: 14.5px;
+  font-weight: 600;
   text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 6px 24px rgba(45, 212, 191, 0.3);
-  position: relative;
-  z-index: 1;
+  transition: background 0.2s, transform 0.15s;
+  letter-spacing: -0.01em;
 }
 
 .coinfest-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 36px rgba(45, 212, 191, 0.4);
+  background: #fff;
+  transform: translateY(-1px);
 }
 
-/* Skip link */
+/* Skip */
 .coinfest-skip {
   display: block;
   width: 100%;
-  margin-top: 14px;
-  padding: 8px;
+  margin-top: 12px;
+  padding: 6px;
   border: none;
   background: transparent;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
   transition: color 0.2s;
-  position: relative;
-  z-index: 1;
   font-family: inherit;
 }
 
@@ -2701,20 +2671,20 @@ a {
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .coinfest-popup {
-    padding: 32px 22px 26px;
-    border-radius: 20px;
+    padding: 30px 22px 24px;
+    border-radius: 18px;
+  }
+
+  .coinfest-logo {
+    height: 40px;
   }
 
   .coinfest-title {
-    font-size: 21px;
-  }
-
-  .coinfest-desc {
-    font-size: 14px;
+    font-size: 20px;
   }
 
   .coinfest-cta {
-    padding: 12px 22px;
     font-size: 14px;
+    padding: 12px 18px;
   }
 }
