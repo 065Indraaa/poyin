@@ -1,10 +1,4 @@
 {
   "cleanUrls": false,
-  "trailingSlash": true,
-  "rewrites": [
-    {
-      "source": "/sia",
-      "destination": "/sia/"
-    }
-  ]
+  "trailingSlash": true
 }

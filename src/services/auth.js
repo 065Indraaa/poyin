@@ -1,6 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 
-const REDIRECT_PATH = '/sia/';
+const REDIRECT_PATH = '/';
 
 function getRedirectUrl() {
   if (typeof window === 'undefined') return REDIRECT_PATH;

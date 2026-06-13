@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:root && npm --prefix sia run build && node scripts/copy-sia-dist.mjs",
-    "build:root": "vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
