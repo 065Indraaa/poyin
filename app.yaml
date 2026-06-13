@@ -1,0 +1,23 @@
+kind: wasmer.io/App.v0
+name: ponyin
+owner: 065indraaa
+package: .
+app_id: da_2J7IAtxUMWwl
+annotations:
+  shipitcli.com/config:
+    build_command: npm run build
+    commands: {}
+    convert_redirects: true
+    extra_dependencies: []
+    framework: vite
+    install_requires_all_files: false
+    node_version: '24'
+    optimize_node_dependencies: true
+    package_manager: npm
+    port: 8080
+    remove_native_binaries: true
+    static_dir: dist
+    sws_version: 2.38.0
+    use_edgejs: true
+  shipitcli.com/provider: node-static
+  shipitcli.com/version: 0.21.2
