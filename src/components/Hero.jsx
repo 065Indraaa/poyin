@@ -50,6 +50,14 @@ export default function Hero() {
           <a href="https://trojan.com/@Ponyinnn" target="_blank" rel="noopener" className="btn btn-outline">
             ⚡ {t('Platform Trading', 'Trading Platform')}
           </a>
+          <a
+            href="https://t.me/premimart_bot?start=ref_8528331841"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-telegram"
+          >
+            🛒 {t('Beli Cenblue X', 'Buy Cenblue X')}
+          </a>
         </div>
       </div>
 

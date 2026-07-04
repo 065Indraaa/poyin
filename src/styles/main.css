@@ -512,6 +512,18 @@ body {
   transform: translateY(-2px);
 }
 
+.btn-telegram {
+  background: #0088cc;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 136, 204, .3);
+}
+
+.btn-telegram:hover {
+  background: #006fa6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 136, 204, .35);
+}
+
 /* ── HERO CARD ── */
 .hcard {
   background: rgba(255, 255, 255, .12);
