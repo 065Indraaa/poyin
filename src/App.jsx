@@ -16,6 +16,7 @@ import CoinfestPopup from './components/CoinfestPopup';
 import SpaceRecordings from './components/SpaceRecordings';
 import ProofGallery from './components/ProofGallery';
 import ScammerList from './components/ScammerList';
+import FieldNotes from './components/FieldNotes';
 import { PANEL_ORDER } from './data/panelData';
 import './styles/main.css';
 
@@ -85,6 +86,8 @@ export default function App() {
           <Sidebar activePanel={activePanel} onSwitch={switchPanel} />
           <PanelArea activePanel={activePanel} onSwitch={switchPanel} />
         </div>
+
+        <FieldNotes />
 
         <SpaceRecordings />
 

@@ -3993,3 +3993,392 @@ footer {
     padding: 12px 18px;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   FIELD NOTES / CATATAN DEGEN SECTION
+   ═══════════════════════════════════════════════════ */
+.field-notes-section {
+  padding: 80px 48px;
+  background: linear-gradient(180deg, #f4f8ff 0%, #ffffff 100%);
+  border-top: 1px solid var(--c3);
+  border-bottom: 1px solid var(--c3);
+}
+
+.field-notes-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.field-notes-head {
+  max-width: 760px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.field-notes-sup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--b);
+  background: var(--bp);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.field-notes-title {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.2vw, 42px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.field-notes-desc {
+  font-size: 16px;
+  color: var(--ink3);
+  line-height: 1.7;
+  max-width: 640px;
+  margin: 0 auto 28px;
+}
+
+/* Tabs */
+.field-notes-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.fn-tab {
+  background: var(--c);
+  border: 1px solid var(--c3);
+  color: var(--ink2);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+.fn-tab:hover {
+  border-color: var(--b);
+  color: var(--b);
+}
+
+.fn-tab.active {
+  background: var(--b);
+  border-color: var(--b);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(36, 85, 212, 0.25);
+}
+
+/* Grid */
+.field-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.field-note-card {
+  background: var(--card);
+  border: 1px solid var(--c3);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+}
+
+.field-note-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(24, 24, 43, 0.06);
+  border-color: var(--b2);
+}
+
+.field-note-card.featured-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(255, 251, 235, 0.9) 0%, rgba(254, 243, 199, 0.4) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.08);
+}
+
+.fn-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.fn-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: 0.2px;
+}
+
+.badge-amber {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-blue {
+  background: var(--bt);
+  color: var(--b);
+  border: 1px solid var(--bp);
+}
+
+.badge-purple {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #e9d5ff;
+}
+
+.badge-indigo {
+  background: #e0e7ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-emerald {
+  background: #d1fae5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.fn-author {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink4);
+}
+
+.fn-card-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.fn-card-subtitle {
+  font-size: 13.5px;
+  color: var(--ink3);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.fn-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.fn-paragraph {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ink2);
+  text-pretty: true;
+}
+
+.featured-card .fn-paragraph {
+  font-size: 15.5px;
+  color: #451a03;
+  font-weight: 500;
+}
+
+.fn-card-footer {
+  margin-top: auto;
+}
+
+.fn-footer-line {
+  height: 1px;
+  background: var(--c3);
+  margin-bottom: 12px;
+}
+
+.fn-tagline {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink4);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] .field-notes-section {
+  background: linear-gradient(180deg, #0d0f1a 0%, #121626 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .field-notes-title {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .field-notes-desc {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .fn-tab {
+  background: #181d30;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .fn-tab:hover {
+  border-color: var(--b3);
+  color: var(--b3);
+}
+
+[data-theme="dark"] .fn-tab.active {
+  background: var(--b2);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .field-note-card {
+  background: #151929;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .field-note-card:hover {
+  border-color: var(--b3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .field-note-card.featured-card {
+  background: linear-gradient(135deg, rgba(30, 24, 15, 0.95) 0%, rgba(20, 16, 10, 0.95) 100%);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+[data-theme="dark"] .featured-card .fn-paragraph {
+  color: #fef3c7;
+}
+
+[data-theme="dark"] .fn-card-title {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .fn-card-subtitle {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .fn-paragraph {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .fn-footer-line {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .badge-amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .badge-blue {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .badge-purple {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+[data-theme="dark"] .badge-indigo {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="dark"] .badge-emerald {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+@media (max-width: 768px) {
+  .field-notes-section {
+    padding: 48px 16px;
+  }
+
+  .field-notes-head {
+    margin-bottom: 28px;
+  }
+
+  .field-notes-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .field-note-card {
+    padding: 20px 18px;
+    border-radius: 16px;
+  }
+
+  .fn-card-title {
+    font-size: 18px;
+  }
+
+  .fn-paragraph {
+    font-size: 14px;
+    line-height: 1.65;
+    word-break: break-word;
+  }
+
+  .featured-card .fn-paragraph {
+    font-size: 14.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .field-notes-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 8px;
+  }
+
+  .fn-tab {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    padding: 7px 14px;
+    font-size: 12.5px;
+  }
+
+  .field-note-card {
+    padding: 18px 14px;
+  }
+
+  .fn-card-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .fn-badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+  }
+}
+
+
