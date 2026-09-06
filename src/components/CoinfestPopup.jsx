@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 
-const COINFEST_URL = 'https://coinfest.asia/with/Ponyin';
-const MAPS_URL = 'https://maps.app.goo.gl/C6TpG4u5eEZMZgvk7';
+const WA_NUMBER = '6281776411255'; // format internasional tanpa "+"
+const WA_MESSAGE = 'Halo, saya mau tanya soal cairin kripto instant';
+const WA_URL = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_MESSAGE)}`;
 const LOGO_SRC = '/coinfest.png';
 
 export default function CoinfestPopup() {
@@ -29,7 +30,7 @@ export default function CoinfestPopup() {
 
   return (
     <div className={`coinfest-overlay${closing ? ' coinfest-out' : ''}`} onClick={handleBackdrop}>
-      <div className={`coinfest-popup${closing ? ' coinfest-popout' : ''}`} role="dialog" aria-modal="true" aria-label="Coinfest Asia 2026">
+      <div className={`coinfest-popup${closing ? ' coinfest-popout' : ''}`} role="dialog" aria-modal="true" aria-label="Cairin Kripto Instant">
 
         <button type="button" className="coinfest-close" onClick={dismiss} aria-label="Tutup">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -40,44 +41,14 @@ export default function CoinfestPopup() {
 
         <img
           src={LOGO_SRC}
-          alt="Coinfest Asia"
+          alt="Admin"
           className="coinfest-logo"
           draggable="false"
         />
 
         <div className="coinfest-divider" />
 
-        <p className="coinfest-kicker">Ponyin akan hadir di</p>
-        <h2 className="coinfest-title">Coinfest Asia 2026</h2>
+        <p className="coinfest-kicker">Mau cairin kripto instant?</p>
+        <h2 className="coinfest-title">Wa Admin</h2>
 
-        <div className="coinfest-date-badge">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          20 – 21 Agustus 2026
-        </div>
-
-        <p className="coinfest-location">
-          Pantai Melasti, Bali{' '}
-          <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">(lihat peta ↗)</a>
-        </p>
-
-        <a
-          href={COINFEST_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="coinfest-cta"
-        >
-          Beli Tiket Diskon — Klik disini
-        </a>
-
-        <button type="button" className="coinfest-skip" onClick={dismiss}>
-          Tutup
-        </button>
-      </div>
-    </div>
-  );
-}
+        <div className="coinfes
