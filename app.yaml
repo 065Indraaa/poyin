@@ -3,13 +3,3 @@ name: ponyin
 owner: 065indraaa
 package: .
 app_id: da_2J7IAtxUMWwl
-annotations:
-  shipitcli.com/config:
-    build_command: npm install && npm run build
-    start_command: npm start
-    framework: node
-    node_version: '24'
-    package_manager: npm
-    port: 8080
-    use_edgejs: true
-  shipitcli.com/provider: node-full
